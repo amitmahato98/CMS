@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # cms
 
 A new Flutter project.
@@ -19,3 +20,6 @@ samples, guidance on mobile development, and a full API reference.
 # CMS
 Collage Management System
 >>>>>>> a4ccd21b45001adc9e9506d99392df4f08c0b53b
+=======
+
+>>>>>>> ffebe9ce5847d196d4dc163ea175ce665e4c15ef
