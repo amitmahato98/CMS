@@ -23,7 +23,6 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           backgroundColor: blueColor,
           actions: [
-            IconButton(icon: Icon(Icons.search), onPressed: () {}),
             IconButton(icon: Icon(Icons.notifications), onPressed: () {}),
           ],
         ),

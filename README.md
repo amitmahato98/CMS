@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # cms
 
 A new Flutter project.
@@ -14,3 +15,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# CMS
+Collage Management System
+>>>>>>> a4ccd21b45001adc9e9506d99392df4f08c0b53b
