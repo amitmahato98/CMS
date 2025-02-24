@@ -47,6 +47,13 @@ class Navbar extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.verified_user_outlined),
+            title: const Text("Student"),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
           ExpansionTile(
             leading: Icon(Icons.people),
             title: Text("Staff"),

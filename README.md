@@ -22,3 +22,9 @@ Collage Management System
 =======
 
 >>>>>>> ffebe9ce5847d196d4dc163ea175ce665e4c15ef
+
+ensure to follow this ;-
+git pull origin main - Get the latest updates from the remote repository.
+git add . - Stage all your changes (new or modified files).
+git commit -m "Your descriptive commit message" - Commit your changes to the local repository.
+git push origin main - Push your changes to the remote repository.
