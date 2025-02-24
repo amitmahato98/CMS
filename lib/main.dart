@@ -22,11 +22,9 @@ class _MyAppState extends State<MyApp> {
         drawer: Navbar(),
         appBar: AppBar(
           backgroundColor: blueColor,
+          title: const Text("Admin"),
           actions: [
-            IconButton(
-              icon: Icon(Icons.notification_important),
-              onPressed: () {},
-            ),
+            IconButton(icon: Icon(Icons.notifications), onPressed: () {}),
           ],
         ),
       ),
