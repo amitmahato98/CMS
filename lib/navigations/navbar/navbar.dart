@@ -91,6 +91,16 @@ class Navbar extends StatelessWidget {
             title: Text("Logout"),
             onTap: () => Navigator.pop(context),
           ),
+          ListTile(
+            leading: Icon(Icons.settings),
+            title: Text("Setting"),
+            onTap: () => Navigator.pop(context),
+          ),
+          ListTile(
+            leading: Icon(Icons.lock),
+            title: Text("Reset Password"),
+            onTap: () => Navigator.pop(context),
+          ),
         ],
       ),
     );
