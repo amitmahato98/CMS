@@ -1,5 +1,6 @@
 import 'package:cms/navigations/body/dashboard.dart';
 import 'package:cms/navigations/navbar/navbar.dart';
+import 'package:cms/navigations/screens/notifications/notification.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -27,7 +28,17 @@ class _MyAppState extends State<MyApp> {
           backgroundColor: blueColor,
           title: const Text("Admin"),
           actions: [
-            IconButton(icon: Icon(Icons.notifications), onPressed: () {}),
+            IconButton(
+              icon: Icon(Icons.notifications),
+              onPressed: () {
+                setState(() {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SendNotification()),
+                  );
+                });
+              },
+            ),
           ],
         ),
         body: Dashboard(),

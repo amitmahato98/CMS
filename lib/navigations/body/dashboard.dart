@@ -1,7 +1,11 @@
 import 'package:cms/datatypes/datatypes.dart';
 import 'package:cms/navigations/navbar/navbar.dart';
 import 'package:cms/navigations/screens/admin/admin.dart';
+import 'package:cms/navigations/screens/attendence/attendence.dart';
+import 'package:cms/navigations/screens/form/form.dart';
 import 'package:cms/navigations/screens/library/library.dart';
+import 'package:cms/navigations/screens/meeting/meeting.dart';
+import 'package:cms/navigations/screens/notifications/notification.dart';
 import 'package:cms/navigations/screens/student/student.dart';
 import 'package:cms/navigations/screens/teacher/teacher.dart';
 import 'package:flutter/cupertino.dart';
@@ -78,6 +82,27 @@ class _GridbuildState extends State<Gridbuild> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Library()),
+                  );
+                } else if (gridMap.elementAt(index)["title"] == "Attendence") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Attendence()),
+                  );
+                } else if (gridMap.elementAt(index)["title"] ==
+                    "Notifications") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SendNotification()),
+                  );
+                } else if (gridMap.elementAt(index)["title"] == "Form") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FormFillUp()),
+                  );
+                } else if (gridMap.elementAt(index)["title"] == "Meeting") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Meeting()),
                   );
                 }
               });
