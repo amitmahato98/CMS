@@ -1,3 +1,4 @@
+import 'package:cms/navigations/body/dashboard.dart';
 import 'package:cms/navigations/navbar/navbar.dart';
 import 'package:flutter/material.dart';
 
@@ -14,9 +15,11 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Color blueColor = Color(0xFF167AFA);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "CMS",
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         drawer: Navbar(),
@@ -27,6 +30,7 @@ class _MyAppState extends State<MyApp> {
             IconButton(icon: Icon(Icons.notifications), onPressed: () {}),
           ],
         ),
+        body: Dashboard(),
       ),
     );
   }

@@ -48,8 +48,8 @@ class Navbar extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.verified_user_outlined),
-            title: const Text("Student"),
+            leading: const Icon(Icons.supervised_user_circle),
+            title: const Text("Students"),
             onTap: () {
               Navigator.pop(context);
             },
@@ -81,7 +81,11 @@ class Navbar extends StatelessWidget {
             title: Text("Policies"),
             onTap: () => Navigator.pop(context),
           ),
-
+          ListTile(
+            leading: Icon(Icons.info),
+            title: Text("About Us"),
+            onTap: () => Navigator.pop(context),
+          ),
           ListTile(
             leading: Icon(Icons.logout),
             title: Text("Logout"),
