@@ -30,16 +30,19 @@ class _MyAppState extends State<MyApp> {
           actions: [
             Builder(
               builder: (context) {
-                return IconButton(
-                  icon: Icon(Icons.notifications),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SendNotification(),
-                      ),
-                    );
-                  },
+                return Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: IconButton(
+                    icon: Icon(Icons.notifications),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SendNotification(),
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             ),

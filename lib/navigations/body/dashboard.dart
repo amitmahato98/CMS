@@ -1,4 +1,5 @@
 import 'package:cms/datatypes/datatypes.dart';
+import 'package:cms/main.dart';
 import 'package:cms/navigations/navbar/navbar.dart';
 import 'package:cms/navigations/screens/admin/admin.dart';
 import 'package:cms/navigations/screens/attendence/attendence.dart';
@@ -24,7 +25,125 @@ class _DashboardState extends State<Dashboard> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: Padding(padding: const EdgeInsets.all(8.0), child: Gridbuild()),
+        body: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [Container(child: Expanded(child: Gridbuild()))],
+            ),
+          ),
+        ),
+        floatingActionButton: FloatingButtonMenu(),
+      ),
+    );
+  }
+}
+
+class FloatingButtonMenu extends StatefulWidget {
+  const FloatingButtonMenu({super.key});
+  @override
+  State<FloatingButtonMenu> createState() => _FloatingButtonMenuState();
+}
+
+class _FloatingButtonMenuState extends State<FloatingButtonMenu> {
+  bool isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Visibility(
+          visible: isExpanded,
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Container(
+              constraints: BoxConstraints(maxWidth: 200),
+              child: Material(
+                elevation: 6,
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 15,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildOption(Icons.school, "Teacher"),
+                      Divider(height: 10, color: Colors.grey[300]),
+                      _buildOption(Icons.person, "Student"),
+                      Divider(height: 10, color: Colors.grey[300]),
+                      _buildOption(Icons.family_restroom, "Parent"),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 10),
+
+        FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              isExpanded = !isExpanded;
+            });
+          },
+          backgroundColor: blueColor,
+          child: Icon(
+            isExpanded ? Icons.close : Icons.message,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildOption(IconData icon, String label) {
+    return GestureDetector(
+      onTap: () {
+        if ("$label" == "Teacher") {
+          setState(() {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Teacher()),
+            );
+            isExpanded = false;
+          });
+        } else if ("$label" == "Student") {
+          setState(() {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Student()),
+            );
+            isExpanded = false;
+          });
+        } else if ("$label" == "Parent") {
+          setState(() {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Dashboard()),
+            );
+            isExpanded = false;
+          });
+        }
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.blue, size: 24),
+          SizedBox(width: 10),
+          Text(
+            label,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          ),
+        ],
       ),
     );
   }
@@ -54,7 +173,9 @@ class _GridbuildState extends State<Gridbuild> {
       itemCount: gridMap.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisExtent: 180,
+        crossAxisSpacing: 20,
+        mainAxisExtent: 200,
+        mainAxisSpacing: 20,
       ),
       itemBuilder: (_, index) {
         return Padding(
@@ -113,11 +234,15 @@ class _GridbuildState extends State<Gridbuild> {
                 color: GrayColor,
               ),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(12.0),
                 child: Column(
                   children: [
-                    Image.asset(gridMap.elementAt(index)['icon'], height: 110),
-                    Text("${gridMap.elementAt(index)['title']}"),
+                    Image.asset(gridMap.elementAt(index)['icon'], height: 115),
+                    SizedBox(height: 18),
+                    Text(
+                      "${gridMap.elementAt(index)['title']}",
+                      style: TextStyle(fontSize: 17),
+                    ),
                   ],
                 ),
               ),
