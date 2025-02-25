@@ -28,15 +28,19 @@ class _MyAppState extends State<MyApp> {
           backgroundColor: blueColor,
           title: const Text("Admin"),
           actions: [
-            IconButton(
-              icon: Icon(Icons.notifications),
-              onPressed: () {
-                setState(() {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SendNotification()),
-                  );
-                });
+            Builder(
+              builder: (context) {
+                return IconButton(
+                  icon: Icon(Icons.notifications),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SendNotification(),
+                      ),
+                    );
+                  },
+                );
               },
             ),
           ],

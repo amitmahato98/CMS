@@ -43,10 +43,10 @@ class _GridbuildState extends State<Gridbuild> {
     {"icon": "assets/icons/icons2-teacher.png", "title": "Teacher"},
     {"icon": "assets/icons/icons3-students.png", "title": "Students"},
     {"icon": "assets/icons/icons4-admin.png", "title": "Administrator"},
-    {"icon": "assets/icons/icons5-attendence.png", "title": "Attendence"},
-    {"icon": "assets/icons/icons6-form.png", "title": "Form"},
-    {"icon": "assets/icons/icons7-notification.png", "title": "Notifications"},
-    {"icon": "assets/icons/icons8-meeting.png", "title": "Meeting"},
+    {"icon": "assets/icons/icon5-attendance.png", "title": "Attendence"},
+    {"icon": "assets/icons/icon6-form.png", "title": "Form"},
+    {"icon": "assets/icons/icon7-notification.png", "title": "Notifications"},
+    {"icon": "assets/icons/icon8-meeting.png", "title": "Meeting"},
   ];
   @override
   Widget build(BuildContext context) {
