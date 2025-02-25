@@ -70,6 +70,11 @@ class Navbar extends StatelessWidget {
             ],
           ),
           ListTile(
+            leading: Icon(Icons.edit_document),
+            title: Text("Exam Section"),
+            onTap: () => Navigator.pop(context),
+          ),
+          ListTile(
             leading: const Icon(Icons.notifications),
             title: const Text("Send Notification"),
             onTap: () {
@@ -87,18 +92,13 @@ class Navbar extends StatelessWidget {
             onTap: () => Navigator.pop(context),
           ),
           ListTile(
-            leading: Icon(Icons.logout),
-            title: Text("Logout"),
-            onTap: () => Navigator.pop(context),
-          ),
-          ListTile(
             leading: Icon(Icons.settings),
             title: Text("Setting"),
             onTap: () => Navigator.pop(context),
           ),
           ListTile(
-            leading: Icon(Icons.lock),
-            title: Text("Reset Password"),
+            leading: Icon(Icons.logout),
+            title: Text("Logout"),
             onTap: () => Navigator.pop(context),
           ),
         ],
