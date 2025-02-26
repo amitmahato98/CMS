@@ -1,15 +1,15 @@
 import 'package:cms/datatypes/datatypes.dart';
-import 'package:cms/main.dart';
-import 'package:cms/navigations/navbar/navbar.dart';
 import 'package:cms/navigations/screens/admin/admin.dart';
 import 'package:cms/navigations/screens/attendence/attendence.dart';
+import 'package:cms/navigations/screens/chat/parent/parentchat.dart';
+import 'package:cms/navigations/screens/chat/student/studentchat.dart';
+import 'package:cms/navigations/screens/chat/teacher/teacherchat.dart';
 import 'package:cms/navigations/screens/form/form.dart';
 import 'package:cms/navigations/screens/library/library.dart';
 import 'package:cms/navigations/screens/meeting/meeting.dart';
 import 'package:cms/navigations/screens/notifications/notification.dart';
 import 'package:cms/navigations/screens/student/student.dart';
 import 'package:cms/navigations/screens/teacher/teacher.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {
@@ -43,13 +43,13 @@ class _DashboardState extends State<Dashboard> {
 
 class FloatingButtonMenu extends StatefulWidget {
   const FloatingButtonMenu({super.key});
+
   @override
   State<FloatingButtonMenu> createState() => _FloatingButtonMenuState();
 }
 
 class _FloatingButtonMenuState extends State<FloatingButtonMenu> {
   bool isExpanded = false;
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -61,11 +61,10 @@ class _FloatingButtonMenuState extends State<FloatingButtonMenu> {
           child: Align(
             alignment: Alignment.centerRight,
             child: Container(
-              constraints: BoxConstraints(maxWidth: 200),
+              constraints: BoxConstraints(maxWidth: 150),
               child: Material(
-                elevation: 6,
+                elevation: 10,
                 borderRadius: BorderRadius.circular(20),
-                color: Colors.white,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     vertical: 10,
@@ -75,11 +74,11 @@ class _FloatingButtonMenuState extends State<FloatingButtonMenu> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildOption(Icons.school, "Teacher"),
-                      Divider(height: 10, color: Colors.grey[300]),
-                      _buildOption(Icons.person, "Student"),
-                      Divider(height: 10, color: Colors.grey[300]),
-                      _buildOption(Icons.family_restroom, "Parent"),
+                      _buildOptions(Icons.school, "Teacher"),
+                      Divider(color: const Color.fromARGB(255, 37, 37, 37)),
+                      _buildOptions(Icons.family_restroom, "Parent"),
+                      Divider(color: const Color.fromARGB(255, 37, 37, 37)),
+                      _buildOptions(Icons.person, "Student"),
                     ],
                   ),
                 ),
@@ -88,7 +87,6 @@ class _FloatingButtonMenuState extends State<FloatingButtonMenu> {
           ),
         ),
         SizedBox(height: 10),
-
         FloatingActionButton(
           onPressed: () {
             setState(() {
@@ -105,30 +103,30 @@ class _FloatingButtonMenuState extends State<FloatingButtonMenu> {
     );
   }
 
-  Widget _buildOption(IconData icon, String label) {
+  _buildOptions(IconData icon, String label) {
     return GestureDetector(
       onTap: () {
-        if ("$label" == "Teacher") {
+        if (label == "Teacher") {
           setState(() {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Teacher()),
+              MaterialPageRoute(builder: (context) => Teacherchat()),
             );
             isExpanded = false;
           });
-        } else if ("$label" == "Student") {
+        } else if (label == "Parent") {
           setState(() {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Student()),
+              MaterialPageRoute(builder: (context) => ParentChat()),
             );
             isExpanded = false;
           });
-        } else if ("$label" == "Parent") {
+        } else if (label == "Student") {
           setState(() {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Dashboard()),
+              MaterialPageRoute(builder: (context) => Studentchat()),
             );
             isExpanded = false;
           });
@@ -137,7 +135,7 @@ class _FloatingButtonMenuState extends State<FloatingButtonMenu> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Colors.blue, size: 24),
+          Icon(icon, color: const Color.fromARGB(255, 124, 124, 124), size: 24),
           SizedBox(width: 10),
           Text(
             label,
