@@ -20,23 +20,271 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  final List<Map<String, dynamic>> gridMap = [
+    {"icon": "assets/icons/icons1-library.png", "title": "Library"},
+    {"icon": "assets/icons/icons2-teacher.png", "title": "Teacher"},
+    {"icon": "assets/icons/icons3-students.png", "title": "Students"},
+    {"icon": "assets/icons/icons4-admin.png", "title": "Administrator"},
+    {"icon": "assets/icons/icon5-attendance.png", "title": "Attendence"},
+    {"icon": "assets/icons/icon6-form.png", "title": "Form"},
+    {"icon": "assets/icons/icon7-notification.png", "title": "Notifications"},
+    {"icon": "assets/icons/icon8-meeting.png", "title": "Meeting"},
+  ];
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: SizedBox(
-          height: MediaQuery.of(context).size.height,
+        body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [Container(child: Expanded(child: Gridbuild()))],
+              children: [
+                OverVeiw(),
+                SizedBox(height: 10),
+
+                GridView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: gridMap.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 20,
+                    mainAxisExtent: 200,
+                    mainAxisSpacing: 20,
+                  ),
+                  itemBuilder: (_, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(7.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            if (gridMap.elementAt(index)['title'] ==
+                                "Students") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Student(),
+                                ),
+                              );
+                            } else if (gridMap.elementAt(index)["title"] ==
+                                "Teacher") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Teacher(),
+                                ),
+                              );
+                            } else if (gridMap.elementAt(index)["title"] ==
+                                "Administrator") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Admin(),
+                                ),
+                              );
+                            } else if (gridMap.elementAt(index)["title"] ==
+                                "Library") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Library(),
+                                ),
+                              );
+                            } else if (gridMap.elementAt(index)["title"] ==
+                                "Attendence") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Attendence(),
+                                ),
+                              );
+                            } else if (gridMap.elementAt(index)["title"] ==
+                                "Notifications") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SendNotification(),
+                                ),
+                              );
+                            } else if (gridMap.elementAt(index)["title"] ==
+                                "Form") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => FormFillUp(),
+                                ),
+                              );
+                            } else if (gridMap.elementAt(index)["title"] ==
+                                "Meeting") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Meeting(),
+                                ),
+                              );
+                            }
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            color: GrayColor,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              children: [
+                                Image.asset(
+                                  gridMap.elementAt(index)['icon'],
+                                  height: 115,
+                                ),
+                                SizedBox(height: 18),
+                                Text(
+                                  "${gridMap.elementAt(index)['title']}",
+                                  style: TextStyle(fontSize: 17),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ),
         floatingActionButton: FloatingButtonMenu(),
       ),
+    );
+  }
+}
+
+class OverVeiw extends StatefulWidget {
+  const OverVeiw({super.key});
+
+  @override
+  State<OverVeiw> createState() => _OverVeiwState();
+}
+
+class _OverVeiwState extends State<OverVeiw> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 0, right: 8, left: 8, bottom: 8),
+      child: Container(
+        height: 190,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: GrayColor,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [BoxShadow(color: Colors.black)],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Admin()),
+                    );
+                  });
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Welcome back,\nMr.Amit Mahato | Cammpus Cheif",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+
+                    CircleAvatar(
+                      radius: 40,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: Image.asset("assets/images/img1profile.jpg"),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: ViewCount(),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ViewCount extends StatefulWidget {
+  const ViewCount({super.key});
+
+  @override
+  State<ViewCount> createState() => _ViewCountState();
+}
+
+class _ViewCountState extends State<ViewCount> {
+  List<Map<String, dynamic>> countMap = [
+    {"number": "68", "Title": "Teacher"},
+    {"number": "1108", "Title": "Student"},
+    {"number": "16", "Title": "Administrator"},
+    {"number": "969", "Title": "Parent"},
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 70, // Increased for better visibility
+      width: 350, // Full screen width
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Even spacing
+        children:
+            countMap.map((data) {
+              return _buildCountItem(data["number"], data["Title"]);
+            }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildCountItem(String number, String title) {
+    return Column(
+      children: [
+        Container(
+          width: 50, // Increased size for visibility
+          height: 50,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.blue, width: 5),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            number,
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          ),
+        ),
+        SizedBox(width: 10), // Space between circle and title
+        Text(
+          title,
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        ), // Title
+      ],
     );
   }
 }
@@ -165,9 +413,12 @@ class _GridbuildState extends State<Gridbuild> {
     {"icon": "assets/icons/icon7-notification.png", "title": "Notifications"},
     {"icon": "assets/icons/icon8-meeting.png", "title": "Meeting"},
   ];
+
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
       itemCount: gridMap.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
