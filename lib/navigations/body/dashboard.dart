@@ -40,8 +40,18 @@ class _DashboardState extends State<Dashboard> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 OverVeiw(),
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "Explore Catagories",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                  ),
+                ),
                 SizedBox(height: 10),
 
                 GridView.builder(
@@ -129,23 +139,27 @@ class _DashboardState extends State<Dashboard> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            color: GrayColor,
+                            // borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              children: [
-                                Image.asset(
-                                  gridMap.elementAt(index)['icon'],
-                                  height: 115,
-                                ),
-                                SizedBox(height: 18),
-                                Text(
-                                  "${gridMap.elementAt(index)['title']}",
-                                  style: TextStyle(fontSize: 17),
-                                ),
-                              ],
+                          child: Material(
+                            color: GrayColor,
+                            elevation: 10,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                children: [
+                                  Image.asset(
+                                    gridMap.elementAt(index)['icon'],
+                                    height: 115,
+                                  ),
+                                  SizedBox(height: 18),
+                                  Text(
+                                    "${gridMap.elementAt(index)['title']}",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -175,57 +189,78 @@ class _OverVeiwState extends State<OverVeiw> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 0, right: 8, left: 8, bottom: 8),
-      child: Container(
-        height: 190,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: GrayColor,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [BoxShadow(color: Colors.black)],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Admin()),
-                    );
-                  });
-                },
-                child: Row(
+      child: Material(
+        elevation: 10,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          height: 220,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: GrayColor,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Admin()),
+                      );
+                    });
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Welcome back,",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 24,
+                            ),
+                          ),
+                          Text(
+                            "Mr.Amit Mahato | Cammpus Cheif",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w200,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      CircleAvatar(
+                        radius: 40,
+                        child: ClipOval(
+                          child: Image.asset(
+                            "assets/images/img1profile.jpg",
+                            fit: BoxFit.cover,
+                            width: 80,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "Welcome back,\nMr.Amit Mahato | Cammpus Cheif",
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-
-                    CircleAvatar(
-                      radius: 40,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
-                        child: Image.asset("assets/images/img1profile.jpg"),
+                    Container(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: ViewCount(),
                       ),
                     ),
                   ],
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: ViewCount(),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -242,19 +277,20 @@ class ViewCount extends StatefulWidget {
 
 class _ViewCountState extends State<ViewCount> {
   List<Map<String, dynamic>> countMap = [
-    {"number": "68", "Title": "Teacher"},
-    {"number": "1108", "Title": "Student"},
-    {"number": "16", "Title": "Administrator"},
-    {"number": "969", "Title": "Parent"},
+    {"number": "68", "Title": "Teachers"},
+    {"number": "1108", "Title": "Students"},
+    {"number": "16", "Title": "Administrators"},
+    {"number": "969", "Title": "Parents"},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 70, // Increased for better visibility
-      width: 350, // Full screen width
+      height: 100, // Increased for better visibility
+      width: 400, // Full screen width
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Even spacing
+        mainAxisAlignment: MainAxisAlignment.start,
+        spacing: 15,
         children:
             countMap.map((data) {
               return _buildCountItem(data["number"], data["Title"]);
@@ -264,27 +300,34 @@ class _ViewCountState extends State<ViewCount> {
   }
 
   Widget _buildCountItem(String number, String title) {
-    return Column(
-      children: [
-        Container(
-          width: 50, // Increased size for visibility
-          height: 50,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.blue, width: 5),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            number,
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-          ),
+    return Material(
+      elevation: 1,
+      color: GrayColor,
+      borderRadius: BorderRadius.circular(7),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.blue, width: 5),
+              ),
+              alignment: Alignment.center,
+              child: Text(number, style: TextStyle(fontSize: 15)),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                title,
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+              ),
+            ), // Title
+          ],
         ),
-        SizedBox(width: 10), // Space between circle and title
-        Text(
-          title,
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-        ), // Title
-      ],
+      ),
     );
   }
 }
