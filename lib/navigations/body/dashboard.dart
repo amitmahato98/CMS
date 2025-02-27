@@ -1,5 +1,6 @@
 import 'package:cms/datatypes/datatypes.dart';
 import 'package:cms/navigations/screens/admin/admin.dart';
+import 'package:cms/navigations/screens/approve/leave-request/leave-request-approve.dart';
 import 'package:cms/navigations/screens/attendence/attendence.dart';
 import 'package:cms/navigations/screens/chat/parent/parentchat.dart';
 import 'package:cms/navigations/screens/chat/student/studentchat.dart';
@@ -346,117 +347,135 @@ class _GridbuildState extends State<Gridbuild> {
     {"icon": "assets/icons/icon6-form.png", "title": "Form"},
     {"icon": "assets/icons/icon7-notification.png", "title": "Notifications"},
     {"icon": "assets/icons/icon8-meeting.png", "title": "Meeting"},
+    {"icon": "assets/icons/icons4-approve.png", "title": "Approve"},
   ];
 
+  // Map of titles to their respective screen widgets
+  bool _isExpanded = false;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // color: GrayColor,
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: GrayColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: GridView.builder(
-        physics: NeverScrollableScrollPhysics(),
+    final int itemToShow = _isExpanded ? gridMap.length : 4;
+    return Column(
+      children: [
+        Container(
+          // color: GrayColor,
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: GrayColor,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+          ),
+          child: GridView.builder(
+            physics: NeverScrollableScrollPhysics(),
 
-        shrinkWrap: true,
-        itemCount: gridMap.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 20,
-          mainAxisExtent: 200,
-          mainAxisSpacing: 20,
-        ),
-        itemBuilder: (_, index) {
-          return Padding(
-            padding: const EdgeInsets.all(7.0),
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  if (gridMap.elementAt(index)['title'] == "Students") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Student()),
-                    );
-                  } else if (gridMap.elementAt(index)["title"] == "Teacher") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Teacher()),
-                    );
-                  } else if (gridMap.elementAt(index)["title"] ==
-                      "Administrator") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Admin()),
-                    );
-                  } else if (gridMap.elementAt(index)["title"] == "Library") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Library()),
-                    );
-                  } else if (gridMap.elementAt(index)["title"] ==
-                      "Attendence") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Attendence()),
-                    );
-                  } else if (gridMap.elementAt(index)["title"] ==
-                      "Notifications") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SendNotification(),
+            shrinkWrap: true,
+            itemCount: itemToShow,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 20,
+              mainAxisExtent: 200,
+              mainAxisSpacing: 20,
+            ),
+            itemBuilder: (_, index) {
+              return Padding(
+                padding: const EdgeInsets.all(7.0),
+                child: GestureDetector(
+                  onTap: () {
+                    final String title = gridMap.elementAt(index)["title"];
+                    final Map<String, Widget> screenMap = {
+                      "Student": Student(),
+                      "Teacher": Teacher(),
+                      "Administrator": Admin(),
+                      "Library": Library(),
+                      "Attendence": Attendence(),
+                      "Notification": SendNotification(),
+                      "Form": FormFillUp(),
+                      "Meeting": Meeting(),
+                      "Approve": LeaveRequestApprove(),
+                    };
+                    if (screenMap.containsKey(title)) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => screenMap[title]!,
+                        ),
+                      );
+                    }
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      color: GrayColor,
+                    ),
+                    child: Material(
+                      elevation: 7,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      // color: GrayColor,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              gridMap.elementAt(index)['icon'],
+                              height: 115,
+                            ),
+                            SizedBox(height: 18),
+                            Text(
+                              "${gridMap.elementAt(index)['title']}",
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500,
+                                // color: cardTextColor,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    );
-                  } else if (gridMap.elementAt(index)["title"] == "Form") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => FormFillUp()),
-                    );
-                  } else if (gridMap.elementAt(index)["title"] == "Meeting") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Meeting()),
-                    );
-                  }
-                });
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  color: GrayColor,
-                ),
-                child: Material(
-                  elevation: 7,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  // color: GrayColor,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          gridMap.elementAt(index)['icon'],
-                          height: 115,
-                        ),
-                        SizedBox(height: 18),
-                        Text(
-                          "${gridMap.elementAt(index)['title']}",
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w500,
-                            // color: cardTextColor,
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ),
+              );
+            },
+          ),
+        ),
+        if (gridMap.length > 4)
+          InkWell(
+            onTap: () {
+              setState(() {
+                _isExpanded = !_isExpanded;
+              });
+            },
+            child: Container(
+              width: double.infinity,
+              alignment: Alignment.center,
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: GrayColor,
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(10),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _isExpanded ? "See Less" : "See More",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Icon(
+                    _isExpanded ? Icons.arrow_upward : Icons.arrow_upward,
+                    size: 24,
+                    color: Colors.white,
+                  ),
+                ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+      ],
     );
   }
 }
