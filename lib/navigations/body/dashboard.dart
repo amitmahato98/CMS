@@ -71,10 +71,10 @@ class _OverVeiwState extends State<OverVeiw> {
         elevation: 10,
         borderRadius: BorderRadius.circular(10),
         child: Container(
-          height: 220,
+          height: 225,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: GrayColor,
+            color: blueColor,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Padding(
@@ -159,18 +159,18 @@ class _ViewCountState extends State<ViewCount> {
   List<Map<String, dynamic>> countMap = [
     {"number": "68", "Title": "Teachers"},
     {"number": "1108", "Title": "Students"},
-    {"number": "16", "Title": "Administrators"},
+    {"number": "16", "Title": "Admin's"},
     {"number": "969", "Title": "Parents"},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100, // Increased for better visibility
-      width: 400, // Full screen width
+      height: 105, // Increased for better visibility
+      width: MediaQuery.sizeOf(context).width - 75,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        spacing: 15,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        // spacing: 15,
         children:
             countMap.map((data) {
               return _buildCountItem(data["number"], data["Title"]);
@@ -181,11 +181,11 @@ class _ViewCountState extends State<ViewCount> {
 
   Widget _buildCountItem(String number, String title) {
     return Material(
-      elevation: 3,
-      color: GrayColor,
-      borderRadius: BorderRadius.circular(7),
+      elevation: 5,
+      // color: GrayColor,
+      borderRadius: BorderRadius.circular(10),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
             Container(
@@ -212,7 +212,7 @@ class _ViewCountState extends State<ViewCount> {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
-                  color: cardTextColor,
+                  // color: cardTextColor,
                 ),
               ),
             ), // Title
@@ -350,102 +350,113 @@ class _GridbuildState extends State<Gridbuild> {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      physics: NeverScrollableScrollPhysics(),
-
-      shrinkWrap: true,
-      itemCount: gridMap.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 20,
-        mainAxisExtent: 200,
-        mainAxisSpacing: 20,
+    return Container(
+      // color: GrayColor,
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: GrayColor,
+        borderRadius: BorderRadius.circular(10),
       ),
-      itemBuilder: (_, index) {
-        return Padding(
-          padding: const EdgeInsets.all(7.0),
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                if (gridMap.elementAt(index)['title'] == "Students") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Student()),
-                  );
-                } else if (gridMap.elementAt(index)["title"] == "Teacher") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Teacher()),
-                  );
-                } else if (gridMap.elementAt(index)["title"] ==
-                    "Administrator") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Admin()),
-                  );
-                } else if (gridMap.elementAt(index)["title"] == "Library") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Library()),
-                  );
-                } else if (gridMap.elementAt(index)["title"] == "Attendence") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Attendence()),
-                  );
-                } else if (gridMap.elementAt(index)["title"] ==
-                    "Notifications") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SendNotification()),
-                  );
-                } else if (gridMap.elementAt(index)["title"] == "Form") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => FormFillUp()),
-                  );
-                } else if (gridMap.elementAt(index)["title"] == "Meeting") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Meeting()),
-                  );
-                }
-              });
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: GrayColor,
-              ),
-              child: Material(
-                elevation: 7,
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: GrayColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        gridMap.elementAt(index)['icon'],
-                        height: 115,
+      child: GridView.builder(
+        physics: NeverScrollableScrollPhysics(),
+
+        shrinkWrap: true,
+        itemCount: gridMap.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 20,
+          mainAxisExtent: 200,
+          mainAxisSpacing: 20,
+        ),
+        itemBuilder: (_, index) {
+          return Padding(
+            padding: const EdgeInsets.all(7.0),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (gridMap.elementAt(index)['title'] == "Students") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Student()),
+                    );
+                  } else if (gridMap.elementAt(index)["title"] == "Teacher") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Teacher()),
+                    );
+                  } else if (gridMap.elementAt(index)["title"] ==
+                      "Administrator") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Admin()),
+                    );
+                  } else if (gridMap.elementAt(index)["title"] == "Library") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Library()),
+                    );
+                  } else if (gridMap.elementAt(index)["title"] ==
+                      "Attendence") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Attendence()),
+                    );
+                  } else if (gridMap.elementAt(index)["title"] ==
+                      "Notifications") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SendNotification(),
                       ),
-                      SizedBox(height: 18),
-                      Text(
-                        "${gridMap.elementAt(index)['title']}",
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w500,
-                          color: cardTextColor,
+                    );
+                  } else if (gridMap.elementAt(index)["title"] == "Form") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => FormFillUp()),
+                    );
+                  } else if (gridMap.elementAt(index)["title"] == "Meeting") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Meeting()),
+                    );
+                  }
+                });
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  color: GrayColor,
+                ),
+                child: Material(
+                  elevation: 7,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  // color: GrayColor,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          gridMap.elementAt(index)['icon'],
+                          height: 115,
                         ),
-                      ),
-                    ],
+                        SizedBox(height: 18),
+                        Text(
+                          "${gridMap.elementAt(index)['title']}",
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w500,
+                            // color: cardTextColor,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
