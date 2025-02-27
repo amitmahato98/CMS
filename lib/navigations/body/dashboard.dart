@@ -20,16 +20,6 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  final List<Map<String, dynamic>> gridMap = [
-    {"icon": "assets/icons/icons1-library.png", "title": "Library"},
-    {"icon": "assets/icons/icons2-teacher.png", "title": "Teacher"},
-    {"icon": "assets/icons/icons3-students.png", "title": "Students"},
-    {"icon": "assets/icons/icons4-admin.png", "title": "Administrator"},
-    {"icon": "assets/icons/icon5-attendance.png", "title": "Attendence"},
-    {"icon": "assets/icons/icon6-form.png", "title": "Form"},
-    {"icon": "assets/icons/icon7-notification.png", "title": "Notifications"},
-    {"icon": "assets/icons/icon8-meeting.png", "title": "Meeting"},
-  ];
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -54,119 +44,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
                 SizedBox(height: 10),
 
-                GridView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: gridMap.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 20,
-                    mainAxisExtent: 200,
-                    mainAxisSpacing: 20,
-                  ),
-                  itemBuilder: (_, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(7.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            if (gridMap.elementAt(index)['title'] ==
-                                "Students") {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Student(),
-                                ),
-                              );
-                            } else if (gridMap.elementAt(index)["title"] ==
-                                "Teacher") {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Teacher(),
-                                ),
-                              );
-                            } else if (gridMap.elementAt(index)["title"] ==
-                                "Administrator") {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Admin(),
-                                ),
-                              );
-                            } else if (gridMap.elementAt(index)["title"] ==
-                                "Library") {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Library(),
-                                ),
-                              );
-                            } else if (gridMap.elementAt(index)["title"] ==
-                                "Attendence") {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Attendence(),
-                                ),
-                              );
-                            } else if (gridMap.elementAt(index)["title"] ==
-                                "Notifications") {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SendNotification(),
-                                ),
-                              );
-                            } else if (gridMap.elementAt(index)["title"] ==
-                                "Form") {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => FormFillUp(),
-                                ),
-                              );
-                            } else if (gridMap.elementAt(index)["title"] ==
-                                "Meeting") {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Meeting(),
-                                ),
-                              );
-                            }
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            // borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          child: Material(
-                            color: GrayColor,
-                            elevation: 10,
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Column(
-                                children: [
-                                  Image.asset(
-                                    gridMap.elementAt(index)['icon'],
-                                    height: 115,
-                                  ),
-                                  SizedBox(height: 18),
-                                  Text(
-                                    "${gridMap.elementAt(index)['title']}",
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                Gridbuild(),
               ],
             ),
           ),
@@ -223,6 +101,7 @@ class _OverVeiwState extends State<OverVeiw> {
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 24,
+                              color: cardTextColor,
                             ),
                           ),
                           Text(
@@ -230,6 +109,7 @@ class _OverVeiwState extends State<OverVeiw> {
                             style: TextStyle(
                               fontWeight: FontWeight.w200,
                               fontSize: 18,
+                              color: cardTextColor,
                             ),
                           ),
                         ],
@@ -301,7 +181,7 @@ class _ViewCountState extends State<ViewCount> {
 
   Widget _buildCountItem(String number, String title) {
     return Material(
-      elevation: 1,
+      elevation: 3,
       color: GrayColor,
       borderRadius: BorderRadius.circular(7),
       child: Padding(
@@ -316,13 +196,24 @@ class _ViewCountState extends State<ViewCount> {
                 border: Border.all(color: Colors.blue, width: 5),
               ),
               alignment: Alignment.center,
-              child: Text(number, style: TextStyle(fontSize: 15)),
+              child: Text(
+                number,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: const Color.fromARGB(255, 255, 0, 0),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
                 title,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: cardTextColor,
+                ),
               ),
             ), // Title
           ],
@@ -461,6 +352,7 @@ class _GridbuildState extends State<Gridbuild> {
   Widget build(BuildContext context) {
     return GridView.builder(
       physics: NeverScrollableScrollPhysics(),
+
       shrinkWrap: true,
       itemCount: gridMap.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -525,17 +417,29 @@ class _GridbuildState extends State<Gridbuild> {
                 borderRadius: BorderRadius.all(Radius.circular(10)),
                 color: GrayColor,
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  children: [
-                    Image.asset(gridMap.elementAt(index)['icon'], height: 115),
-                    SizedBox(height: 18),
-                    Text(
-                      "${gridMap.elementAt(index)['title']}",
-                      style: TextStyle(fontSize: 17),
-                    ),
-                  ],
+              child: Material(
+                elevation: 7,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                color: GrayColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        gridMap.elementAt(index)['icon'],
+                        height: 115,
+                      ),
+                      SizedBox(height: 18),
+                      Text(
+                        "${gridMap.elementAt(index)['title']}",
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500,
+                          color: cardTextColor,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
