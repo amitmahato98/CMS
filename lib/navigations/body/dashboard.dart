@@ -447,10 +447,10 @@ class _GridbuildState extends State<Gridbuild> {
             child: Container(
               width: double.infinity,
               alignment: Alignment.center,
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: GrayColor,
-                borderRadius: BorderRadius.vertical(
+                borderRadius: const BorderRadius.vertical(
                   bottom: Radius.circular(10),
                 ),
               ),
@@ -459,15 +459,15 @@ class _GridbuildState extends State<Gridbuild> {
                 children: [
                   Text(
                     _isExpanded ? "See Less" : "See More",
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Icon(
-                    _isExpanded ? Icons.arrow_upward : Icons.arrow_upward,
+                    _isExpanded ? Icons.arrow_upward : Icons.arrow_downward,
                     size: 24,
                     color: Colors.white,
                   ),
