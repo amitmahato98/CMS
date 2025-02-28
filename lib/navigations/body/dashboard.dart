@@ -11,46 +11,28 @@ import 'package:cms/navigations/screens/meeting/meeting.dart';
 import 'package:cms/navigations/screens/notifications/notification.dart';
 import 'package:cms/navigations/screens/student/student.dart';
 import 'package:cms/navigations/screens/teacher/teacher.dart';
+import 'package:cms/utils/full_screen_route.dart';
 import 'package:flutter/material.dart';
 
-class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+class Dashboard extends StatelessWidget {
+  final Function(Widget) onSectionSelected;
 
-  @override
-  State<Dashboard> createState() => _DashboardState();
-}
+  const Dashboard({Key? key, required this.onSectionSelected})
+    : super(key: key);
 
-class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                OverVeiw(),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Explore Catagories",
-                    textAlign: TextAlign.start,
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                Gridbuild(),
-              ],
-            ),
-          ),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            OverVeiw(),
+            SizedBox(height: 20),
+            Gridbuild(onSectionSelected: onSectionSelected),
+            // FloatingButtonMenu(),
+          ],
         ),
-        floatingActionButton: FloatingButtonMenu(),
       ),
     );
   }
@@ -258,9 +240,9 @@ class _FloatingButtonMenuState extends State<FloatingButtonMenu> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildOptions(Icons.school, "Teacher"),
-                      Divider(color: const Color.fromARGB(255, 37, 37, 37)),
+                      Divider(color: const Color.fromARGB(174, 37, 37, 37)),
                       _buildOptions(Icons.family_restroom, "Parent"),
-                      Divider(color: const Color.fromARGB(255, 37, 37, 37)),
+                      Divider(color: const Color.fromARGB(174, 37, 37, 37)),
                       _buildOptions(Icons.person, "Student"),
                     ],
                   ),
@@ -293,7 +275,7 @@ class _FloatingButtonMenuState extends State<FloatingButtonMenu> {
           setState(() {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Teacherchat()),
+              FullScreenRoute(builder: (context) => Teacherchat()),
             );
             isExpanded = false;
           });
@@ -301,7 +283,7 @@ class _FloatingButtonMenuState extends State<FloatingButtonMenu> {
           setState(() {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ParentChat()),
+              FullScreenRoute(builder: (context) => ParentChat()),
             );
             isExpanded = false;
           });
@@ -309,7 +291,7 @@ class _FloatingButtonMenuState extends State<FloatingButtonMenu> {
           setState(() {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Studentchat()),
+              FullScreenRoute(builder: (context) => Studentchat()),
             );
             isExpanded = false;
           });
@@ -331,7 +313,10 @@ class _FloatingButtonMenuState extends State<FloatingButtonMenu> {
 }
 
 class Gridbuild extends StatefulWidget {
-  const Gridbuild({super.key});
+  final Function(Widget) onSectionSelected;
+
+  const Gridbuild({Key? key, required this.onSectionSelected})
+    : super(key: key);
 
   @override
   State<Gridbuild> createState() => _GridbuildState();
@@ -350,15 +335,14 @@ class _GridbuildState extends State<Gridbuild> {
     {"icon": "assets/icons/icons4-approve.png", "title": "Approve"},
   ];
 
-  // Map of titles to their respective screen widgets
   bool _isExpanded = false;
+
   @override
   Widget build(BuildContext context) {
     final int itemToShow = _isExpanded ? gridMap.length : 4;
     return Column(
       children: [
         Container(
-          // color: GrayColor,
           padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: GrayColor,
@@ -366,7 +350,6 @@ class _GridbuildState extends State<Gridbuild> {
           ),
           child: GridView.builder(
             physics: NeverScrollableScrollPhysics(),
-
             shrinkWrap: true,
             itemCount: itemToShow,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -382,23 +365,18 @@ class _GridbuildState extends State<Gridbuild> {
                   onTap: () {
                     final String title = gridMap.elementAt(index)["title"];
                     final Map<String, Widget> screenMap = {
-                      "Student": Student(),
+                      "Students": Student(),
                       "Teacher": Teacher(),
                       "Administrator": Admin(),
                       "Library": Library(),
                       "Attendence": Attendence(),
-                      "Notification": SendNotification(),
+                      "Notifications": SendNotification(),
                       "Form": FormFillUp(),
                       "Meeting": Meeting(),
                       "Approve": LeaveRequestApprove(),
                     };
                     if (screenMap.containsKey(title)) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => screenMap[title]!,
-                        ),
-                      );
+                      widget.onSectionSelected(screenMap[title]!);
                     }
                   },
                   child: Container(
@@ -409,7 +387,6 @@ class _GridbuildState extends State<Gridbuild> {
                     child: Material(
                       elevation: 7,
                       borderRadius: BorderRadius.all(Radius.circular(10)),
-                      // color: GrayColor,
                       child: Padding(
                         padding: const EdgeInsets.all(12.0),
                         child: Column(
@@ -420,11 +397,10 @@ class _GridbuildState extends State<Gridbuild> {
                             ),
                             SizedBox(height: 18),
                             Text(
-                              "${gridMap.elementAt(index)['title']}",
+                              gridMap.elementAt(index)['title'],
                               style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w500,
-                                // color: cardTextColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
                             ),
                           ],
@@ -438,38 +414,51 @@ class _GridbuildState extends State<Gridbuild> {
           ),
         ),
         if (gridMap.length > 4)
-          InkWell(
-            onTap: () {
-              setState(() {
-                _isExpanded = !_isExpanded;
-              });
-            },
-            child: Container(
-              width: double.infinity,
-              alignment: Alignment.center,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: GrayColor,
-                borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(10),
-                ),
+          Transform.translate(
+            offset: Offset(0, -10), // Move up by 10 pixels
+            child: TextButton(
+              onPressed: () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              },
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Stack(
+                alignment: AlignmentDirectional.topCenter,
                 children: [
-                  Text(
-                    _isExpanded ? "See Less" : "See More",
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                  Container(
+                    width: 150,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.vertical(
+                        bottom: Radius.circular(100),
+                      ),
+                      color: GrayColor,
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Icon(
-                    _isExpanded ? Icons.arrow_upward : Icons.arrow_downward,
-                    size: 24,
-                    color: Colors.white,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _isExpanded ? "Less" : "More",
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 0, 0, 0),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(
+                          _isExpanded
+                              ? Icons.keyboard_arrow_up
+                              : Icons.keyboard_arrow_down,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
