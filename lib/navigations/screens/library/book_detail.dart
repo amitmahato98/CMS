@@ -8,9 +8,7 @@ class BookDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Book Details'),
-      ),
+      appBar: AppBar(title: Text('Book Details')),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -18,14 +16,12 @@ class BookDetail extends StatelessWidget {
             Container(
               width: double.infinity,
               height: 200,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-              ),
+              decoration: BoxDecoration(color: Colors.grey[200]),
               child: Image.asset(
                 book['image'],
                 fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) =>
-                    Icon(Icons.book, size: 100),
+                errorBuilder:
+                    (context, error, stackTrace) => Icon(Icons.book, size: 100),
               ),
             ),
             Padding(
@@ -35,31 +31,25 @@ class BookDetail extends StatelessWidget {
                 children: [
                   Text(
                     book['title'],
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),
                   Text(
                     'By ${book['author']}',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 18, color: Colors.grey[600]),
                   ),
                   SizedBox(height: 16),
-                  _buildInfoCard(
+                  _buildInfoCard(context, [
+                    _buildInfoRow('Category', book['category']),
+                    _buildInfoRow('Available Copies', '${book['copies']}'),
+                    if (book['semester'] != null)
+                      _buildInfoRow('Semester', book['semester']),
+                  ]),
+                  SizedBox(height: 16),
+                  _buildDescriptionCard(
                     context,
-                    [
-                      _buildInfoRow('Category', book['category']),
-                      _buildInfoRow('Available Copies', '${book['copies']}'),
-                      if (book['semester'] != null)
-                        _buildInfoRow('Semester', book['semester']),
-                    ],
+                    book['description'] ?? 'No description available.',
                   ),
-                  SizedBox(height: 16),
-                  _buildDescriptionCard(context, book['description'] ?? 'No description available.'),
                   SizedBox(height: 16),
                   _buildActionButtons(context),
                 ],
@@ -81,10 +71,7 @@ class BookDetail extends StatelessWidget {
           children: [
             Text(
               'Book Information',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
             ...children,
@@ -104,19 +91,10 @@ class BookDetail extends StatelessWidget {
           children: [
             Text(
               'Description',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
-            Text(
-              description,
-              style: TextStyle(
-                fontSize: 16,
-                height: 1.5,
-              ),
-            ),
+            Text(description, style: TextStyle(fontSize: 16, height: 1.5)),
           ],
         ),
       ),
@@ -132,20 +110,14 @@ class BookDetail extends StatelessWidget {
             flex: 2,
             child: Text(
               label,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
           ),
           Expanded(
             flex: 3,
             child: Text(
               value,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
           ),
         ],
