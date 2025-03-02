@@ -24,7 +24,7 @@ class _LibraryState extends State<Library> {
     'BTech',
     'NUTRITION',
     'PHYSIC',
-    'GEOLOGY',
+    
   ];
 
   final List<String> semesters = ['1', '2', '3', '4', '5', '6', '7', '8'];
