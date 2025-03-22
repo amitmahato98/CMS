@@ -585,7 +585,7 @@ class _GridbuildState extends State<Gridbuild> {
                       final Map<String, Widget> screenMap = {
                         "Students": Student(),
                         "Teacher": Teacher(),
-                        "Administrator": Admin(),
+                        "Administrator": AdminDashboard(),
                         "Library": Library(),
                         "Attendence": Attendence(),
                         "Notifications": SendNotification(),

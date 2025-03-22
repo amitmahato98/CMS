@@ -24,7 +24,7 @@ class Navbar extends StatelessWidget {
               onTap:
                   () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Admin()),
+                    MaterialPageRoute(builder: (context) => AdminDashboard()),
                   ),
               child: Row(
                 children: [
@@ -58,7 +58,7 @@ class Navbar extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Admin()),
+                MaterialPageRoute(builder: (context) => AdminDashboard()),
               );
             },
           ),
