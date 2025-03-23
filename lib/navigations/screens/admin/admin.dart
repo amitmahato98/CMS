@@ -1,4 +1,6 @@
 import 'package:cms/datatypes/datatypes.dart';
+import 'package:cms/navigations/screens/admin/more_recentactivities.dart';
+import 'package:cms/navigations/screens/admin/notiications.dart';
 import 'package:flutter/material.dart';
 
 // Color Constants
@@ -170,7 +172,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       IconButton(
                         icon: const Icon(Icons.notifications),
                         color: Colors.white,
-                        onPressed: () {},
+                        onPressed: () {
+                          setState(() {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => const NotificationsScreen(),
+                              ),
+                            );
+                          });
+                        },
                       ),
                       Positioned(
                         right: 8,
@@ -280,10 +292,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
             icon: Icon(Icons.dashboard),
             label: 'Dashboard',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Students'),
+          BottomNavigationBarItem(icon: Icon(Icons.payment), label: 'Finance'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.assessment),
+            label: 'Reports',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.announcement),
+            label: 'Announcements',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.school), label: 'Faculty'),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Courses'),
-          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: 'More'),
         ],
       ),
     );
@@ -493,8 +511,81 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
             trailing: IconButton(
               icon: const Icon(Icons.more_vert),
-              onPressed: () {},
+
+              onPressed: () {
+                // Create a RecentActivity object based on the current list item
+                final RecentActivity activity = RecentActivity(
+                  title:
+                      index % 3 == 0
+                          ? 'New student registered'
+                          : index % 3 == 1
+                          ? 'Course syllabus updated'
+                          : 'Tuition payment received',
+                  subtitle:
+                      'By ${index % 3 == 0 ? 'System' : 'Admin User'} • ${index * 2 + 1} hours ago',
+                  icon:
+                      index % 3 == 0
+                          ? Icons.person_add
+                          : index % 3 == 1
+                          ? Icons.edit_document
+                          : Icons.payment,
+                  iconBackgroundColor:
+                      index % 3 == 0
+                          ? Colors.blue.shade100
+                          : index % 3 == 1
+                          ? Colors.green.shade100
+                          : Colors.orange.shade100,
+                  iconColor:
+                      index % 3 == 0
+                          ? Colors.blue.shade700
+                          : index % 3 == 1
+                          ? Colors.green.shade700
+                          : Colors.orange.shade700,
+                  time: DateTime.now().subtract(Duration(hours: index * 2 + 1)),
+                  details:
+                      index % 3 == 0
+                          ? {
+                            "Student Name": "Student ${index + 1}",
+                            "Student ID": "S2023${100 + index}",
+                            "Course": "Computer Science",
+                            "Registration Date": "March 23, 2025",
+                            "Email": "student${index + 1}@mail.com",
+                            "Phone": "+1 (555) 123-456${index}",
+                            "Address":
+                                "${index + 1}23 College, University Town",
+                          }
+                          : index % 3 == 1
+                          ? {
+                            "Course": "Course ${index + 1}",
+                            "Course Code": "CSC${300 + index}",
+                            "Updated By": "Prof. Sushanti Mandi",
+                            "Major Changes": "Updated content for Spring 2025",
+                            "Previous Version": "v2.0",
+                            "Current Version": "v2.1",
+                            "Effective Date": "April 1, 2025",
+                          }
+                          : {
+                            "Student": "Student ${index + 1}",
+                            "Student ID": "S2022${50 + index}",
+                            "Amount": "\nNPR ${1000 + index * 100}.00",
+                            "Payment Method": "Online Transfer",
+                            "Transaction ID": "TRX${78945612 + index}",
+                            "Payment Date": "March 23, 2025",
+                            "Semester": "Spring 2025",
+                          },
+                );
+
+                // Navigate directly to the detail screen for this activity
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => ActivityDetailScreen(activity: activity),
+                  ),
+                );
+              },
             ),
+            onTap: () {},
           );
         },
       ),

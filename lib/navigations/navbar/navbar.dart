@@ -2,8 +2,10 @@ import 'package:cms/datatypes/datatypes.dart';
 import 'package:cms/navigations/screens/aboutus/aboutus.dart';
 import 'package:cms/navigations/screens/admin/admin.dart';
 import 'package:cms/navigations/screens/exam/exam.dart';
+import 'package:cms/navigations/screens/examination/examination.dart';
 import 'package:cms/navigations/screens/notifications/notification.dart';
 import 'package:cms/navigations/screens/policies/policies.dart';
+import 'package:cms/navigations/screens/profile/profile.dart';
 import 'package:cms/navigations/screens/setting/setting.dart';
 import 'package:cms/navigations/screens/student/student.dart';
 import 'package:cms/navigations/screens/teacher/teacher.dart';
@@ -24,7 +26,7 @@ class Navbar extends StatelessWidget {
               onTap:
                   () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AdminDashboard()),
+                    MaterialPageRoute(builder: (context) => ProfileScreen()),
                   ),
               child: Row(
                 children: [
@@ -98,7 +100,7 @@ class Navbar extends StatelessWidget {
             onTap:
                 () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Exam()),
+                  MaterialPageRoute(builder: (context) => Examination()),
                 ),
           ),
           ListTile(

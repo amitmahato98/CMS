@@ -485,7 +485,7 @@ class _GridbuildState extends State<Gridbuild> {
       "description": "Manage teacher profiles and assignments",
     },
     {
-      "icon": "assets/icons/icons2-teacher.png",
+      "icon": "assets/icons/parent.png",
       "title": "Parents",
       "description": "Parent communication and student progress tracking",
     },
@@ -525,12 +525,12 @@ class _GridbuildState extends State<Gridbuild> {
       "description": "Review and approve leave requests",
     },
     {
-      "icon": "assets/icons/exam_icon.png",
+      "icon": "assets/icons/examination.png",
       "title": "Examination",
       "description": "Manage exams, results and grade reports",
     },
     {
-      "icon": "assets/icons/timetable_icon.png",
+      "icon": "assets/icons/timetable.png",
       "title": "Timetable",
       "description": "Class schedules and academic calendar",
     },
