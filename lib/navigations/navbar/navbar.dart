@@ -1,7 +1,6 @@
 import 'package:cms/datatypes/datatypes.dart';
 import 'package:cms/navigations/screens/aboutus/aboutus.dart';
 import 'package:cms/navigations/screens/admin/admin.dart';
-import 'package:cms/navigations/screens/exam/exam.dart';
 import 'package:cms/navigations/screens/examination/examination.dart';
 import 'package:cms/navigations/screens/notifications/notification.dart';
 import 'package:cms/navigations/screens/policies/policies.dart';

@@ -9,3 +9,4 @@ const Color blueColor = Color(0xFF167AFA);
 const Color cardTextColor = Colors.white;
 const Color backgroundColor = Color(0xFFF5F7FA);
 const Color lightGrayColor = Color(0xFFEEEEEE);
+DateTime selectedMonth = DateTime(2025, 3, 1); // Initialize with March 2025

@@ -1,9 +1,11 @@
 import 'package:cms/datatypes/datatypes.dart';
+import 'package:cms/navigations/screens/admin/addstudentPage.dart'; // Fix import
+import 'package:cms/navigations/screens/admin/announcementpage.dart';
+import 'package:cms/navigations/screens/admin/eventdetails.dart';
 import 'package:cms/navigations/screens/admin/more_recentactivities.dart';
 import 'package:cms/navigations/screens/admin/notiications.dart';
 import 'package:flutter/material.dart';
-
-// Color Constants
+import 'package:intl/intl.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -14,123 +16,15 @@ class AdminDashboard extends StatefulWidget {
 
 class _AdminDashboardState extends State<AdminDashboard> {
   int _selectedIndex = 0;
-  // bool _isMenuOpen = false;
+  List<Map<String, dynamic>> students = []; // Initialize empty list
+  DateTime selectedMonth = DateTime.now(); // Add this line
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
-      // Using drawer for navigation instead of a row-based layout
-      drawer: Drawer(
-        elevation: 16.0, // Increase elevation for better shadow
-        width:
-            MediaQuery.of(context).size.width *
-            0.75, // Set width to 75% of screen
-        child: Container(
-          color: darkBlack,
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                decoration: const BoxDecoration(color: darkBlack),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: darkBlue,
-                          radius: 24,
-                          child: const Text(
-                            'CM',
-                            style: TextStyle(
-                              color: cardTextColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Expanded(
-                          child: Text(
-                            'College Manager',
-                            style: TextStyle(
-                              color: cardTextColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    // Admin Info
-                    const Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundImage: AssetImage(
-                            'assets/images/img1profile.jpg',
-                          ),
-
-                          radius: 16,
-                        ),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Admin User',
-                                style: TextStyle(
-                                  color: cardTextColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              Text(
-                                'admin@college.edu',
-                                style: TextStyle(
-                                  color: grayColor,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              // Navigation Items
-              _buildNavItem(0, Icons.dashboard, 'Dashboard'),
-              _buildNavItem(1, Icons.people, 'Students'),
-              _buildNavItem(2, Icons.school, 'Faculty'),
-              _buildNavItem(3, Icons.book, 'Courses'),
-              _buildNavItem(4, Icons.calendar_today, 'Schedule'),
-              _buildNavItem(5, Icons.payment, 'Finance'),
-              _buildNavItem(6, Icons.assessment, 'Reports'),
-              _buildNavItem(7, Icons.announcement, 'Announcements'),
-              _buildNavItem(8, Icons.settings, 'Settings'),
-
-              // Logout option at bottom
-              const Divider(color: grayColor),
-              ListTile(
-                leading: const Icon(Icons.logout, color: grayColor),
-                title: const Text('Logout', style: TextStyle(color: grayColor)),
-                onTap: () {
-                  // Implement logout function
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-      // Main content
       body: Column(
         children: [
-          // App Bar
           Container(
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
@@ -141,32 +35,21 @@ class _AdminDashboardState extends State<AdminDashboard> {
               bottom: false,
               child: Row(
                 children: [
-                  // Back button
                   IconButton(
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
-                  Builder(
-                    builder:
-                        (context) => IconButton(
-                          icon: const Icon(Icons.menu),
-                          onPressed: () {
-                            Scaffold.of(context).openDrawer();
-                          },
-                        ),
-                  ),
                   const Text(
                     'Administrator Dashboard',
                     style: TextStyle(
-                      fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      fontSize: 18,
                       color: darkBlack,
                     ),
                   ),
                   const Spacer(),
-                  // Action Buttons
                   Stack(
                     children: [
                       IconButton(
@@ -210,17 +93,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
             ),
           ),
-
-          // Main content - Use Expanded to fill available space
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Stats Section
                   _buildStatsSection(),
-
-                  // Activity Section
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -231,8 +109,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ],
                     ),
                   ),
-
-                  // Calendar Section
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -243,8 +119,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ],
                     ),
                   ),
-
-                  // Quick Actions
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -255,8 +129,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ],
                     ),
                   ),
-
-                  // System Status
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -267,8 +139,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ],
                     ),
                   ),
-
-                  // Bottom padding
                   const SizedBox(height: 16),
                 ],
               ),
@@ -276,7 +146,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ),
         ],
       ),
-      // Bottom Navigation as an alternative for Android
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex < 5 ? _selectedIndex : 0,
         onTap: (index) {
@@ -307,28 +176,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String title) {
-    final bool isSelected = index == _selectedIndex;
-    return ListTile(
-      leading: Icon(icon, color: isSelected ? blueColor : grayColor),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: isSelected ? cardTextColor : grayColor,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
-      selected: isSelected,
-      onTap: () {
-        setState(() {
-          _selectedIndex = index;
-          Navigator.pop(context); // Close drawer after selection
-        });
-      },
-      selectedTileColor: darkBlue.withOpacity(0.2),
-    );
-  }
-
   Widget _buildStatsSection() {
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -342,13 +189,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
-          // Two stats in one row
           Row(
             children: [
               Expanded(
                 child: _buildStatCard(
                   'Total Students',
-                  '1,250',
+                  '1108',
                   Icons.people,
                   Colors.blue.shade700,
                 ),
@@ -357,7 +203,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               Expanded(
                 child: _buildStatCard(
                   'Faculty Members',
-                  '85',
+                  '68',
                   Icons.school,
                   Colors.green.shade700,
                 ),
@@ -365,7 +211,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ],
           ),
           const SizedBox(height: 16),
-          // Two more stats in one row
           Row(
             children: [
               Expanded(
@@ -467,8 +312,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       child: ListView.separated(
         itemCount: 5,
         shrinkWrap: true,
-        physics:
-            const NeverScrollableScrollPhysics(), // Prevent nested scrolling issues
+        physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.all(16.0),
         separatorBuilder:
             (context, index) =>
@@ -510,10 +354,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
               style: const TextStyle(color: grayColor, fontSize: 12),
             ),
             trailing: IconButton(
-              icon: const Icon(Icons.more_vert),
-
+              icon: const Icon(Icons.info_sharp),
+              color:
+                  index % 3 == 0
+                      ? Colors.blue.shade700
+                      : index % 3 == 1
+                      ? Colors.green.shade700
+                      : Colors.orange.shade700,
               onPressed: () {
-                // Create a RecentActivity object based on the current list item
                 final RecentActivity activity = RecentActivity(
                   title:
                       index % 3 == 0
@@ -522,7 +370,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           ? 'Course syllabus updated'
                           : 'Tuition payment received',
                   subtitle:
-                      'By ${index % 3 == 0 ? 'System' : 'Admin User'} • ${index * 2 + 1} hours ago',
+                      'By ${index % 3 == 0 ? 'System' : 'Admin User'} • ${index * 2} hours ago',
                   icon:
                       index % 3 == 0
                           ? Icons.person_add
@@ -548,11 +396,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             "Student Name": "Student ${index + 1}",
                             "Student ID": "S2023${100 + index}",
                             "Course": "Computer Science",
-                            "Registration Date": "March 23, 2025",
                             "Email": "student${index + 1}@mail.com",
-                            "Phone": "+1 (555) 123-456${index}",
+                            "Phone": "+977 98 0123-456${index}",
                             "Address":
                                 "${index + 1}23 College, University Town",
+                            "Registration Date": "March 23, 2025",
                           }
                           : index % 3 == 1
                           ? {
@@ -567,7 +415,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           : {
                             "Student": "Student ${index + 1}",
                             "Student ID": "S2022${50 + index}",
-                            "Amount": "\nNPR ${1000 + index * 100}.00",
+                            "Amount": "NPR ${1000 + index * 100}.00",
                             "Payment Method": "Online Transfer",
                             "Transaction ID": "TRX${78945612 + index}",
                             "Payment Date": "March 23, 2025",
@@ -575,7 +423,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           },
                 );
 
-                // Navigate directly to the detail screen for this activity
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -604,20 +451,39 @@ class _AdminDashboardState extends State<AdminDashboard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'March 2025',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                Text(
+                  DateFormat('MMMM yyyy').format(selectedMonth),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Row(
                   children: [
                     IconButton(
                       icon: const Icon(Icons.chevron_left),
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          selectedMonth = DateTime(
+                            selectedMonth.year,
+                            selectedMonth.month - 1,
+                            1,
+                          );
+                        });
+                      },
                       iconSize: 20,
                     ),
                     IconButton(
                       icon: const Icon(Icons.chevron_right),
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          selectedMonth = DateTime(
+                            selectedMonth.year,
+                            selectedMonth.month + 1,
+                            1,
+                          );
+                        });
+                      },
                       iconSize: 20,
                     ),
                   ],
@@ -625,95 +491,138 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ],
             ),
             const SizedBox(height: 16),
-            // Events List - Use ListView.builder with shrinkWrap to avoid scrolling issues
             ListView.builder(
               itemCount: 4,
               shrinkWrap: true,
-              physics:
-                  const NeverScrollableScrollPhysics(), // Prevent nested scrolling issues
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12.0),
-                  padding: const EdgeInsets.all(12.0),
-                  decoration: BoxDecoration(
-                    color:
-                        index % 2 == 0
-                            ? darkBlue.withOpacity(0.1)
-                            : Colors.orange.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8.0),
-                    border: Border.all(
+                final String eventTitle =
+                    index == 0
+                        ? 'Faculty Meeting'
+                        : index == 1
+                        ? 'Semester Registration Deadline'
+                        : index == 2
+                        ? 'Campus Tour for New Students'
+                        : 'Board Review Meeting';
+
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => EventDetailsPage(
+                              eventIndex: index,
+                              eventTitle: eventTitle,
+                            ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 12.0),
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
                       color:
                           index % 2 == 0
-                              ? darkBlue.withOpacity(0.2)
-                              : Colors.orange.withOpacity(0.2),
-                      width: 1.0,
+                              ? darkBlue.withOpacity(0.1)
+                              : Colors.orange.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8.0),
+                      border: Border.all(
+                        color:
+                            index % 2 == 0
+                                ? darkBlue.withOpacity(0.2)
+                                : Colors.orange.withOpacity(0.2),
+                        width: 1.0,
+                      ),
                     ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Column(
-                          children: [
-                            Text(
-                              '${index + 22}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                '${index + 22}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
                               ),
-                            ),
-                            const Text(
-                              'MAR',
-                              style: TextStyle(color: grayColor, fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              index == 0
-                                  ? 'Faculty Meeting'
-                                  : index == 1
-                                  ? 'Semester Registration Deadline'
-                                  : index == 2
-                                  ? 'Campus Tour for New Students'
-                                  : 'Board Review Meeting',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
+                              const Text(
+                                'MAR',
+                                style: TextStyle(
+                                  color: grayColor,
+                                  fontSize: 12,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              index == 0
-                                  ? '9:00 AM - 11:00 AM • Conference Room'
-                                  : index == 1
-                                  ? 'All Day • Online Portal'
-                                  : index == 2
-                                  ? '2:00 PM - 4:00 PM • Main Campus'
-                                  : '10:00 AM - 12:00 PM • Admin Building',
-                              style: const TextStyle(
-                                color: grayColor,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                eventTitle,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                index == 0
+                                    ? '9:00 AM - 11:00 AM • Conference Room'
+                                    : index == 1
+                                    ? 'All Day • Online Portal'
+                                    : index == 2
+                                    ? '2:00 PM - 4:00 PM • Main Campus'
+                                    : '10:00 AM - 12:00 PM • Admin Building',
+                                style: const TextStyle(
+                                  color: grayColor,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildQuickActionButton(
+    String title,
+    IconData icon,
+    Color color, {
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12.0),
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        icon: Icon(icon, color: Colors.white),
+        label: Text(title),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+        onPressed: onPressed,
       ),
     );
   }
@@ -730,44 +639,69 @@ class _AdminDashboardState extends State<AdminDashboard> {
               'Add New Student',
               Icons.person_add,
               Colors.blue,
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddNewStudentPage(),
+                  ),
+                );
+
+                if (result != null && mounted) {
+                  setState(() {
+                    students.add(result);
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Student added successfully!'),
+                      backgroundColor: Colors.green,
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
+              },
             ),
             _buildQuickActionButton(
               'Create Announcement',
-              Icons.campaign,
+              Icons.announcement,
               Colors.orange,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CreateAnnouncementPage(),
+                  ),
+                );
+              },
             ),
             _buildQuickActionButton(
               'Generate Reports',
               Icons.assessment,
               Colors.purple,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CreateAnnouncementPage(),
+                  ),
+                );
+              },
             ),
             _buildQuickActionButton(
               'Manage Faculty',
               Icons.people,
               Colors.green,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CreateAnnouncementPage(),
+                  ),
+                );
+              },
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildQuickActionButton(String title, IconData icon, Color color) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12.0),
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        icon: Icon(icon, color: Colors.white),
-        label: Text(title),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        ),
-        onPressed: () {},
       ),
     );
   }

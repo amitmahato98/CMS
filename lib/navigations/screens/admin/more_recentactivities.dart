@@ -177,7 +177,7 @@ class ActivityDetailScreen extends StatelessWidget {
               );
             },
             icon: Icon(Icons.download),
-            label: Text("Download Syllabus"),
+            label: Text("View Syllabus"),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
               padding: EdgeInsets.symmetric(vertical: 12),
