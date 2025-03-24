@@ -34,106 +34,10 @@ class Dashboard extends StatelessWidget {
               OverVeiw(onSectionSelected: onSectionSelected),
               SizedBox(height: 20),
               Gridbuild(onSectionSelected: onSectionSelected),
-              SizedBox(height: 20),
-              RecentActivities(),
+              SizedBox(height: 10),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class RecentActivities extends StatelessWidget {
-  const RecentActivities({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      elevation: 8,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Recent Activities",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                TextButton(onPressed: () {}, child: Text("View All")),
-              ],
-            ),
-            SizedBox(height: 12),
-            _buildActivityItem(
-              "New assignment posted",
-              "Computer Networks - Due in 3 days",
-              Icons.assignment,
-              Colors.orange,
-            ),
-            Divider(),
-            _buildActivityItem(
-              "Upcoming Test",
-              "Database Management - Tomorrow 10:00 AM",
-              Icons.event_note,
-              Colors.red,
-            ),
-            Divider(),
-            _buildActivityItem(
-              "New Message",
-              "Prof. Johnson has sent you a message",
-              Icons.message,
-              Colors.blue,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActivityItem(
-    String title,
-    String subtitle,
-    IconData icon,
-    Color iconColor,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: iconColor),
-          ),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-          Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-        ],
       ),
     );
   }
