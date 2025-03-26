@@ -8,88 +8,90 @@ class Examination extends StatefulWidget {
   State<Examination> createState() => _ExaminationState();
 }
 
-class _ExaminationState extends State<Examination> with SingleTickerProviderStateMixin {
+class _ExaminationState extends State<Examination>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+  DateTime _selectedDate = DateTime(2025, 4);
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
 
-  final List<Map<String, dynamic>> upcomingExams = [
+  List<Map<String, dynamic>> upcomingExams = [
     {
       "subject": "Database Management Systems",
       "code": "CS301",
-      "date": "Apr 15, 2025",
+      "date": "2025-04-15",
       "time": "10:00 AM - 1:00 PM",
       "venue": "Examination Hall A",
-      "type": "Mid Term"
+      "type": "Mid Term",
     },
     {
       "subject": "Computer Networks",
       "code": "CS302",
-      "date": "Apr 17, 2025",
+      "date": "2025-04-17",
       "time": "10:00 AM - 1:00 PM",
       "venue": "Examination Hall B",
-      "type": "Mid Term"
+      "type": "Mid Term",
     },
     {
       "subject": "Operating Systems",
       "code": "CS303",
-      "date": "Apr 19, 2025",
+      "date": "2025-04-19",
       "time": "10:00 AM - 1:00 PM",
       "venue": "Examination Hall A",
-      "type": "Mid Term"
+      "type": "Mid Term",
     },
     {
       "subject": "Software Engineering",
       "code": "CS304",
-      "date": "Apr 21, 2025",
+      "date": "2025-04-21",
       "time": "10:00 AM - 1:00 PM",
       "venue": "Examination Hall C",
-      "type": "Mid Term"
+      "type": "Mid Term",
     },
   ];
 
-  final List<Map<String, dynamic>> pastResults = [
+  List<Map<String, dynamic>> pastResults = [
     {
       "subject": "Data Structures",
       "code": "CS201",
-      "date": "Jan 15, 2025",
+      "date": "2025-01-15",
       "grade": "A",
       "percentage": "87%",
-      "status": "Passed"
+      "status": "Passed",
     },
     {
       "subject": "Algorithms",
       "code": "CS202",
-      "date": "Jan 17, 2025",
+      "date": "2025-01-17",
       "grade": "A+",
       "percentage": "92%",
-      "status": "Passed"
+      "status": "Passed",
     },
     {
       "subject": "Object Oriented Programming",
       "code": "CS203",
-      "date": "Jan 19, 2025",
+      "date": "2025-01-19",
       "grade": "B+",
       "percentage": "78%",
-      "status": "Passed"
+      "status": "Passed",
     },
     {
       "subject": "Web Development",
       "code": "CS204",
-      "date": "Jan 21, 2025",
+      "date": "2025-01-21",
       "grade": "A",
       "percentage": "85%",
-      "status": "Passed"
+      "status": "Passed",
     },
   ];
 
@@ -97,7 +99,7 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: blueColor,
+        backgroundColor: Colors.blue,
         title: Text("Examination", style: TextStyle(color: Colors.white)),
         iconTheme: IconThemeData(color: Colors.white),
         bottom: TabBar(
@@ -113,10 +115,10 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: blueColor,
+        backgroundColor: Colors.blue,
         child: Icon(Icons.add),
         onPressed: () {
-          // Add functionality for creating new exam/result
+          _showAddDialog(context);
         },
       ),
       body: TabBarView(
@@ -127,6 +129,327 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
           _buildScheduleTab(),
         ],
       ),
+    );
+  }
+
+  void _showAddDialog(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
+    String selectedType = "Exam";
+    String subject = "";
+    String code = "";
+    DateTime? selectedDate;
+    String time = "";
+    String venue = "";
+    String examType = "Mid Term";
+    String grade = "";
+    String percentage = "";
+    String status = "Pass";
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text("Add New Entry"),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      DropdownButtonFormField<String>(
+                        value: selectedType,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedType = newValue!;
+                          });
+                        },
+                        items:
+                            ['Exam', 'Result'].map<DropdownMenuItem<String>>((
+                              String value,
+                            ) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                        decoration: InputDecoration(labelText: "Type"),
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(labelText: "Subject"),
+                        onSaved: (value) {
+                          subject = value!;
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please enter the subject";
+                          }
+                          if (value.length < 3) {
+                            return "Subject must be at least 3 characters long";
+                          }
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(labelText: "Course Code"),
+                        onSaved: (value) {
+                          code = value!;
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please enter the course code";
+                          }
+                          if (!RegExp(r'^[A-Z]{2}[0-9]{3}$').hasMatch(value)) {
+                            return "Code must be 2 uppercase letters followed by 3 numbers";
+                          }
+                          return null;
+                        },
+                      ),
+                      if (selectedType == "Exam") ...[
+                        DropdownButtonFormField<String>(
+                          value: examType,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              examType = newValue!;
+                            });
+                          },
+                          items:
+                              [
+                                'Mid Term',
+                                'Final Term',
+                              ].map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                          decoration: InputDecoration(labelText: "Exam Type"),
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Date"),
+                          controller: TextEditingController(
+                            text:
+                                selectedDate != null
+                                    ? "${selectedDate!.year}-${selectedDate!.month.toString().padLeft(2, '0')}-${selectedDate!.day.toString().padLeft(2, '0')}"
+                                    : '',
+                          ),
+                          readOnly: true,
+                          onTap: () async {
+                            DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime(2100),
+                            );
+                            if (pickedDate != null) {
+                              setState(() {
+                                selectedDate = pickedDate;
+                              });
+                            }
+                          },
+                          validator: (value) {
+                            if (selectedDate == null) {
+                              return "Please select a future date";
+                            }
+                            return null;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Time"),
+                          onSaved: (value) {
+                            time = value!;
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter the exam time";
+                            }
+                            return null;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Hall Venue"),
+                          onSaved: (value) {
+                            venue = value!;
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter the exam venue";
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                      if (selectedType == "Result") ...[
+                        DropdownButtonFormField<String>(
+                          value: status,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              status = newValue!;
+                            });
+                          },
+                          items:
+                              ['Pass', 'Fail'].map<DropdownMenuItem<String>>((
+                                String value,
+                              ) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                          decoration: InputDecoration(
+                            labelText: "Result Status",
+                          ),
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Grade"),
+                          onSaved: (value) {
+                            grade = value!;
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter the grade";
+                            }
+                            if (!RegExp(r'^[A-F][+-]?$').hasMatch(value)) {
+                              return "Invalid grade format (e.g., A, B+, C-)";
+                            }
+
+                            // Additional validation for passing and failing conditions
+                            if (status == "Pass") {
+                              // Grades below C or percentage less than 40% cannot be a pass
+                              final passableGrades = [
+                                'A+',
+                                'A',
+                                'A-',
+                                'B+',
+                                'B',
+                                'B-',
+                                'C+',
+                                'C',
+                              ];
+                              if (!passableGrades.contains(value)) {
+                                return "Passing grade must be C or above";
+                              }
+                            } else if (status == "Fail") {
+                              // Grades C and above cannot be a fail
+                              final failGrades = ['D+', 'D', 'D-', 'F'];
+                              if (!failGrades.contains(value)) {
+                                return "Failing grade must be below C";
+                              }
+                            }
+
+                            return null;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Percentage"),
+                          keyboardType: TextInputType.number,
+                          onSaved: (value) {
+                            percentage = value!;
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter the percentage";
+                            }
+                            double? parsedValue = double.tryParse(value);
+                            if (parsedValue == null ||
+                                parsedValue < 0 ||
+                                parsedValue > 100) {
+                              return "Please enter a valid percentage (0-100)";
+                            }
+
+                            // Additional validation for passing and failing conditions
+                            if (status == "Pass" && parsedValue < 40) {
+                              return "Passing percentage must be 40% or above";
+                            } else if (status == "Fail" && parsedValue >= 40) {
+                              return "Failing percentage must be below 40%";
+                            }
+
+                            return null;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: "Result Published Date",
+                          ),
+                          controller: TextEditingController(
+                            text:
+                                selectedDate != null
+                                    ? "${selectedDate!.year}-${selectedDate!.month.toString().padLeft(2, '0')}-${selectedDate!.day.toString().padLeft(2, '0')}"
+                                    : '',
+                          ),
+                          readOnly: true,
+                          onTap: () async {
+                            DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime.now(),
+                            );
+                            if (pickedDate != null) {
+                              setState(() {
+                                selectedDate = pickedDate;
+                              });
+                            }
+                          },
+                          validator: (value) {
+                            if (selectedDate == null) {
+                              return "Please select a result published date";
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Cancel"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      setState(() {
+                        if (selectedType == "Exam") {
+                          upcomingExams.add({
+                            "subject": subject,
+                            "code": code,
+                            "date":
+                                selectedDate!.toIso8601String().split('T')[0],
+                            "time": time,
+                            "venue": venue,
+                            "type": examType,
+                          });
+                        } else if (selectedType == "Result") {
+                          pastResults.add({
+                            "subject": subject,
+                            "code": code,
+                            "date":
+                                selectedDate!.toIso8601String().split('T')[0],
+                            "grade": grade,
+                            "percentage": "$percentage%",
+                            "status": status,
+                          });
+                        }
+                        // Trigger a rebuild of the widget to reflect the new entry
+                        setState(() {});
+                      });
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: Text("Add"),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
@@ -168,15 +491,18 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
                             ),
                           ),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
-                              color: blueColor.withOpacity(0.1),
+                              color: Colors.blue.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
                               exam["type"],
                               style: TextStyle(
-                                color: blueColor,
+                                color: Colors.blue,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
@@ -187,10 +513,7 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
                       SizedBox(height: 8),
                       Text(
                         "Course Code: ${exam["code"]}",
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
                       ),
                       SizedBox(height: 12),
                       Divider(),
@@ -198,7 +521,10 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildExamInfoItem(Icons.calendar_today, exam["date"]),
+                          _buildExamInfoItem(
+                            Icons.calendar_today,
+                            exam["date"],
+                          ),
                           _buildExamInfoItem(Icons.access_time, exam["time"]),
                           _buildExamInfoItem(Icons.location_on, exam["venue"]),
                         ],
@@ -212,7 +538,7 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
                             label: Text("Syllabus"),
                             onPressed: () {},
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: blueColor,
+                              foregroundColor: Colors.blue,
                             ),
                           ),
                           ElevatedButton.icon(
@@ -220,7 +546,7 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
                             label: Text("Set Reminder"),
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: blueColor,
+                              backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
                             ),
                           ),
@@ -291,14 +617,14 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
                             width: 50,
                             height: 50,
                             decoration: BoxDecoration(
-                              color: blueColor.withOpacity(0.1),
+                              color: Colors.blue.withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Center(
                               child: Text(
                                 result["grade"],
                                 style: TextStyle(
-                                  color: blueColor,
+                                  color: Colors.blue,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20,
                                 ),
@@ -314,7 +640,10 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           _buildResultInfoItem("Date", result["date"]),
-                          _buildResultInfoItem("Percentage", result["percentage"]),
+                          _buildResultInfoItem(
+                            "Percentage",
+                            result["percentage"],
+                          ),
                           _buildResultInfoItem("Status", result["status"]),
                         ],
                       ),
@@ -324,7 +653,7 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
                         label: Text("Download Result"),
                         onPressed: () {},
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: blueColor,
+                          foregroundColor: Colors.blue,
                         ),
                       ),
                     ],
@@ -366,7 +695,7 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "April 2025",
+                      "${_selectedDate.year}-${_selectedDate.month}",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -376,18 +705,31 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
                       children: [
                         IconButton(
                           icon: Icon(Icons.arrow_back_ios, size: 16),
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {
+                              _selectedDate = DateTime(
+                                _selectedDate.year,
+                                _selectedDate.month - 1,
+                              );
+                            });
+                          },
                         ),
                         IconButton(
                           icon: Icon(Icons.arrow_forward_ios, size: 16),
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {
+                              _selectedDate = DateTime(
+                                _selectedDate.year,
+                                _selectedDate.month + 1,
+                              );
+                            });
+                          },
                         ),
                       ],
                     ),
                   ],
                 ),
                 SizedBox(height: 16),
-                // Calendar placeholder
                 GridView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
@@ -395,25 +737,43 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
                     crossAxisCount: 7,
                     childAspectRatio: 1,
                   ),
-                  itemCount: 30,
+                  itemCount:
+                      DateTime(_selectedDate.year, _selectedDate.month + 1)
+                          .difference(
+                            DateTime(_selectedDate.year, _selectedDate.month),
+                          )
+                          .inDays,
                   itemBuilder: (context, index) {
-                    // Highlight exam days
-                    final isExamDay = [14, 16, 18, 20].contains(index);
+                    final day = DateTime(
+                      _selectedDate.year,
+                      _selectedDate.month,
+                      index + 1,
+                    );
+                    final isExamDay = upcomingExams.any(
+                      (exam) =>
+                          DateTime.parse(exam["date"]).day == day.day &&
+                          DateTime.parse(exam["date"]).month == day.month &&
+                          DateTime.parse(exam["date"]).year == day.year,
+                    );
                     return Container(
                       margin: EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: isExamDay ? blueColor : Colors.transparent,
+                        color: isExamDay ? Colors.blue : Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: isExamDay ? blueColor : Colors.grey.withOpacity(0.3),
+                          color:
+                              isExamDay
+                                  ? Colors.blue
+                                  : Colors.grey.withOpacity(0.3),
                         ),
                       ),
                       child: Center(
                         child: Text(
-                          "${index + 1}",
+                          "${day.day}",
                           style: TextStyle(
                             color: isExamDay ? Colors.white : Colors.black,
-                            fontWeight: isExamDay ? FontWeight.bold : FontWeight.normal,
+                            fontWeight:
+                                isExamDay ? FontWeight.bold : FontWeight.normal,
                           ),
                         ),
                       ),
@@ -432,52 +792,53 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
             itemCount: upcomingExams.length,
             itemBuilder: (context, index) {
               final exam = upcomingExams[index];
-              return ListTile(
-                leading: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: blueColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Text(
-                      exam["date"].split(" ")[1],
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: blueColor,
+              final examDate = DateTime.parse(exam["date"]);
+              if (examDate.month == _selectedDate.month &&
+                  examDate.year == _selectedDate.year) {
+                return ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        exam["date"].split("-")[2],
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                title: Text(
-                  exam["subject"],
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                  title: Text(
+                    exam["subject"],
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                ),
-                subtitle: Text(
-                  "${exam["time"]} - ${exam["venue"]}",
-                  style: TextStyle(
-                    fontSize: 12,
+                  subtitle: Text(
+                    "${exam["time"]} - ${exam["venue"]}",
+                    style: TextStyle(fontSize: 12),
                   ),
-                ),
-                trailing: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: blueColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    exam["code"],
-                    style: TextStyle(
-                      color: blueColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                  trailing: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      exam["code"],
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
-                ),
-              );
+                );
+              }
+              return SizedBox.shrink();
             },
           ),
         ],
@@ -488,14 +849,11 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
   Widget _buildSectionHeader(String title, IconData icon) {
     return Row(
       children: [
-        Icon(icon, color: blueColor),
+        Icon(icon, color: Colors.blue),
         SizedBox(width: 8),
         Text(
           title,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ],
     );
@@ -506,13 +864,7 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
       children: [
         Icon(icon, size: 16, color: Colors.grey[600]),
         SizedBox(width: 4),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 13,
-            color: Colors.grey[700],
-          ),
-        ),
+        Text(text, style: TextStyle(fontSize: 13, color: Colors.grey[700])),
       ],
     );
   }
@@ -521,20 +873,11 @@ class _ExaminationState extends State<Examination> with SingleTickerProviderStat
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
         SizedBox(height: 4),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
         ),
       ],
     );

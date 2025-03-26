@@ -11,18 +11,15 @@ class FormFillUp extends StatefulWidget {
 class _FormFillUpState extends State<FormFillUp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("Form"),
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.arrow_back),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Form"),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back),
         ),
-        body: Center(child: Text("Its the Form Section !")),
       ),
+      body: Center(child: Text("Its the Form Section !")),
     );
   }
 }

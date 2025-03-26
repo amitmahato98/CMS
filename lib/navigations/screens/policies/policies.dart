@@ -11,18 +11,15 @@ class Policy extends StatefulWidget {
 class _PolicyState extends State<Policy> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("Policies"),
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.arrow_back),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Policies"),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back),
         ),
-        body: Center(child: Text("Its the Policies Section !")),
       ),
+      body: Center(child: Text("Its the Policies Section !")),
     );
   }
 }

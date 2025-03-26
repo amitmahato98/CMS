@@ -10,18 +10,15 @@ class Meeting extends StatefulWidget {
 class _MeetingState extends State<Meeting> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("Meeting"),
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.arrow_back),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Meeting"),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back),
         ),
-        body: Center(child: Text("Its the Meeting Section !")),
       ),
+      body: Center(child: Text("Its the Meeting Section !")),
     );
   }
 }

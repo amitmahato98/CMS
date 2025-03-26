@@ -11,20 +11,15 @@ class Studentchat extends StatefulWidget {
 class _StudentchatState extends State<Studentchat> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back),
-          ),
-          title: Text('Student Chats'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Student Chats"),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back),
         ),
-        body: Center(child: Text("This is Student admin Chat Section !")),
       ),
+      body: Center(child: Text("Its the Student Chat Section !")),
     );
   }
 }

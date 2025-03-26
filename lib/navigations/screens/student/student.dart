@@ -11,18 +11,15 @@ class Student extends StatefulWidget {
 class _StudentState extends State<Student> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("Student"),
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.arrow_back),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Student"),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back),
         ),
-        body: Center(child: Text("its the Student page")),
       ),
+      body: Center(child: Text("its the Student page")),
     );
   }
 }

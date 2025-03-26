@@ -59,24 +59,17 @@ class _LibraryState extends State<Library> {
           'Library',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
         ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined, color: Colors.white),
             onPressed: () {
-              Navigator.of(context).push(
-                PageRouteBuilder(
-                  pageBuilder:
-                      (context, animation, secondaryAnimation) =>
-                          LibraryNotification(),
-                  transitionsBuilder: (
-                    context,
-                    animation,
-                    secondaryAnimation,
-                    child,
-                  ) {
-                    return FadeTransition(opacity: animation, child: child);
-                  },
-                ),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LibraryNotification()),
               );
             },
           ),

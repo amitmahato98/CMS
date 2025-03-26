@@ -2,6 +2,7 @@ import 'package:cms/navigations/body/dashboard.dart';
 import 'package:cms/navigations/navbar/navbar.dart';
 import 'package:cms/navigations/screens/notifications/notification.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -43,16 +44,9 @@ class _MainNavigatorState extends State<MainNavigator> {
     });
     _navigatorKey.currentState
         ?.push(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => page,
-            transitionsBuilder: (
-              context,
-              animation,
-              secondaryAnimation,
-              child,
-            ) {
-              return FadeTransition(opacity: animation, child: child);
-            },
+          MaterialPageRoute(
+            builder: (context) => page,
+            fullscreenDialog: false,
           ),
         )
         .then((_) {
@@ -62,18 +56,59 @@ class _MainNavigatorState extends State<MainNavigator> {
         });
   }
 
+  Future<bool> _onWillPop() async {
+    if (!_showingDashboard) {
+      if (_navigatorKey.currentState?.canPop() ?? false) {
+        _navigatorKey.currentState?.pop();
+        return false;
+      }
+      setState(() {
+        _showingDashboard = true;
+      });
+      return false;
+    }
+
+    // Show exit confirmation dialog when on main screen
+    // Always show the dialog and never return true directly
+    bool shouldExit =
+        await showDialog(
+          context: context,
+          barrierDismissible: false, // User must tap a button to close dialog
+          builder:
+              (context) => WillPopScope(
+                // Prevent dialog itself from being dismissed by back button
+                onWillPop: () async => false,
+                child: AlertDialog(
+                  title: Text('Exit App'),
+                  content: Text('Do you want to exit the app?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text('No'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                      child: Text('Yes'),
+                    ),
+                  ],
+                ),
+              ),
+        ) ??
+        false;
+
+    if (shouldExit) {
+      SystemNavigator.pop(); // Use system navigator to exit the app
+    }
+
+    return false; // Always return false to handle the exit within this method
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        if (!_showingDashboard) {
-          setState(() {
-            _showingDashboard = true;
-          });
-          return true;
-        }
-        return true;
-      },
+      onWillPop: _onWillPop,
       child: Scaffold(
         key: _scaffoldKey,
         drawer: _showingDashboard ? Navbar() : null,

@@ -11,20 +11,17 @@ class ParentChat extends StatefulWidget {
 class _ParentChatState extends State<ParentChat> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back),
-          ),
-          title: Text('Parent Chats'),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back),
         ),
-        body: Center(child: Text("This is Parent admin Chat Section !")),
+        title: Text('Parent Chats'),
       ),
+      body: Center(child: Text("This is Parent admin Chat Section !")),
     );
   }
 }

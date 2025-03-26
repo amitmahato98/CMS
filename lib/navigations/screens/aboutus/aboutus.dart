@@ -11,18 +11,15 @@ class AboutUs extends StatefulWidget {
 class _AboutUsState extends State<AboutUs> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("About Us"),
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.arrow_back),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("About Us"),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back),
         ),
-        body: Center(child: Text("Its the About Us Section !")),
       ),
+      body: Center(child: Text("Its the About Us Section !")),
     );
   }
 }

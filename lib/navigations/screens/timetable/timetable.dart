@@ -8,19 +8,20 @@ class Timetable extends StatefulWidget {
   State<Timetable> createState() => _TimetableState();
 }
 
-class _TimetableState extends State<Timetable> with SingleTickerProviderStateMixin {
+class _TimetableState extends State<Timetable>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  int _selectedDayIndex = 0; // 0 = Monday, 6 = Sunday
-  
+  int _selectedDayIndex = 0; // 0 = Sunday, 6 = Saturday
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     // Set today as default selected day
-    final today = DateTime.now().weekday;
-    _selectedDayIndex = today - 1 < 7 ? today - 1 : 0;
+    final today = DateTime.now().weekday % 7;
+    _selectedDayIndex = today;
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -28,40 +29,77 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
   }
 
   final List<String> weekDays = [
-    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
   ];
 
-  // Sample timetable data for a week
+  // Updated weekly schedule with Saturday as holiday
   final List<List<Map<String, dynamic>>> weeklySchedule = [
+    // Sunday
+    [
+      {
+        "subject": "Software Engineering",
+        "time": "09:00 AM - 10:30 AM",
+        "room": "Room 203",
+        "teacher": "Prof. Anita Dharane",
+        "color": Color(0xFFD1C4E9),
+      },
+      {
+        "subject": "Web Development",
+        "time": "10:45 AM - 12:15 PM",
+        "room": "Lab 102",
+        "teacher": "Prof. Web Expert",
+        "color": Color(0xFFFFCCBC),
+      },
+      {
+        "subject": "Lunch Break",
+        "time": "12:15 PM - 01:00 PM",
+        "room": "Cafeteria",
+        "teacher": "",
+        "color": Color(0xFFFFE0B2),
+      },
+      {
+        "subject": "Data Structures",
+        "time": "01:00 PM - 02:30 PM",
+        "room": "Room 301",
+        "teacher": "Dr. Micheal Sharma",
+        "color": Color(0xFFC5CAE9),
+      },
+    ],
     // Monday
     [
       {
         "subject": "Database Management",
         "time": "08:30 AM - 10:00 AM",
         "room": "Room 201",
-        "teacher": "Prof. Smith",
-        "color": Color(0xFFF8BBD0)
+        "teacher": "Prof. Sushant Sharma",
+        "color": Color(0xFFF8BBD0),
       },
       {
         "subject": "Computer Networks",
         "time": "10:15 AM - 11:45 AM",
         "room": "Lab 101",
-        "teacher": "Dr. Johnson",
-        "color": Color(0xFFB3E5FC)
+        "teacher": "Dr. Mandip Raj",
+        "color": Color(0xFFB3E5FC),
       },
       {
         "subject": "Lunch Break",
         "time": "11:45 AM - 12:30 PM",
         "room": "Cafeteria",
         "teacher": "",
-        "color": Color(0xFFFFE0B2)
+        "color": Color(0xFFFFE0B2),
       },
       {
         "subject": "Operating Systems",
         "time": "12:30 PM - 02:00 PM",
         "room": "Room 305",
-        "teacher": "Prof. Williams",
-        "color": Color(0xFFDCEDC8)
+        "teacher": "Prof. Rajesh Kumar",
+        "color": Color(0xFFDCEDC8),
       },
     ],
     // Tuesday
@@ -70,60 +108,60 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
         "subject": "Software Engineering",
         "time": "09:00 AM - 10:30 AM",
         "room": "Room 203",
-        "teacher": "Prof. Davis",
-        "color": Color(0xFFD1C4E9)
+        "teacher": "Prof. Anita Dharane",
+        "color": Color(0xFFD1C4E9),
       },
       {
         "subject": "Web Development",
         "time": "10:45 AM - 12:15 PM",
         "room": "Lab 102",
-        "teacher": "Ms. Thompson",
-        "color": Color(0xFFFFCCBC)
+        "teacher": "Prof. Web Expert",
+        "color": Color(0xFFFFCCBC),
       },
       {
         "subject": "Lunch Break",
         "time": "12:15 PM - 01:00 PM",
         "room": "Cafeteria",
         "teacher": "",
-        "color": Color(0xFFFFE0B2)
+        "color": Color(0xFFFFE0B2),
       },
       {
         "subject": "Data Structures",
         "time": "01:00 PM - 02:30 PM",
         "room": "Room 301",
-        "teacher": "Dr. White",
-        "color": Color(0xFFC5CAE9)
+        "teacher": "Dr. Micheal Sharma",
+        "color": Color(0xFFC5CAE9),
       },
     ],
     // Wednesday
     [
       {
-        "subject": "Mobile App Development",
+        "subject": "App Development",
         "time": "08:30 AM - 10:00 AM",
         "room": "Lab 103",
-        "teacher": "Mr. Brown",
-        "color": Color(0xFFB2DFDB)
+        "teacher": "Mr. Mobile Expert",
+        "color": Color(0xFFB2DFDB),
       },
       {
         "subject": "Artificial Intelligence",
         "time": "10:15 AM - 11:45 AM",
         "room": "Room 205",
-        "teacher": "Dr. Martinez",
-        "color": Color(0xFFF0F4C3)
+        "teacher": "Dr. AI Specialist",
+        "color": Color(0xFFF0F4C3),
       },
       {
         "subject": "Lunch Break",
         "time": "11:45 AM - 12:30 PM",
         "room": "Cafeteria",
         "teacher": "",
-        "color": Color(0xFFFFE0B2)
+        "color": Color(0xFFFFE0B2),
       },
       {
         "subject": "Database Lab",
         "time": "12:30 PM - 02:30 PM",
         "room": "Lab 104",
-        "teacher": "Prof. Smith",
-        "color": Color(0xFFF8BBD0)
+        "teacher": "Prof. Database Expert",
+        "color": Color(0xFFF8BBD0),
       },
     ],
     // Thursday
@@ -132,29 +170,29 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
         "subject": "Computer Architecture",
         "time": "09:00 AM - 10:30 AM",
         "room": "Room 207",
-        "teacher": "Prof. Jones",
-        "color": Color(0xFFCFD8DC)
+        "teacher": "Prof. Architecture Expert",
+        "color": Color(0xFFCFD8DC),
       },
       {
         "subject": "Computer Networks Lab",
         "time": "10:45 AM - 12:45 PM",
         "room": "Lab 105",
-        "teacher": "Dr. Johnson",
-        "color": Color(0xFFB3E5FC)
+        "teacher": "Dr. Networks Specialist",
+        "color": Color(0xFFB3E5FC),
       },
       {
         "subject": "Lunch Break",
         "time": "12:45 PM - 01:30 PM",
         "room": "Cafeteria",
         "teacher": "",
-        "color": Color(0xFFFFE0B2)
+        "color": Color(0xFFFFE0B2),
       },
       {
         "subject": "Project Work",
         "time": "01:30 PM - 03:00 PM",
         "room": "Project Lab",
         "teacher": "Multiple Faculties",
-        "color": Color(0xFFE1BEE7)
+        "color": Color(0xFFE1BEE7),
       },
     ],
     // Friday
@@ -163,49 +201,32 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
         "subject": "Cloud Computing",
         "time": "08:30 AM - 10:00 AM",
         "room": "Room 208",
-        "teacher": "Dr. Taylor",
-        "color": Color(0xFFFFCDD2)
+        "teacher": "Dr. Cloud Expert",
+        "color": Color(0xFFFFCDD2),
       },
       {
         "subject": "Machine Learning",
         "time": "10:15 AM - 11:45 AM",
         "room": "Lab 106",
-        "teacher": "Prof. Anderson",
-        "color": Color(0xFFBBDEFB)
+        "teacher": "Prof. ML Specialist",
+        "color": Color(0xFFBBDEFB),
       },
       {
         "subject": "Lunch Break",
         "time": "11:45 AM - 12:30 PM",
         "room": "Cafeteria",
         "teacher": "",
-        "color": Color(0xFFFFE0B2)
+        "color": Color(0xFFFFE0B2),
       },
       {
         "subject": "Seminar",
         "time": "12:30 PM - 02:00 PM",
         "room": "Seminar Hall",
         "teacher": "Guest Speakers",
-        "color": Color(0xFFC8E6C9)
+        "color": Color(0xFFC8E6C9),
       },
     ],
-    // Saturday
-    [
-      {
-        "subject": "Elective Course",
-        "time": "09:00 AM - 10:30 AM",
-        "room": "Room 210",
-        "teacher": "Various Faculties",
-        "color": Color(0xFFD7CCC8)
-      },
-      {
-        "subject": "Mini Project",
-        "time": "10:45 AM - 12:15 PM",
-        "room": "Project Lab",
-        "teacher": "Project Guides",
-        "color": Color(0xFFFFECB3)
-      },
-    ],
-    // Sunday
+    // Saturday (Holiday)
     [],
   ];
 
@@ -221,10 +242,7 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
-          tabs: [
-            Tab(text: "Daily View"),
-            Tab(text: "Weekly View"),
-          ],
+          tabs: [Tab(text: "Daily View"), Tab(text: "Weekly View")],
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -237,10 +255,7 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildDailyView(),
-          _buildWeeklyView(),
-        ],
+        children: [_buildDailyView(), _buildWeeklyView()],
       ),
     );
   }
@@ -250,9 +265,10 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
       children: [
         _buildDaySelector(),
         Expanded(
-          child: weeklySchedule[_selectedDayIndex].isEmpty
-              ? _buildNoClassesView()
-              : _buildDaySchedule(weeklySchedule[_selectedDayIndex]),
+          child:
+              weeklySchedule[_selectedDayIndex].isEmpty
+                  ? _buildNoClassesView()
+                  : _buildDaySchedule(weeklySchedule[_selectedDayIndex]),
         ),
       ],
     );
@@ -267,8 +283,8 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
         itemCount: weekDays.length,
         itemBuilder: (context, index) {
           bool isSelected = _selectedDayIndex == index;
-          bool isToday = DateTime.now().weekday - 1 == index;
-          
+          bool isToday = DateTime.now().weekday % 7 == index;
+
           return GestureDetector(
             onTap: () {
               setState(() {
@@ -279,7 +295,12 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
               width: MediaQuery.of(context).size.width / 4.5,
               margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
               decoration: BoxDecoration(
-                color: isSelected ? blueColor : (isToday ? blueColor.withOpacity(0.1) : Colors.transparent),
+                color:
+                    isSelected
+                        ? blueColor
+                        : (isToday
+                            ? blueColor.withOpacity(0.1)
+                            : Colors.transparent),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: isToday ? blueColor : Colors.transparent,
@@ -292,15 +313,18 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
                   Text(
                     weekDays[index].substring(0, 3),
                     style: TextStyle(
-                      color: isSelected ? Colors.white : (isToday ? blueColor : Colors.black),
+                      color:
+                          isSelected
+                              ? Colors.white
+                              : (isToday ? blueColor : Colors.black),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   if (isToday && !isSelected)
                     Container(
                       margin: EdgeInsets.only(top: 4),
-                      width: 8,
-                      height: 8,
+                      width: 10,
+                      height: 12,
                       decoration: BoxDecoration(
                         color: blueColor,
                         shape: BoxShape.circle,
@@ -322,7 +346,7 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
       itemBuilder: (context, index) {
         final session = daySchedule[index];
         final bool isBreak = session["subject"].contains("Break");
-        
+
         return Container(
           margin: EdgeInsets.only(bottom: 16),
           child: Row(
@@ -384,7 +408,9 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
+                            overflow: TextOverflow.ellipsis,
                           ),
+                          maxLines: 2,
                         ),
                         SizedBox(height: 8),
                         if (!isBreak) ...[
@@ -392,9 +418,15 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
                           SizedBox(height: 4),
                           _buildClassInfoRow(Icons.room, session["room"]),
                           SizedBox(height: 4),
-                          _buildClassInfoRow(Icons.access_time, session["time"].split(" - ")[1]),
+                          _buildClassInfoRow(
+                            Icons.access_time,
+                            session["time"].split(" - ")[1],
+                          ),
                         ] else
-                          _buildClassInfoRow(Icons.location_on, session["room"]),
+                          _buildClassInfoRow(
+                            Icons.location_on,
+                            session["room"],
+                          ),
                       ],
                     ),
                   ),
@@ -412,11 +444,7 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.event_busy,
-            size: 80,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.event_busy, size: 80, color: Colors.grey[400]),
           SizedBox(height: 16),
           Text(
             "No Classes Scheduled",
@@ -429,10 +457,7 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
           SizedBox(height: 8),
           Text(
             "Enjoy your day off!",
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[500],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[500]),
           ),
         ],
       ),
@@ -442,7 +467,7 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
   Widget _buildWeeklyView() {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -464,8 +489,10 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: DataTable(
-                  columnSpacing: 20,
-                  headingRowColor: MaterialStateProperty.all(blueColor.withOpacity(0.1)),
+                  columnSpacing: 10,
+                  headingRowColor: MaterialStateProperty.all(
+                    blueColor.withOpacity(0.1),
+                  ),
                   columns: [
                     DataColumn(
                       label: Text(
@@ -473,12 +500,16 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    ...weekDays.sublist(0, 6).map((day) => DataColumn(
-                      label: Text(
-                        day.substring(0, 3),
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    )).toList(),
+                    ...weekDays
+                        .map(
+                          (day) => DataColumn(
+                            label: Text(
+                              day.substring(0, 3),
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
+                        .toList(),
                   ],
                   rows: [
                     _buildTimeTableRow("8:30 - 10:00", 0),
@@ -503,20 +534,24 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
       cells: [
         DataCell(
           Container(
-            width: 100,
+            width: 92,
             child: Text(
               timeSlot,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
-        ...List.generate(6, (dayIndex) {
-          if (weeklySchedule[dayIndex].length > slotIndex) {
+        ...List.generate(7, (dayIndex) {
+          // Skip Saturday
+          if (dayIndex < 6 && weeklySchedule[dayIndex].length > slotIndex) {
             final subject = weeklySchedule[dayIndex][slotIndex];
             return DataCell(
               Container(
-                width: 110,
-                padding: EdgeInsets.all(8),
+                width: 160,
+                padding: EdgeInsets.all(5),
                 decoration: BoxDecoration(
                   color: subject["color"].withOpacity(0.3),
                   borderRadius: BorderRadius.circular(8),
@@ -526,14 +561,21 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
                   children: [
                     Text(
                       subject["subject"],
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 4),
+                    SizedBox(height: 1),
                     Text(
                       subject["room"],
-                      style: TextStyle(fontSize: 11),
+                      style: TextStyle(
+                        fontSize: 9,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      maxLines: 1,
                     ),
                   ],
                 ),
@@ -549,30 +591,34 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
 
   Widget _buildUpcomingClassesList() {
     // Get next 3 classes from today
-    final today = DateTime.now().weekday - 1;
+    final today = DateTime.now().weekday % 7;
     final currentTimeHour = DateTime.now().hour;
     final currentTimeMinute = DateTime.now().minute;
-    
+
     List<Map<String, dynamic>> upcomingClasses = [];
-    
+
     // Check today's remaining classes
     for (var session in weeklySchedule[today]) {
       if (!session["subject"].contains("Break")) {
         // Parse time like "08:30 AM" to compare
         final startTime = session["time"].split(" - ")[0];
         final isPM = startTime.contains("PM");
-        final timeComponents = startTime.replaceAll(" AM", "").replaceAll(" PM", "").split(":");
+        final timeComponents = startTime
+            .replaceAll(" AM", "")
+            .replaceAll(" PM", "")
+            .split(":");
         var hour = int.parse(timeComponents[0]);
         if (isPM && hour < 12) hour += 12;
         final minute = int.parse(timeComponents[1]);
-        
-        if (hour > currentTimeHour || (hour == currentTimeHour && minute > currentTimeMinute)) {
+
+        if (hour > currentTimeHour ||
+            (hour == currentTimeHour && minute > currentTimeMinute)) {
           upcomingClasses.add({...session, "day": weekDays[today]});
           if (upcomingClasses.length >= 3) break;
         }
       }
     }
-    
+
     // Add classes from upcoming days if needed
     if (upcomingClasses.length < 3) {
       int nextDay = (today + 1) % 7;
@@ -586,86 +632,89 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
         nextDay = (nextDay + 1) % 7;
       }
     }
-    
+
     return upcomingClasses.isEmpty
         ? Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                "No upcoming classes found",
-                style: TextStyle(color: Colors.grey),
-              ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              "No upcoming classes found",
+              style: TextStyle(color: Colors.grey),
             ),
-          )
+          ),
+        )
         : Column(
-            children: upcomingClasses.map((session) {
-              return Card(
-                margin: EdgeInsets.only(bottom: 12),
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ListTile(
-                  contentPadding: EdgeInsets.all(16),
-                  leading: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: session["color"].withOpacity(0.3),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.book,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
+          children:
+              upcomingClasses.map((session) {
+                return Card(
+                  margin: EdgeInsets.only(bottom: 12),
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          session["subject"],
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                  child: ListTile(
+                    contentPadding: EdgeInsets.all(16),
+                    leading: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: session["color"].withOpacity(0.3),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Icons.book, color: Colors.black87),
+                        ),
+                      ],
+                    ),
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            session["subject"],
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            maxLines: 2,
                           ),
                         ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: blueColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          session["day"].substring(0, 3),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: blueColor,
-                            fontWeight: FontWeight.bold,
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: blueColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            session["day"].substring(0, 3),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: blueColor,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 8),
+                        _buildClassInfoRow(Icons.access_time, session["time"]),
+                        SizedBox(height: 4),
+                        _buildClassInfoRow(Icons.person, session["teacher"]),
+                        SizedBox(height: 4),
+                        _buildClassInfoRow(Icons.room, session["room"]),
+                      ],
+                    ),
                   ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 8),
-                      _buildClassInfoRow(Icons.access_time, session["time"]),
-                      SizedBox(height: 4),
-                      _buildClassInfoRow(Icons.person, session["teacher"]),
-                      SizedBox(height: 4),
-                      _buildClassInfoRow(Icons.room, session["room"]),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
-          );
+                );
+              }).toList(),
+        );
   }
 
   Widget _buildClassInfoRow(IconData icon, String text) {
@@ -679,9 +728,9 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
             style: TextStyle(
               fontSize: 13,
               color: Colors.grey[700],
+              overflow: TextOverflow.ellipsis,
             ),
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
@@ -695,10 +744,7 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
         SizedBox(width: 8),
         Text(
           title,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ],
     );
@@ -721,10 +767,10 @@ class _TimetableState extends State<Timetable> with SingleTickerProviderStateMix
         );
       },
     );
-    
+
     if (picked != null) {
       setState(() {
-        _selectedDayIndex = picked.weekday - 1;
+        _selectedDayIndex = picked.weekday % 7;
       });
     }
   }
