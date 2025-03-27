@@ -1,6 +1,8 @@
 import 'package:cms/navigations/screens/library/all_books_page.dart';
 import 'package:cms/navigations/screens/library/book_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:cms/theme/theme_provider.dart';
 
 class LibraryBooks extends StatefulWidget {
   final String faculty;
@@ -473,12 +475,10 @@ class _LibraryBooksState extends State<LibraryBooks> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
     final books = getBooks();
-
-    // Modern color scheme (matching the history page)
-    const Color primaryBlue = Color(0xFF1E88E5);
-    const Color lightBlue = Color(0xFFBBDEFB);
-    const Color darkBlue = Color(0xFF0D47A1);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -502,14 +502,18 @@ class _LibraryBooksState extends State<LibraryBooks> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.menu_book_rounded, color: darkBlue, size: 22),
+                  Icon(
+                    Icons.menu_book_rounded,
+                    color: theme.colorScheme.primary,
+                    size: 22,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     "Available Books",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: darkBlue,
+                      color: theme.colorScheme.primary,
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -520,12 +524,18 @@ class _LibraryBooksState extends State<LibraryBooks> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AllBooksPage(books: books),
+                      builder:
+                          (context) => AllBooksPage(
+                            books: books,
+                            title: "All Books",
+                            faculty: widget.faculty,
+                            semester: widget.semester,
+                          ),
                     ),
                   );
                 },
                 style: TextButton.styleFrom(
-                  foregroundColor: primaryBlue,
+                  foregroundColor: theme.colorScheme.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -576,8 +586,21 @@ class _LibraryBooksState extends State<LibraryBooks> {
                   return Container(
                     margin: const EdgeInsets.only(bottom: 10),
                     decoration: BoxDecoration(
-                      color: Colors.grey[50],
+                      color:
+                          isDarkMode
+                              ? theme.colorScheme.surface
+                              : Colors.grey[50],
                       borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color:
+                              isDarkMode
+                                  ? Colors.black26
+                                  : Colors.black.withOpacity(0.05),
+                          blurRadius: 3,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: ListTile(
                       contentPadding: const EdgeInsets.symmetric(
@@ -588,7 +611,10 @@ class _LibraryBooksState extends State<LibraryBooks> {
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: lightBlue.withOpacity(0.6),
+                          color:
+                              isDarkMode
+                                  ? theme.colorScheme.primary.withOpacity(0.2)
+                                  : theme.colorScheme.surface.withOpacity(0.6),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: ClipRRect(
@@ -602,14 +628,16 @@ class _LibraryBooksState extends State<LibraryBooks> {
                                 (context, error, stackTrace) => Icon(
                                   Icons.book,
                                   size: 24,
-                                  color: primaryBlue.withOpacity(0.7),
+                                  color: theme.colorScheme.primary.withOpacity(
+                                    0.7,
+                                  ),
                                 ),
                           ),
                         ),
                       ),
                       title: Text(
                         book['title'],
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15,
                         ),
@@ -622,7 +650,8 @@ class _LibraryBooksState extends State<LibraryBooks> {
                           "Available: ${book['copies']} copies",
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.grey[700],
+                            color:
+                                isDarkMode ? Colors.white70 : Colors.grey[700],
                           ),
                         ),
                       ),
@@ -632,7 +661,10 @@ class _LibraryBooksState extends State<LibraryBooks> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.blue[50],
+                          color:
+                              isDarkMode
+                                  ? theme.colorScheme.primary.withOpacity(0.2)
+                                  : Colors.blue[50],
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -641,13 +673,13 @@ class _LibraryBooksState extends State<LibraryBooks> {
                             Icon(
                               Icons.info_outline,
                               size: 14,
-                              color: primaryBlue,
+                              color: theme.colorScheme.primary,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               "Details",
                               style: TextStyle(
-                                color: primaryBlue,
+                                color: theme.colorScheme.primary,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -659,7 +691,7 @@ class _LibraryBooksState extends State<LibraryBooks> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => BookDetail(book: book),
+                            builder: (context) => BookDetailPage(book: book),
                           ),
                         );
                       },
@@ -675,7 +707,7 @@ class _LibraryBooksState extends State<LibraryBooks> {
                   "Showing 5 of ${books.length} items",
                   style: TextStyle(
                     fontSize: 13,
-                    color: Colors.grey[600],
+                    color: isDarkMode ? Colors.white70 : Colors.grey[600],
                     fontStyle: FontStyle.italic,
                   ),
                 ),

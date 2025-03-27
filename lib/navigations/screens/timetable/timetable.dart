@@ -497,7 +497,10 @@ class _TimetableState extends State<Timetable>
                     DataColumn(
                       label: Text(
                         "Time",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: blueColor,
+                        ),
                       ),
                     ),
                     ...weekDays
@@ -505,7 +508,10 @@ class _TimetableState extends State<Timetable>
                           (day) => DataColumn(
                             label: Text(
                               day.substring(0, 3),
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: blueColor,
+                              ),
                             ),
                           ),
                         )

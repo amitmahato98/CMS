@@ -6,6 +6,8 @@ import 'package:cms/navigations/screens/admin/more_recentactivities.dart';
 import 'package:cms/navigations/screens/admin/notiications.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:cms/theme/theme_provider.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -21,8 +23,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: backgroundColor,
       body: Column(
         children: [
           Container(
@@ -30,31 +35,36 @@ class _AdminDashboardState extends State<AdminDashboard> {
               horizontal: 16.0,
               vertical: 8.0,
             ),
-            color: blueColor,
+            color: theme.colorScheme.primary,
             child: SafeArea(
               bottom: false,
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back),
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: theme.colorScheme.onPrimary,
+                    ),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
-                  const Text(
+                  Text(
                     'Administrator Dashboard',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
-                      color: darkBlack,
+                      color: theme.colorScheme.onPrimary,
                     ),
                   ),
                   const Spacer(),
                   Stack(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.notifications),
-                        color: Colors.white,
+                        icon: Icon(
+                          Icons.notifications,
+                          color: theme.colorScheme.onPrimary,
+                        ),
                         onPressed: () {
                           setState(() {
                             Navigator.push(
@@ -80,7 +90,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             minWidth: 16,
                             minHeight: 16,
                           ),
-                          child: const Text(
+                          child: Text(
                             '5',
                             style: TextStyle(color: Colors.white, fontSize: 10),
                             textAlign: TextAlign.center,
@@ -154,8 +164,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: blueColor,
-        unselectedItemColor: grayColor,
+        selectedItemColor: theme.colorScheme.primary,
+        unselectedItemColor: isDarkMode ? Colors.white70 : Colors.grey[600],
+        backgroundColor: theme.bottomNavigationBarTheme.backgroundColor,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),
@@ -177,12 +188,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   Widget _buildStatsSection() {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(bottom: 16.0),
             child: Text(
               'Dashboard Overview',
@@ -196,7 +211,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   'Total Students',
                   '1108',
                   Icons.people,
-                  Colors.blue.shade700,
+                  theme.colorScheme.primary,
                 ),
               ),
               const SizedBox(width: 16),
@@ -243,6 +258,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
     IconData icon,
     Color color,
   ) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+
     return Card(
       elevation: 2.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
@@ -256,8 +275,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    color: grayColor,
+                  style: TextStyle(
+                    color: isDarkMode ? Colors.white70 : Colors.grey[700],
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -276,7 +295,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
             const SizedBox(height: 8),
             LinearProgressIndicator(
               value: 0.7,
-              backgroundColor: lightGrayColor,
+              backgroundColor:
+                  isDarkMode ? Color(0xFF2A2A2A) : Colors.grey[200],
               valueColor: AlwaysStoppedAnimation<Color>(color),
             ),
           ],
@@ -286,6 +306,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   Widget _buildSectionHeader(String title) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16.0),
       child: Row(
@@ -293,11 +317,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           TextButton.icon(
-            icon: const Icon(Icons.refresh, size: 16),
-            label: const Text('Refresh'),
+            icon: Icon(
+              Icons.refresh,
+              size: 16,
+              color: theme.colorScheme.primary,
+            ),
+            label: Text(
+              'Refresh',
+              style: TextStyle(color: theme.colorScheme.primary),
+            ),
             onPressed: () {},
           ),
         ],
@@ -306,6 +337,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   Widget _buildActivityList() {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+
     return Card(
       elevation: 1.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
@@ -315,29 +350,35 @@ class _AdminDashboardState extends State<AdminDashboard> {
         physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.all(16.0),
         separatorBuilder:
-            (context, index) =>
-                const Divider(height: 1.0, color: lightGrayColor),
+            (context, index) => Divider(
+              height: 1.0,
+              color: isDarkMode ? Color(0xFF2A2A2A) : Colors.grey[300],
+            ),
         itemBuilder: (context, index) {
+          Color iconBgColor =
+              index % 3 == 0
+                  ? Colors.blue.shade100.withOpacity(isDarkMode ? 0.3 : 1.0)
+                  : index % 3 == 1
+                  ? Colors.green.shade100.withOpacity(isDarkMode ? 0.3 : 1.0)
+                  : Colors.orange.shade100.withOpacity(isDarkMode ? 0.3 : 1.0);
+
+          Color iconColor =
+              index % 3 == 0
+                  ? Colors.blue.shade700
+                  : index % 3 == 1
+                  ? Colors.green.shade700
+                  : Colors.orange.shade700;
+
           return ListTile(
             leading: CircleAvatar(
-              backgroundColor:
-                  index % 3 == 0
-                      ? Colors.blue.shade100
-                      : index % 3 == 1
-                      ? Colors.green.shade100
-                      : Colors.orange.shade100,
+              backgroundColor: iconBgColor,
               child: Icon(
                 index % 3 == 0
                     ? Icons.person_add
                     : index % 3 == 1
                     ? Icons.edit_document
                     : Icons.payment,
-                color:
-                    index % 3 == 0
-                        ? Colors.blue.shade700
-                        : index % 3 == 1
-                        ? Colors.green.shade700
-                        : Colors.orange.shade700,
+                color: iconColor,
                 size: 20,
               ),
             ),
@@ -347,20 +388,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   : index % 3 == 1
                   ? 'Course syllabus updated'
                   : 'Tuition payment received',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Text(
               'By ${index % 3 == 0 ? 'System' : 'Admin User'} • ${index * 2 + 1} hours ago',
-              style: const TextStyle(color: grayColor, fontSize: 12),
+              style: TextStyle(
+                color: isDarkMode ? Colors.white60 : Colors.grey[600],
+                fontSize: 12,
+              ),
             ),
             trailing: IconButton(
-              icon: const Icon(Icons.info_sharp),
-              color:
-                  index % 3 == 0
-                      ? Colors.blue.shade700
-                      : index % 3 == 1
-                      ? Colors.green.shade700
-                      : Colors.orange.shade700,
+              icon: Icon(Icons.info_sharp),
+              color: iconColor,
               onPressed: () {
                 final RecentActivity activity = RecentActivity(
                   title:
@@ -440,6 +479,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   Widget _buildEventCalendar() {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+
     return Card(
       elevation: 1.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
@@ -453,15 +496,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
               children: [
                 Text(
                   DateFormat('MMMM yyyy').format(selectedMonth),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.chevron_left),
+                      icon: Icon(Icons.chevron_left),
                       onPressed: () {
                         setState(() {
                           selectedMonth = DateTime(
@@ -474,7 +514,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       iconSize: 20,
                     ),
                     IconButton(
-                      icon: const Icon(Icons.chevron_right),
+                      icon: Icon(Icons.chevron_right),
                       onPressed: () {
                         setState(() {
                           selectedMonth = DateTime(
@@ -505,6 +545,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         ? 'Campus Tour for New Students'
                         : 'Board Review Meeting';
 
+                Color eventColor =
+                    index % 2 == 0 ? theme.colorScheme.primary : Colors.orange;
+
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -522,16 +565,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     margin: const EdgeInsets.only(bottom: 12.0),
                     padding: const EdgeInsets.all(12.0),
                     decoration: BoxDecoration(
-                      color:
-                          index % 2 == 0
-                              ? darkBlue.withOpacity(0.1)
-                              : Colors.orange.withOpacity(0.1),
+                      color: eventColor.withOpacity(isDarkMode ? 0.2 : 0.1),
                       borderRadius: BorderRadius.circular(8.0),
                       border: Border.all(
-                        color:
-                            index % 2 == 0
-                                ? darkBlue.withOpacity(0.2)
-                                : Colors.orange.withOpacity(0.2),
+                        color: eventColor.withOpacity(isDarkMode ? 0.3 : 0.2),
                         width: 1.0,
                       ),
                     ),
@@ -540,22 +577,25 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         Container(
                           padding: const EdgeInsets.all(8.0),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: theme.cardTheme.color,
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           child: Column(
                             children: [
                               Text(
                                 '${index + 22}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
                                 ),
                               ),
-                              const Text(
+                              Text(
                                 'MAR',
                                 style: TextStyle(
-                                  color: grayColor,
+                                  color:
+                                      isDarkMode
+                                          ? Colors.white60
+                                          : Colors.grey[600],
                                   fontSize: 12,
                                 ),
                               ),
@@ -569,9 +609,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             children: [
                               Text(
                                 eventTitle,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 4),
                               Text(
@@ -582,8 +620,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                     : index == 2
                                     ? '2:00 PM - 4:00 PM • Main Campus'
                                     : '10:00 AM - 12:00 PM • Admin Building',
-                                style: const TextStyle(
-                                  color: grayColor,
+                                style: TextStyle(
+                                  color:
+                                      isDarkMode
+                                          ? Colors.white60
+                                          : Colors.grey[600],
                                   fontSize: 12,
                                 ),
                               ),

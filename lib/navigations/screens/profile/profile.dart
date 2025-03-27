@@ -17,12 +17,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ];
 
   final List<Map<String, dynamic>> menuItems = [
-    {"icon": Icons.person_outline, "title": "Personal Information", "subtitle": "View and edit your personal details"},
-    {"icon": Icons.work_outline, "title": "Professional Information", "subtitle": "View your work experience and skills"},
-    {"icon": Icons.school_outlined, "title": "Educational Information", "subtitle": "View your academic qualifications"},
-    {"icon": Icons.verified_user_outlined, "title": "Documents & Verification", "subtitle": "Manage your documents and verification status"},
-    {"icon": Icons.lock_outline, "title": "Account Settings", "subtitle": "Manage your password and security settings"},
-    {"icon": Icons.notifications_outlined, "title": "Notifications", "subtitle": "Manage your notification preferences"},
+    {
+      "icon": Icons.person_outline,
+      "title": "Personal Information",
+      "subtitle": "View and edit your personal details",
+    },
+    {
+      "icon": Icons.work_outline,
+      "title": "Professional Information",
+      "subtitle": "View your work experience and skills",
+    },
+    {
+      "icon": Icons.school_outlined,
+      "title": "Educational Information",
+      "subtitle": "View your academic qualifications",
+    },
+    {
+      "icon": Icons.verified_user_outlined,
+      "title": "Documents & Verification",
+      "subtitle": "Manage your documents and verification status",
+    },
+    {
+      "icon": Icons.lock_outline,
+      "title": "Account Settings",
+      "subtitle": "Manage your password and security settings",
+    },
+    {
+      "icon": Icons.notifications_outlined,
+      "title": "Notifications",
+      "subtitle": "Manage your notification preferences",
+    },
   ];
 
   @override
@@ -34,14 +58,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
-          IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {},
-          ),
+          IconButton(icon: Icon(Icons.edit), onPressed: () {}),
+          IconButton(icon: Icon(Icons.settings), onPressed: () {}),
         ],
       ),
       body: SingleChildScrollView(
@@ -98,9 +116,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildContactInfo(Icons.email, "amitm@examplecollege.edu"),
+              _buildContactInfo(Icons.email, "amitm@examplecollege.edu.np"),
               SizedBox(width: 20),
-              _buildContactInfo(Icons.phone, "+977-9812345678"),
+              _buildContactInfo(Icons.phone, "+977-9825780505"),
             ],
           ),
         ],
@@ -113,13 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         Icon(icon, color: Colors.white, size: 16),
         SizedBox(width: 5),
-        Text(
-          text,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-          ),
-        ),
+        Text(text, style: TextStyle(color: Colors.white, fontSize: 14)),
       ],
     );
   }
@@ -132,10 +144,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Text(
             "Overview",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10),
           Container(
@@ -155,13 +164,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: statsItems.map((item) {
-                  return _buildStatItem(
-                    item["icon"], 
-                    item["label"], 
-                    item["count"]
-                  );
-                }).toList(),
+                children:
+                    statsItems.map((item) {
+                      return _buildStatItem(
+                        item["icon"],
+                        item["label"],
+                        item["count"],
+                      );
+                    }).toList(),
               ),
             ),
           ),
@@ -179,11 +189,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: blueColor.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            icon,
-            color: blueColor,
-            size: 24,
-          ),
+          child: Icon(icon, color: blueColor, size: 24),
         ),
         SizedBox(height: 8),
         Text(
@@ -191,16 +197,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18,
+            color: blueColor,
           ),
         ),
         SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 12,
-          ),
-        ),
+        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
       ],
     );
   }
@@ -213,10 +214,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Text(
             "Account Settings",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10),
           ListView.separated(
@@ -232,26 +230,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: blueColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
-                    menuItems[index]["icon"],
-                    color: blueColor,
-                  ),
+                  child: Icon(menuItems[index]["icon"], color: blueColor),
                 ),
                 title: Text(
                   menuItems[index]["title"],
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(
                   menuItems[index]["subtitle"],
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
                 trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 16,
+                ),
                 onTap: () {},
               );
             },

@@ -1,5 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:cms/datatypes/datatypes.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:provider/provider.dart';
+import 'package:cms/theme/theme_provider.dart';
 
 class Examination extends StatefulWidget {
   const Examination({Key? key}) : super(key: key);
@@ -13,10 +17,21 @@ class _ExaminationState extends State<Examination>
   late TabController _tabController;
   DateTime _selectedDate = DateTime(2025, 4);
 
+  // Keys for SharedPreferences
+  static const String UPCOMING_EXAMS_KEY = 'upcoming_exams';
+  static const String PAST_RESULTS_KEY = 'past_results';
+
+  // Lists to store exams and results
+  List<Map<String, dynamic>> upcomingExams = [];
+  List<Map<String, dynamic>> pastResults = [];
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+
+    // Load saved data when app initializes
+    _loadSavedData();
   }
 
   @override
@@ -25,88 +40,121 @@ class _ExaminationState extends State<Examination>
     super.dispose();
   }
 
-  List<Map<String, dynamic>> upcomingExams = [
-    {
-      "subject": "Database Management Systems",
-      "code": "CS301",
-      "date": "2025-04-15",
-      "time": "10:00 AM - 1:00 PM",
-      "venue": "Examination Hall A",
-      "type": "Mid Term",
-    },
-    {
-      "subject": "Computer Networks",
-      "code": "CS302",
-      "date": "2025-04-17",
-      "time": "10:00 AM - 1:00 PM",
-      "venue": "Examination Hall B",
-      "type": "Mid Term",
-    },
-    {
-      "subject": "Operating Systems",
-      "code": "CS303",
-      "date": "2025-04-19",
-      "time": "10:00 AM - 1:00 PM",
-      "venue": "Examination Hall A",
-      "type": "Mid Term",
-    },
-    {
-      "subject": "Software Engineering",
-      "code": "CS304",
-      "date": "2025-04-21",
-      "time": "10:00 AM - 1:00 PM",
-      "venue": "Examination Hall C",
-      "type": "Mid Term",
-    },
-  ];
+  // Method to load saved data from SharedPreferences
+  Future<void> _loadSavedData() async {
+    final prefs = await SharedPreferences.getInstance();
 
-  List<Map<String, dynamic>> pastResults = [
-    {
-      "subject": "Data Structures",
-      "code": "CS201",
-      "date": "2025-01-15",
-      "grade": "A",
-      "percentage": "87%",
-      "status": "Passed",
-    },
-    {
-      "subject": "Algorithms",
-      "code": "CS202",
-      "date": "2025-01-17",
-      "grade": "A+",
-      "percentage": "92%",
-      "status": "Passed",
-    },
-    {
-      "subject": "Object Oriented Programming",
-      "code": "CS203",
-      "date": "2025-01-19",
-      "grade": "B+",
-      "percentage": "78%",
-      "status": "Passed",
-    },
-    {
-      "subject": "Web Development",
-      "code": "CS204",
-      "date": "2025-01-21",
-      "grade": "A",
-      "percentage": "85%",
-      "status": "Passed",
-    },
-  ];
+    setState(() {
+      // Load upcoming exams
+      final examsJson = prefs.getString(UPCOMING_EXAMS_KEY);
+      if (examsJson != null) {
+        final List<dynamic> savedExams = json.decode(examsJson);
+        upcomingExams = savedExams.cast<Map<String, dynamic>>();
+      } else {
+        // Default data if no saved exams
+        upcomingExams = [
+          {
+            "subject": "Database Management Systems",
+            "code": "CSC301",
+            "date": "2025-04-15",
+            "time": "10:00 AM - 1:00 PM",
+            "venue": "Examination Hall A",
+            "type": "Mid Term",
+          },
+          {
+            "subject": "Computer Networks",
+            "code": "CSC302",
+            "date": "2025-04-17",
+            "time": "10:00 AM - 1:00 PM",
+            "venue": "Examination Hall B",
+            "type": "Mid Term",
+          },
+          {
+            "subject": "Operating Systems",
+            "code": "CSC303",
+            "date": "2025-04-19",
+            "time": "10:00 AM - 1:00 PM",
+            "venue": "Examination Hall A",
+            "type": "Mid Term",
+          },
+          {
+            "subject": "Software Engineering",
+            "code": "CSC304",
+            "date": "2025-04-21",
+            "time": "10:00 AM - 1:00 PM",
+            "venue": "Examination Hall C",
+            "type": "Mid Term",
+          },
+        ];
+      }
+
+      // Load past results
+      final resultsJson = prefs.getString(PAST_RESULTS_KEY);
+      if (resultsJson != null) {
+        final List<dynamic> savedResults = json.decode(resultsJson);
+        pastResults = savedResults.cast<Map<String, dynamic>>();
+      } else {
+        // Default data if no saved results
+        pastResults = [
+          {
+            "subject": "Data Structures",
+            "code": "CSC201",
+            "date": "2025-01-15",
+            "grade": "A",
+            "percentage": "87%",
+            "status": "Passed",
+          },
+          {
+            "subject": "Algorithms",
+            "code": "CSC202",
+            "date": "2025-01-17",
+            "grade": "A+",
+            "percentage": "92%",
+            "status": "Passed",
+          },
+          {
+            "subject": "Object Oriented Programming",
+            "code": "CSC203",
+            "date": "2025-01-19",
+            "grade": "B+",
+            "percentage": "78%",
+            "status": "Passed",
+          },
+          {
+            "subject": "Web Development",
+            "code": "CSC204",
+            "date": "2025-01-21",
+            "grade": "A",
+            "percentage": "85%",
+            "status": "Passed",
+          },
+        ];
+      }
+    });
+  }
+
+  // Method to save data to SharedPreferences
+  Future<void> _saveData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Save upcoming exams
+    await prefs.setString(UPCOMING_EXAMS_KEY, json.encode(upcomingExams));
+
+    // Save past results
+    await prefs.setString(PAST_RESULTS_KEY, json.encode(pastResults));
+  }
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: Text("Examination", style: TextStyle(color: Colors.white)),
-        iconTheme: IconThemeData(color: Colors.white),
+        title: Text("Examination"),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.white,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
           tabs: [
             Tab(text: "Upcoming Exams"),
             Tab(text: "Results"),
@@ -115,7 +163,6 @@ class _ExaminationState extends State<Examination>
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
         child: Icon(Icons.add),
         onPressed: () {
           _showAddDialog(context);
@@ -144,6 +191,10 @@ class _ExaminationState extends State<Examination>
     String grade = "";
     String percentage = "";
     String status = "Pass";
+
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
 
     showDialog(
       context: context,
@@ -200,7 +251,7 @@ class _ExaminationState extends State<Examination>
                           if (value == null || value.isEmpty) {
                             return "Please enter the course code";
                           }
-                          if (!RegExp(r'^[A-Z]{2}[0-9]{3}$').hasMatch(value)) {
+                          if (!RegExp(r'^[A-Z]{3}[0-9]{3}$').hasMatch(value)) {
                             return "Code must be 2 uppercase letters followed by 3 numbers";
                           }
                           return null;
@@ -314,28 +365,24 @@ class _ExaminationState extends State<Examination>
                               return "Invalid grade format (e.g., A, B+, C-)";
                             }
 
-                            // Additional validation for passing and failing conditions
-                            if (status == "Pass") {
-                              // Grades below C or percentage less than 40% cannot be a pass
-                              final passableGrades = [
-                                'A+',
-                                'A',
-                                'A-',
-                                'B+',
-                                'B',
-                                'B-',
-                                'C+',
-                                'C',
-                              ];
-                              if (!passableGrades.contains(value)) {
-                                return "Passing grade must be C or above";
-                              }
-                            } else if (status == "Fail") {
-                              // Grades C and above cannot be a fail
-                              final failGrades = ['D+', 'D', 'D-', 'F'];
-                              if (!failGrades.contains(value)) {
-                                return "Failing grade must be below C";
-                              }
+                            final passableGrades = [
+                              'A+',
+                              'A',
+                              'A-',
+                              'B+',
+                              'B',
+                              'B-',
+                              'C+',
+                              'C',
+                            ];
+                            final failGrades = ['D+', 'D', 'D-', 'F'];
+
+                            if (status == "Pass" &&
+                                !passableGrades.contains(value)) {
+                              return "Passing grade must be C or above";
+                            } else if (status == "Fail" &&
+                                !failGrades.contains(value)) {
+                              return "Failing grade must be below C";
                             }
 
                             return null;
@@ -358,7 +405,6 @@ class _ExaminationState extends State<Examination>
                               return "Please enter a valid percentage (0-100)";
                             }
 
-                            // Additional validation for passing and failing conditions
                             if (status == "Pass" && parsedValue < 40) {
                               return "Passing percentage must be 40% or above";
                             } else if (status == "Fail" && parsedValue >= 40) {
@@ -437,8 +483,9 @@ class _ExaminationState extends State<Examination>
                             "status": status,
                           });
                         }
-                        // Trigger a rebuild of the widget to reflect the new entry
-                        setState(() {});
+
+                        // Save data after adding
+                        _saveData();
                       });
                       Navigator.of(context).pop();
                     }
@@ -699,12 +746,17 @@ class _ExaminationState extends State<Examination>
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
+                        color: blueColor,
                       ),
                     ),
                     Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back_ios, size: 16),
+                          icon: Icon(
+                            Icons.arrow_back_ios,
+                            size: 16,
+                            color: blueColor,
+                          ),
                           onPressed: () {
                             setState(() {
                               _selectedDate = DateTime(
@@ -715,7 +767,11 @@ class _ExaminationState extends State<Examination>
                           },
                         ),
                         IconButton(
-                          icon: Icon(Icons.arrow_forward_ios, size: 16),
+                          icon: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: blueColor,
+                          ),
                           onPressed: () {
                             setState(() {
                               _selectedDate = DateTime(

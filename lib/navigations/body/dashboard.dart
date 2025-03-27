@@ -16,6 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:cms/navigations/screens/profile/profile.dart';
 import 'package:cms/navigations/screens/examination/examination.dart';
 import 'package:cms/navigations/screens/timetable/timetable.dart';
+import 'package:provider/provider.dart';
+import 'package:cms/theme/theme_provider.dart';
 
 class Dashboard extends StatelessWidget {
   final Function(Widget) onSectionSelected;
@@ -25,6 +27,10 @@ class Dashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -55,18 +61,19 @@ class OverVeiw extends StatefulWidget {
 class _OverVeiwState extends State<OverVeiw> {
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.only(top: 0, right: 8, left: 8, bottom: 8),
       child: Material(
         elevation: 10,
         borderRadius: BorderRadius.circular(10),
+        color: theme.colorScheme.primary,
         child: Container(
-          height: 251,
           width: double.infinity,
-          decoration: BoxDecoration(
-            color: blueColor,
-            borderRadius: BorderRadius.circular(10),
-          ),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(
@@ -86,15 +93,15 @@ class _OverVeiwState extends State<OverVeiw> {
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 24,
-                              color: cardTextColor,
+                              color: theme.colorScheme.onPrimary,
                             ),
                           ),
                           Text(
-                            "Mr.Amit Mahato | Campus Chief",
+                            "Amit Mahato | Dean",
                             style: TextStyle(
                               fontWeight: FontWeight.w200,
                               fontSize: 18,
-                              color: cardTextColor,
+                              color: theme.colorScheme.onPrimary,
                             ),
                           ),
                           SizedBox(height: 8),
@@ -104,17 +111,23 @@ class _OverVeiwState extends State<OverVeiw> {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: theme.colorScheme.onPrimary.withOpacity(
+                                0.2,
+                              ),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.edit, color: Colors.white, size: 16),
+                                Icon(
+                                  Icons.edit,
+                                  color: theme.colorScheme.onPrimary,
+                                  size: 16,
+                                ),
                                 SizedBox(width: 6),
                                 Text(
                                   "Edit Profile",
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: theme.colorScheme.onPrimary,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -133,20 +146,6 @@ class _OverVeiwState extends State<OverVeiw> {
                                 fit: BoxFit.cover,
                                 width: 80,
                               ),
-                            ),
-                          ),
-                          Positioned(
-                            right: 0,
-                            bottom: 0,
-                            child: Container(
-                              padding: EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: Colors.green,
-                                shape: BoxShape.circle,
-                                border: Border.all(color: blueColor, width: 2),
-                              ),
-                              height: 16,
-                              width: 16,
                             ),
                           ),
                         ],
@@ -196,6 +195,10 @@ class _ViewCountState extends State<ViewCount> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+
     return Container(
       height: 105,
       width: MediaQuery.of(context).size.width - 75,
@@ -214,9 +217,14 @@ class _ViewCountState extends State<ViewCount> {
   }
 
   Widget _buildCountItem(String number, String title, IconData icon) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+
     return Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(10),
+      color: isDarkMode ? theme.cardTheme.color : Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -226,8 +234,8 @@ class _ViewCountState extends State<ViewCount> {
               height: 50,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.blue.withOpacity(0.1),
-                border: Border.all(color: Colors.blue, width: 3),
+                color: theme.colorScheme.primary.withOpacity(0.1),
+                border: Border.all(color: theme.colorScheme.primary, width: 3),
               ),
               alignment: Alignment.center,
               child: Column(
@@ -237,11 +245,11 @@ class _ViewCountState extends State<ViewCount> {
                     number,
                     style: TextStyle(
                       fontSize: 14,
-                      color: const Color.fromARGB(255, 255, 0, 0),
+                      color: blueColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Icon(icon, size: 16, color: Colors.blue),
+                  Icon(icon, size: 16, color: theme.colorScheme.primary),
                 ],
               ),
             ),
@@ -444,6 +452,10 @@ class _GridbuildState extends State<Gridbuild> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+
     final int itemToShow = _isExpanded ? gridMap.length : 6;
     return Column(
       children: [
@@ -451,11 +463,11 @@ class _GridbuildState extends State<Gridbuild> {
           width: double.infinity,
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.cardTheme.color,
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
+                color: theme.colorScheme.shadow.withOpacity(0.2),
                 spreadRadius: 2,
                 blurRadius: 5,
                 offset: Offset(0, 3),
@@ -507,10 +519,13 @@ class _GridbuildState extends State<Gridbuild> {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: Colors.white,
+                        color:
+                            isDarkMode
+                                ? theme.colorScheme.surface
+                                : Colors.white,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
+                            color: theme.colorScheme.shadow.withOpacity(0.2),
                             spreadRadius: 1,
                             blurRadius: 3,
                             offset: Offset(0, 2),
@@ -523,7 +538,7 @@ class _GridbuildState extends State<Gridbuild> {
                           Container(
                             height: 110,
                             decoration: BoxDecoration(
-                              color: blueColor.withOpacity(0.1),
+                              color: theme.colorScheme.primary.withOpacity(0.1),
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(12),
                                 topRight: Radius.circular(12),
@@ -546,7 +561,6 @@ class _GridbuildState extends State<Gridbuild> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    color: Colors.black87,
                                   ),
                                 ),
                                 SizedBox(height: 4),
@@ -554,7 +568,10 @@ class _GridbuildState extends State<Gridbuild> {
                                   gridMap.elementAt(index)['description'],
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.grey[600],
+                                    color:
+                                        isDarkMode
+                                            ? Colors.white70
+                                            : Colors.grey[600],
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -581,7 +598,7 @@ class _GridbuildState extends State<Gridbuild> {
                 });
               },
               style: TextButton.styleFrom(
-                backgroundColor: blueColor.withOpacity(0.1),
+                backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
@@ -593,7 +610,7 @@ class _GridbuildState extends State<Gridbuild> {
                   Text(
                     _isExpanded ? "Show Less" : "Show More",
                     style: TextStyle(
-                      color: blueColor,
+                      color: theme.colorScheme.primary,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -603,7 +620,7 @@ class _GridbuildState extends State<Gridbuild> {
                     _isExpanded
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down,
-                    color: blueColor,
+                    color: theme.colorScheme.primary,
                     size: 20,
                   ),
                 ],

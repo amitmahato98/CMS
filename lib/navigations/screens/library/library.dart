@@ -1,7 +1,10 @@
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:cms/navigations/screens/library/bookhistory.dart';
 import 'package:cms/navigations/screens/library/books.dart';
 import 'package:cms/navigations/screens/library/ibrary-notification.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:cms/theme/theme_provider.dart';
 
 class Library extends StatefulWidget {
   const Library({super.key});
@@ -35,7 +38,7 @@ class _LibraryState extends State<Library> {
 
   void _updateTimePeriodType() {
     // Check if the selected faculty uses years instead of semesters
-    isYearBased = ['BTech', 'NUTRITION', 'PHYSIC'].contains(selectedFaculty);
+    isYearBased = ['BTech', 'PHYSIC'].contains(selectedFaculty);
 
     // Reset selected time period to first value when switching between year/semester
     selectedTimePeriod = '1';
@@ -43,29 +46,24 @@ class _LibraryState extends State<Library> {
 
   @override
   Widget build(BuildContext context) {
-    // Modern blue color scheme
-    const Color primaryBlue = Color(0xFF1E88E5);
-    const Color lightBlue = Color(0xFFBBDEFB);
-    const Color darkBlue = Color(0xFF0D47A1);
-    const Color backgroundColor = Colors.white;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: backgroundColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: primaryBlue,
-        foregroundColor: Colors.white,
         title: const Text(
           'Library',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+            icon: const Icon(Icons.notifications_outlined),
             onPressed: () {
               Navigator.push(
                 context,
@@ -82,15 +80,15 @@ class _LibraryState extends State<Library> {
             backgroundColor: Colors.transparent,
             builder:
                 (context) => Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
+                  decoration: BoxDecoration(
+                    color: theme.cardTheme.color,
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(24),
                       topRight: Radius.circular(24),
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black12,
+                        color: theme.colorScheme.shadow.withOpacity(0.1),
                         blurRadius: 10,
                         spreadRadius: 1,
                       ),
@@ -104,17 +102,18 @@ class _LibraryState extends State<Library> {
                         width: 40,
                         height: 5,
                         decoration: BoxDecoration(
-                          color: Colors.grey[300],
+                          color:
+                              isDarkMode ? Color(0xFF2A2A2A) : Colors.grey[300],
                           borderRadius: BorderRadius.circular(10),
                         ),
                         margin: const EdgeInsets.only(bottom: 20),
                       ),
                       ListTile(
-                        leading: const Icon(
+                        leading: Icon(
                           Icons.menu_book_rounded,
-                          color: primaryBlue,
+                          color: theme.colorScheme.primary,
                         ),
-                        title: const Text(
+                        title: Text(
                           'Library Books',
                           style: TextStyle(fontWeight: FontWeight.w500),
                         ),
@@ -128,11 +127,11 @@ class _LibraryState extends State<Library> {
                       ),
                       const SizedBox(height: 8),
                       ListTile(
-                        leading: const Icon(
+                        leading: Icon(
                           Icons.assignment_return_rounded,
-                          color: primaryBlue,
+                          color: theme.colorScheme.primary,
                         ),
-                        title: const Text(
+                        title: Text(
                           'Return Books',
                           style: TextStyle(fontWeight: FontWeight.w500),
                         ),
@@ -149,18 +148,19 @@ class _LibraryState extends State<Library> {
                 ),
           );
         },
-        backgroundColor: primaryBlue,
-        foregroundColor: Colors.white,
         icon: const Icon(Icons.swap_horiz),
         label: const Text('Switch View'),
         elevation: 4,
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [lightBlue, backgroundColor],
+            colors:
+                isDarkMode
+                    ? [theme.colorScheme.surface, theme.colorScheme.background]
+                    : [Color(0xFFBBDEFB), Colors.white],
             stops: [0.0, 0.3],
           ),
         ),
@@ -176,10 +176,10 @@ class _LibraryState extends State<Library> {
                     padding: const EdgeInsets.only(bottom: 20, left: 4),
                     child: Text(
                       isLibrary ? 'Available Books' : 'Book Return History',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: darkBlue,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                   ),
@@ -187,11 +187,11 @@ class _LibraryState extends State<Library> {
                   // Filters Card
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: theme.cardTheme.color,
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: const [
+                      boxShadow: [
                         BoxShadow(
-                          color: Colors.black12,
+                          color: theme.colorScheme.shadow.withOpacity(0.1),
                           blurRadius: 10,
                           spreadRadius: 1,
                         ),
@@ -206,7 +206,7 @@ class _LibraryState extends State<Library> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: darkBlue,
+                            color: blueColor,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -228,7 +228,7 @@ class _LibraryState extends State<Library> {
                               value: selectedFaculty,
                               icon: const Icon(
                                 Icons.arrow_drop_down_rounded,
-                                color: primaryBlue,
+                                color: Colors.black87,
                               ),
                               items:
                                   faculties.map((String faculty) {
@@ -237,7 +237,7 @@ class _LibraryState extends State<Library> {
                                       child: Text(
                                         faculty,
                                         style: const TextStyle(
-                                          color: Colors.black87,
+                                          color: blueColor,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -272,7 +272,7 @@ class _LibraryState extends State<Library> {
                               value: selectedTimePeriod,
                               icon: const Icon(
                                 Icons.arrow_drop_down_rounded,
-                                color: primaryBlue,
+                                color: Colors.black87,
                               ),
                               items:
                                   (isYearBased ? years : semesters).map((
@@ -285,7 +285,7 @@ class _LibraryState extends State<Library> {
                                             ? 'Year $period'
                                             : 'Semester $period',
                                         style: const TextStyle(
-                                          color: Colors.black87,
+                                          color: blueColor,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -321,7 +321,7 @@ class _LibraryState extends State<Library> {
                               ),
                               prefixIcon: const Icon(
                                 Icons.search_rounded,
-                                color: primaryBlue,
+                                color: Colors.black87,
                               ),
                               border: InputBorder.none,
                               contentPadding: const EdgeInsets.symmetric(

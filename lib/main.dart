@@ -1,11 +1,19 @@
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:cms/navigations/body/dashboard.dart';
 import 'package:cms/navigations/navbar/navbar.dart';
 import 'package:cms/navigations/screens/notifications/notification.dart';
+import 'package:cms/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -13,17 +21,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'CMS',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Color(0xFF167AFA),
-        appBarTheme: AppBarTheme(
-          backgroundColor: Color(0xFF167AFA),
-          elevation: 0,
-        ),
-      ),
-      home: MainNavigator(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          title: 'CMS',
+          debugShowCheckedModeBanner: false,
+          theme: themeProvider.currentTheme,
+          home: MainNavigator(),
+        );
+      },
     );
   }
 }
@@ -107,6 +113,8 @@ class _MainNavigatorState extends State<MainNavigator> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
@@ -115,6 +123,7 @@ class _MainNavigatorState extends State<MainNavigator> {
         appBar:
             _showingDashboard
                 ? AppBar(
+                  backgroundColor: blueColor,
                   leading: IconButton(
                     icon: Icon(Icons.menu),
                     onPressed: () {
@@ -123,6 +132,14 @@ class _MainNavigatorState extends State<MainNavigator> {
                   ),
                   title: const Text('Admin'),
                   actions: [
+                    IconButton(
+                      icon: Icon(
+                        themeProvider.isDarkMode
+                            ? Icons.light_mode
+                            : Icons.dark_mode,
+                      ),
+                      onPressed: () => themeProvider.toggleTheme(),
+                    ),
                     IconButton(
                       icon: Icon(Icons.notifications),
                       onPressed: () => _pushPage(SendNotification()),

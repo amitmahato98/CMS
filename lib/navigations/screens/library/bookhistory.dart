@@ -1,5 +1,7 @@
 import 'package:cms/navigations/screens/library/all_history_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:cms/theme/theme_provider.dart';
 
 class LibraryBooksHistory extends StatefulWidget {
   final String faculty;
@@ -154,12 +156,10 @@ class _LibraryBooksHistoryState extends State<LibraryBooksHistory> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
     final history = getHistory();
-
-    // Modern color scheme (matching the other pages)
-    const Color primaryBlue = Color(0xFF1E88E5);
-    const Color lightBlue = Color(0xFFBBDEFB);
-    const Color darkBlue = Color(0xFF0D47A1);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -183,14 +183,18 @@ class _LibraryBooksHistoryState extends State<LibraryBooksHistory> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.history_rounded, color: darkBlue, size: 22),
+                  Icon(
+                    Icons.history_rounded,
+                    color: theme.colorScheme.primary,
+                    size: 22,
+                  ),
                   const SizedBox(width: 8),
                   Text(
-                    "Book Returns",
+                    'Recent History',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: darkBlue,
+                      color: theme.colorScheme.primary,
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -201,25 +205,20 @@ class _LibraryBooksHistoryState extends State<LibraryBooksHistory> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AllHistoryPage(history: history),
+                      builder:
+                          (context) => AllHistoryPage(history: getHistory()),
                     ),
                   );
                 },
                 style: TextButton.styleFrom(
-                  foregroundColor: primaryBlue,
+                  foregroundColor: theme.colorScheme.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: Row(
-                  children: const [
-                    Text(
-                      "View All",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                      ),
-                    ),
+                child: const Row(
+                  children: [
+                    Text('View All'),
                     SizedBox(width: 4),
                     Icon(Icons.arrow_forward, size: 16),
                   ],
@@ -257,8 +256,21 @@ class _LibraryBooksHistoryState extends State<LibraryBooksHistory> {
                   return Container(
                     margin: const EdgeInsets.only(bottom: 10),
                     decoration: BoxDecoration(
-                      color: Colors.grey[50],
+                      color:
+                          isDarkMode
+                              ? theme.colorScheme.surface
+                              : Colors.grey[50],
                       borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color:
+                              isDarkMode
+                                  ? Colors.black26
+                                  : Colors.black.withOpacity(0.05),
+                          blurRadius: 3,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: ListTile(
                       contentPadding: const EdgeInsets.symmetric(
@@ -269,7 +281,10 @@ class _LibraryBooksHistoryState extends State<LibraryBooksHistory> {
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: lightBlue.withOpacity(0.6),
+                          color:
+                              isDarkMode
+                                  ? theme.colorScheme.primary.withOpacity(0.2)
+                                  : theme.colorScheme.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: ClipRRect(
@@ -283,14 +298,16 @@ class _LibraryBooksHistoryState extends State<LibraryBooksHistory> {
                                 (context, error, stackTrace) => Icon(
                                   Icons.menu_book_rounded,
                                   size: 24,
-                                  color: primaryBlue.withOpacity(0.7),
+                                  color: theme.colorScheme.primary.withOpacity(
+                                    0.7,
+                                  ),
                                 ),
                           ),
                         ),
                       ),
                       title: Text(
                         item['title'],
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15,
                         ),
@@ -303,7 +320,8 @@ class _LibraryBooksHistoryState extends State<LibraryBooksHistory> {
                           "Borrowed: ${item['borrowDate']}",
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.grey[700],
+                            color:
+                                isDarkMode ? Colors.white70 : Colors.grey[700],
                           ),
                         ),
                       ),
@@ -315,8 +333,12 @@ class _LibraryBooksHistoryState extends State<LibraryBooksHistory> {
                         decoration: BoxDecoration(
                           color:
                               item['status'] == 'Returned'
-                                  ? Colors.green[50]
-                                  : Colors.orange[50],
+                                  ? (isDarkMode
+                                      ? Colors.green.withOpacity(0.2)
+                                      : Colors.green[50])
+                                  : (isDarkMode
+                                      ? Colors.orange.withOpacity(0.2)
+                                      : Colors.orange[50]),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -329,8 +351,12 @@ class _LibraryBooksHistoryState extends State<LibraryBooksHistory> {
                               size: 14,
                               color:
                                   item['status'] == 'Returned'
-                                      ? Colors.green[700]
-                                      : Colors.orange[700],
+                                      ? (isDarkMode
+                                          ? Colors.green[400]
+                                          : Colors.green[700])
+                                      : (isDarkMode
+                                          ? Colors.orange[400]
+                                          : Colors.orange[700]),
                             ),
                             const SizedBox(width: 4),
                             Text(
@@ -338,8 +364,12 @@ class _LibraryBooksHistoryState extends State<LibraryBooksHistory> {
                               style: TextStyle(
                                 color:
                                     item['status'] == 'Returned'
-                                        ? Colors.green[700]
-                                        : Colors.orange[700],
+                                        ? (isDarkMode
+                                            ? Colors.green[400]
+                                            : Colors.green[700])
+                                        : (isDarkMode
+                                            ? Colors.orange[400]
+                                            : Colors.orange[700]),
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -359,14 +389,122 @@ class _LibraryBooksHistoryState extends State<LibraryBooksHistory> {
                   "Showing 5 of ${history.length} items",
                   style: TextStyle(
                     fontSize: 13,
-                    color: Colors.grey[600],
+                    color: isDarkMode ? Colors.white70 : Colors.grey[600],
                     fontStyle: FontStyle.italic,
                   ),
                 ),
               ),
             ),
+          Container(
+            margin: const EdgeInsets.only(top: 24, bottom: 16),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface.withOpacity(0.6),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color:
+                    isDarkMode
+                        ? Colors.grey.withOpacity(0.3)
+                        : Colors.grey.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.analytics_outlined,
+                      color: theme.colorScheme.primary.withOpacity(0.7),
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Return History Analysis',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildAnalyticsItem(
+                  'On-time Returns',
+                  '85%',
+                  0.85,
+                  Colors.green,
+                  isDarkMode,
+                  theme,
+                ),
+                const SizedBox(height: 12),
+                _buildAnalyticsItem(
+                  'Late Returns',
+                  '12%',
+                  0.12,
+                  Colors.orange,
+                  isDarkMode,
+                  theme,
+                ),
+                const SizedBox(height: 12),
+                _buildAnalyticsItem(
+                  'Very Late Returns',
+                  '3%',
+                  0.03,
+                  Colors.red,
+                  isDarkMode,
+                  theme,
+                ),
+              ],
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAnalyticsItem(
+    String label,
+    String percentage,
+    double value,
+    Color color,
+    bool isDarkMode,
+    ThemeData theme,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                color: isDarkMode ? Colors.white70 : Colors.grey[700],
+              ),
+            ),
+            Text(
+              percentage,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        LinearProgressIndicator(
+          value: value,
+          backgroundColor:
+              isDarkMode ? Colors.grey.withOpacity(0.2) : Colors.grey[200],
+          valueColor: AlwaysStoppedAnimation<Color>(color),
+          borderRadius: BorderRadius.circular(4),
+        ),
+      ],
     );
   }
 }

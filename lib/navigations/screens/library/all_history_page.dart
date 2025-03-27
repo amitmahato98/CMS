@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:cms/theme/theme_provider.dart';
 
 class AllHistoryPage extends StatelessWidget {
   final List<Map<String, dynamic>> history;
@@ -7,29 +9,33 @@ class AllHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Modern blue color scheme (matching AllBooksPage)
-    const Color primaryBlue = Color(0xFF1E88E5);
-    const Color lightBlue = Color(0xFFBBDEFB);
-    const Color darkBlue = Color(0xFF0D47A1);
-    const Color backgroundColor = Colors.white;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: primaryBlue,
-        foregroundColor: Colors.white,
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: theme.colorScheme.onPrimary,
         title: const Text(
           'Book History',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [lightBlue, backgroundColor],
+            colors:
+                isDarkMode
+                    ? [theme.colorScheme.surface, theme.colorScheme.background]
+                    : [
+                      theme.colorScheme.primary.withOpacity(0.1),
+                      theme.colorScheme.background,
+                    ],
             stops: [0.0, 0.3],
           ),
         ),
@@ -40,10 +46,10 @@ class AllHistoryPage extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
               child: Text(
                 'Borrowing History',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: darkBlue,
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ),
@@ -53,7 +59,7 @@ class AllHistoryPage extends StatelessWidget {
                 '${history.length} records found',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[700],
+                  color: isDarkMode ? Colors.white70 : Colors.grey[700],
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -67,11 +73,15 @@ class AllHistoryPage extends StatelessWidget {
                   return Container(
                     margin: const EdgeInsets.only(bottom: 16),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color:
+                          isDarkMode ? theme.colorScheme.surface : Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color:
+                              isDarkMode
+                                  ? Colors.black.withOpacity(0.2)
+                                  : Colors.black.withOpacity(0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -89,7 +99,10 @@ class AllHistoryPage extends StatelessWidget {
                         height: 50,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          color: Colors.grey[200],
+                          color:
+                              isDarkMode
+                                  ? theme.colorScheme.surface.withOpacity(0.7)
+                                  : Colors.grey[200],
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
@@ -102,7 +115,8 @@ class AllHistoryPage extends StatelessWidget {
                                   child: Icon(
                                     Icons.book_rounded,
                                     size: 28,
-                                    color: primaryBlue.withOpacity(0.7),
+                                    color: theme.colorScheme.primary
+                                        .withOpacity(0.7),
                                   ),
                                 ),
                           ),
@@ -122,7 +136,8 @@ class AllHistoryPage extends StatelessWidget {
                         child: Text(
                           'Borrowed: ${item['borrowDate']}',
                           style: TextStyle(
-                            color: Colors.grey[600],
+                            color:
+                                isDarkMode ? Colors.white70 : Colors.grey[600],
                             fontSize: 14,
                           ),
                         ),
@@ -135,8 +150,12 @@ class AllHistoryPage extends StatelessWidget {
                         decoration: BoxDecoration(
                           color:
                               item['status'] == 'Returned'
-                                  ? Colors.green[50]
-                                  : Colors.orange[50],
+                                  ? (isDarkMode
+                                      ? Colors.green.withOpacity(0.2)
+                                      : Colors.green[50])
+                                  : (isDarkMode
+                                      ? Colors.orange.withOpacity(0.2)
+                                      : Colors.orange[50]),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -170,7 +189,10 @@ class AllHistoryPage extends StatelessWidget {
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey[50],
+                            color:
+                                isDarkMode
+                                    ? theme.colorScheme.surface.withOpacity(0.7)
+                                    : Colors.grey[50],
                             borderRadius: const BorderRadius.vertical(
                               bottom: Radius.circular(16),
                             ),
@@ -185,16 +207,41 @@ class AllHistoryPage extends StatelessWidget {
                                   'Borrowing Details',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: darkBlue,
+                                    color: theme.colorScheme.primary,
                                     fontSize: 15,
                                   ),
                                 ),
                               ),
-                              _buildInfoRow('Student', item['student']),
-                              _buildInfoRow('Class', item['class']),
-                              _buildInfoRow('Borrow Date', item['borrowDate']),
-                              _buildInfoRow('Return Date', item['returnDate']),
-                              _buildInfoRow('Status', item['status']),
+                              _buildInfoRow(
+                                'Student',
+                                item['student'],
+                                isDarkMode,
+                                theme,
+                              ),
+                              _buildInfoRow(
+                                'Class',
+                                item['class'],
+                                isDarkMode,
+                                theme,
+                              ),
+                              _buildInfoRow(
+                                'Borrow Date',
+                                item['borrowDate'],
+                                isDarkMode,
+                                theme,
+                              ),
+                              _buildInfoRow(
+                                'Return Date',
+                                item['returnDate'],
+                                isDarkMode,
+                                theme,
+                              ),
+                              _buildInfoRow(
+                                'Status',
+                                item['status'],
+                                isDarkMode,
+                                theme,
+                              ),
                             ],
                           ),
                         ),
@@ -210,25 +257,28 @@ class AllHistoryPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(
+    String label,
+    String value,
+    bool isDarkMode,
+    ThemeData theme,
+  ) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Expanded(
-            flex: 2,
+          SizedBox(
+            width: 120,
             child: Text(
               label,
               style: TextStyle(
-                color: Colors.grey[600],
                 fontWeight: FontWeight.w500,
+                color: isDarkMode ? Colors.white70 : Colors.grey[700],
                 fontSize: 14,
               ),
             ),
           ),
-          const SizedBox(width: 8),
           Expanded(
-            flex: 3,
             child: Text(
               value,
               style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
