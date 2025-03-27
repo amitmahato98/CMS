@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -499,6 +502,13 @@ class _ExaminationState extends State<Examination>
       },
     );
   }
+
+  // The rest of the methods (_buildUpcomingExamsTab, _buildResultsTab, _buildScheduleTab,
+  // _buildSectionHeader, _buildExamInfoItem, _buildResultInfoItem)
+  // remain exactly the same as in the original implementation.
+
+  // They are not repeated here to save space, but would be identical to the original code.
+  // You can copy them from the original implementation.
 
   Widget _buildUpcomingExamsTab() {
     return SingleChildScrollView(

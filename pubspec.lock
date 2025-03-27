@@ -216,6 +216,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+<<<<<<< HEAD
   provider:
     dependency: "direct main"
     description:
@@ -224,6 +225,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.4"
+=======
+>>>>>>> 24ee3154c3f1de3227dcad8e403ba4b51ce181c6
   shared_preferences:
     dependency: "direct main"
     description:
