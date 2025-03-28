@@ -155,6 +155,7 @@ class _ExaminationState extends State<Examination>
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: blueColor,
         title: Text("Examination"),
         bottom: TabBar(
           controller: _tabController,

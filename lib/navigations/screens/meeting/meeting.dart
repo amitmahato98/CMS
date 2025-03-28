@@ -1,3 +1,4 @@
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
 
 class Meeting extends StatefulWidget {
@@ -12,6 +13,7 @@ class _MeetingState extends State<Meeting> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: blueColor,
         title: Text("Meeting"),
         leading: IconButton(
           onPressed: () => Navigator.pop(context),

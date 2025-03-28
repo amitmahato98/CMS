@@ -1,3 +1,4 @@
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,7 @@ class _StudentchatState extends State<Studentchat> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: blueColor,
         title: Text("Student Chats"),
         leading: IconButton(
           onPressed: () => Navigator.pop(context),

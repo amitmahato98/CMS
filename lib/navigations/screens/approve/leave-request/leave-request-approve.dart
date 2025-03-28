@@ -1,3 +1,4 @@
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
 
 class LeaveRequestApprove extends StatefulWidget {
@@ -12,6 +13,7 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: blueColor,
         title: Text("Leave Request"),
         leading: IconButton(
           onPressed: () => Navigator.pop(context),

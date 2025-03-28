@@ -1,3 +1,4 @@
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
 
 class SendNotification extends StatefulWidget {
@@ -12,6 +13,7 @@ class _SendNotificationState extends State<SendNotification> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: blueColor,
         title: Text("Notifications"),
         leading: IconButton(
           onPressed: () => Navigator.pop(context),

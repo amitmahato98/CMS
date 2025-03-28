@@ -52,6 +52,7 @@ class _LibraryState extends State<Library> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: blueColor,
         elevation: 0,
         title: const Text(
           'Library',
