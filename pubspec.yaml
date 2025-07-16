@@ -77,6 +77,8 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/collage/
+    - assets/teacher_avatar/
 
  
 
