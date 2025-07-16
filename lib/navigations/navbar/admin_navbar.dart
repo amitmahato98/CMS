@@ -22,10 +22,11 @@ class Navbar extends StatelessWidget {
           DrawerHeader(
             decoration: BoxDecoration(color: blueColor),
             child: GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfileScreen()),
-              ),
+              onTap:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfileScreen()),
+                  ),
               child: Row(
                 children: [
                   CircleAvatar(
@@ -58,7 +59,7 @@ class Navbar extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AdminDashboard()),
+                MaterialPageRoute(builder: (context) => ProfileScreen()),
               );
             },
           ),
@@ -72,32 +73,35 @@ class Navbar extends StatelessWidget {
               );
             },
           ),
-          ExpansionTile(
-            leading: Icon(Icons.people),
-            title: Text("Staff"),
-            children: [
-              ListTile(
-                leading: Icon(Icons.person_4),
-                title: Text(" Teaching"),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Teacher()),
-                ),
-              ),
-              ListTile(
-                leading: Icon(Icons.engineering),
-                title: Text("Non-Teaching"),
-                onTap: () => Navigator.pop(context),
-              ),
-            ],
-          ),
+
+          // ExpansionTile(
+          //   leading: Icon(Icons.people),
+          //   title: Text("Staff"),
+          //   children: [
+          //     ListTile(
+          //       leading: Icon(Icons.person_4),
+          //       title: Text(" Teaching"),
+          //       onTap:
+          //           () => Navigator.push(
+          //             context,
+          //             MaterialPageRoute(builder: (context) => TeacherScreen()),
+          //           ),
+          //     ),
+          //     ListTile(
+          //       leading: Icon(Icons.engineering),
+          //       title: Text("Non-Teaching"),
+          //       onTap: () => Navigator.pop(context),
+          //     ),
+          //   ],
+          // ),
           ListTile(
             leading: Icon(Icons.edit_document),
             title: Text("Exam Section"),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Examination()),
-            ),
+            onTap:
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Examination()),
+                ),
           ),
           ListTile(
             leading: const Icon(Icons.notifications),
@@ -105,34 +109,37 @@ class Navbar extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SendNotification()),
+                MaterialPageRoute(builder: (context) => SendNotificationPage()),
               );
             },
           ),
           ListTile(
             leading: const Icon(Icons.policy_rounded),
             title: Text("Policies"),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Policy()),
-            ),
+            onTap:
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Policy()),
+                ),
           ),
           ListTile(
             leading: Icon(Icons.info),
             title: Text("About Us"),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AboutUs()),
-            ),
+            onTap:
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutUs()),
+                ),
           ),
-          ListTile(
-            leading: Icon(Icons.settings),
-            title: Text("Setting"),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Setting()),
-            ),
-          ),
+          // ListTile(
+          //   leading: Icon(Icons.settings),
+          //   title: Text("Setting"),
+          //   onTap:
+          //       () => Navigator.push(
+          //         context,
+          //         MaterialPageRoute(builder: (context) => Setting()),
+          //       ),
+          // ),
           ListTile(
             leading: Icon(Icons.logout),
             title: Text("Logout"),

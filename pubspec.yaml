@@ -32,6 +32,7 @@ dependencies:
     sdk: flutter
   shared_preferences: ^2.5.2
   provider: ^6.1.4  
+  crypto: ^3.0.6
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -39,6 +40,18 @@ dependencies:
   cupertino_icons: ^1.0.8
   intl: ^0.20.2
   file_picker: ^10.1.1
+  uuid: ^4.5.1
+  qr_flutter: ^4.1.0
+  http: ^1.3.0
+  image_picker: ^1.1.2
+  url_launcher: ^6.3.1
+  barcode_widget: ^2.0.4
+  nepali_date_picker: ^6.0.2
+  pdf: ^3.11.3
+  printing: ^5.14.2
+  path_provider: ^2.1.5
+  permission_handler: ^12.0.1
+  open_file: ^3.5.10
 
 dev_dependencies:
   flutter_test:
@@ -66,6 +79,8 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/collage/
+    - assets/teacher_avatar/
 
  
 

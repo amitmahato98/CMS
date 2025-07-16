@@ -1,7 +1,8 @@
 import 'package:cms/datatypes/datatypes.dart';
-import 'package:cms/navigations/body/dashboard.dart';
-import 'package:cms/navigations/navbar/navbar.dart';
+import 'package:cms/navigations/body/admin_dashboard.dart';
+import 'package:cms/navigations/navbar/admin_navbar.dart';
 import 'package:cms/navigations/screens/notifications/notification.dart';
+import 'package:cms/theme/theme_provider.dart' as theme;
 import 'package:cms/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
+    return Consumer<theme.ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
           title: 'CMS',
@@ -75,14 +76,12 @@ class _MainNavigatorState extends State<MainNavigator> {
     }
 
     // Show exit confirmation dialog when on main screen
-    // Always show the dialog and never return true directly
     bool shouldExit =
         await showDialog(
           context: context,
           barrierDismissible: false, // User must tap a button to close dialog
           builder:
               (context) => WillPopScope(
-                // Prevent dialog itself from being dismissed by back button
                 onWillPop: () async => false,
                 child: AlertDialog(
                   title: Text('Exit App'),
@@ -108,7 +107,7 @@ class _MainNavigatorState extends State<MainNavigator> {
       SystemNavigator.pop(); // Use system navigator to exit the app
     }
 
-    return false; // Always return false to handle the exit within this method
+    return false;
   }
 
   @override
@@ -142,12 +141,12 @@ class _MainNavigatorState extends State<MainNavigator> {
                     ),
                     IconButton(
                       icon: Icon(Icons.notifications),
-                      onPressed: () => _pushPage(SendNotification()),
+                      onPressed: () => _pushPage(SendNotificationPage()),
                     ),
                   ],
                 )
                 : null,
-        floatingActionButton: _showingDashboard ? FloatingButtonMenu() : null,
+
         body: Navigator(
           key: _navigatorKey,
           onGenerateRoute: (settings) {
