@@ -4,9 +4,11 @@ import 'package:cms/navigations/screens/admin/announcementpage.dart';
 import 'package:cms/navigations/screens/admin/eventdetails.dart';
 import 'package:cms/navigations/screens/admin/more_recentactivities.dart';
 import 'package:cms/navigations/screens/admin/notiications.dart';
+import 'package:cms/navigations/screens/student/addnewstudentpage.dart';
 // import 'package:cms/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -17,8 +19,32 @@ class AdminDashboard extends StatefulWidget {
 
 class _AdminDashboardState extends State<AdminDashboard> {
   int _selectedIndex = 0;
-  List<Map<String, dynamic>> students = []; // Initialize empty list
-  DateTime selectedMonth = DateTime.now(); // Add this line
+  int unreadNotifications = 0; // ✅ Start from 0
+  List<Map<String, dynamic>> students = [];
+  DateTime selectedMonth = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUnreadNotifications(); // ✅ Load persisted unread count
+  }
+
+  Future<void> _loadUnreadNotifications() async {
+    final prefs = await SharedPreferences.getInstance();
+    final readTitles = prefs.getStringList('read_notifications')?.toSet() ?? {};
+
+    // Titles must match exactly as in NotificationsScreen
+    final allTitles = {
+      "New Student Registration",
+      "Course Syllabus Updated",
+      "Fee Payment Received",
+      "System Maintenance",
+    };
+
+    setState(() {
+      unreadNotifications = allTitles.difference(readTitles).length;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,60 +82,70 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       IconButton(
                         icon: const Icon(Icons.notifications),
                         color: Colors.white,
-                        onPressed: () {
-                          setState(() {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) => const NotificationsScreen(),
-                              ),
-                            );
-                          });
+                        onPressed: () async {
+                          final updatedUnread = await Navigator.push<int>(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => NotificationsScreen(
+                                    initialUnreadCount: unreadNotifications,
+                                  ),
+                            ),
+                          );
+                          if (updatedUnread != null) {
+                            setState(() {
+                              unreadNotifications = updatedUnread;
+                            });
+                          }
                         },
                       ),
-                      Positioned(
-                        right: 8,
-                        top: 8,
-                        child: Container(
-                          padding: const EdgeInsets.all(2.5),
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 16,
-                            minHeight: 16,
-                          ),
-                          child: const Text(
-                            '5',
-                            style: TextStyle(color: Colors.white, fontSize: 10),
-                            textAlign: TextAlign.center,
+                      if (unreadNotifications > 0)
+                        Positioned(
+                          right: 8,
+                          top: 8,
+                          child: Container(
+                            padding: const EdgeInsets.all(2.5),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 16,
+                              minHeight: 16,
+                            ),
+                            child: Text(
+                              '$unreadNotifications',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ],
               ),
             ),
           ),
+
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildStatsSection(),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildSectionHeader('Recent Activities'),
-                        _buildActivityList(),
-                      ],
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(16.0),
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       _buildSectionHeader('Recent Activities'),
+                  //       _buildActivityList(),
+                  //     ],
+                  //   ),
+                  // ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -120,16 +156,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildSectionHeader('Quick Actions'),
-                        _buildQuickActionPanel(),
-                      ],
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(16.0),
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       _buildSectionHeader('Quick Actions'),
+                  //       _buildQuickActionPanel(),
+                  //     ],
+                  //   ),
+                  // ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(

@@ -1,25 +1,29 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class AddNewStudentPage extends StatefulWidget {
-  const AddNewStudentPage({Key? key}) : super(key: key);
+  final Map<String, dynamic>? studentData;
+
+  const AddNewStudentPage({Key? key, this.studentData}) : super(key: key);
 
   @override
-  _AddNewStudentPageState createState() => _AddNewStudentPageState();
+  State<AddNewStudentPage> createState() => _AddNewStudentPageState();
 }
 
 class _AddNewStudentPageState extends State<AddNewStudentPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
+
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _addressController = TextEditingController();
+
   String _selectedGender = 'Male';
   DateTime _selectedDOB = DateTime.now().subtract(
     const Duration(days: 365 * 18),
-  ); // Default 18 years ago
+  );
   String _selectedProgram = 'BSc.CSIT';
+  String _studentId = '';
 
   final List<String> _programs = [
     'BSc.CSIT',
@@ -32,6 +36,24 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
   bool _isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.studentData != null) {
+      final data = widget.studentData!;
+      _nameController.text = data['name'];
+      _emailController.text = data['email'];
+      _phoneController.text = data['phone'];
+      _addressController.text = data['address'];
+      _selectedGender = data['gender'];
+      _selectedProgram = data['program'];
+      _selectedDOB = DateTime.tryParse(data['dateOfBirth']) ?? _selectedDOB;
+      _studentId = data['studentId'];
+    } else {
+      _studentId = 'STU${DateTime.now().year}${1000 + Random().nextInt(9000)}';
+    }
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
@@ -41,64 +63,57 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
   }
 
   void _submitForm() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      try {
-        setState(() {
-          _isLoading = true;
-        });
+    if (!_formKey.currentState!.validate()) return;
 
-        // Create student data to return
-        final studentData = {
-          'name': _nameController.text,
-          'email': _emailController.text,
-          'phone': _phoneController.text,
-          'address': _addressController.text,
-          'gender': _selectedGender,
-          'dateOfBirth': _selectedDOB,
-          'program': _selectedProgram,
-          'studentId':
-              'STU${DateTime.now().year}${1000 + Random().nextInt(9000)}',
-        };
+    try {
+      setState(() => _isLoading = true);
 
-        // Simulate API call
-        await Future.delayed(const Duration(seconds: 2));
+      final studentData = {
+        'name': _nameController.text.trim(),
+        'email': _emailController.text.trim(),
+        'phone': _phoneController.text.trim(),
+        'address': _addressController.text.trim(),
+        'gender': _selectedGender,
+        'dateOfBirth': _selectedDOB.toIso8601String(),
+        'program': _selectedProgram,
+        'studentId': _studentId,
+      };
 
-        if (!mounted) return; // Check if widget is still mounted
-
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Student added successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        // Return data to previous screen
-        Navigator.of(context).pop(studentData);
-      } catch (e) {
-        if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to add student. Please try again.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
-      }
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
+      Navigator.of(context).pop(studentData);
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Something went wrong.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  InputDecoration _inputDecoration(
+    String label,
+    IconData icon, {
+    String? prefixText,
+  }) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon),
+      prefixText: prefixText,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New Student'),
+        title: Text(
+          widget.studentData == null ? 'Add Student' : 'Edit Student',
+        ),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
@@ -106,129 +121,60 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
           _isLoading
               ? const Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 child: Form(
                   key: _formKey,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Student Photo
-                      Center(
-                        child: Stack(
-                          children: [
-                            CircleAvatar(
-                              radius: 60,
-                              backgroundColor: Colors.grey[200],
-                              child: const Icon(
-                                Icons.person,
-                                size: 80,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: CircleAvatar(
-                                backgroundColor: Colors.blue,
-                                radius: 20,
-                                child: IconButton(
-                                  icon: const Icon(
-                                    Icons.camera_alt,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                  onPressed: () {
-                                    // Photo upload functionality
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Personal Information Section
-                      const Text(
-                        'Personal Information',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Full Name
+                      // Name
                       TextFormField(
                         controller: _nameController,
-                        decoration: InputDecoration(
-                          labelText: 'Full Name',
-                          prefixIcon: const Icon(Icons.person),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter student name';
-                          }
-                          return null;
-                        },
+                        decoration: _inputDecoration('Full Name', Icons.person),
+                        validator:
+                            (v) =>
+                                v == null || v.trim().isEmpty
+                                    ? 'Enter name'
+                                    : null,
                       ),
                       const SizedBox(height: 16),
 
-                      // Gender selection
+                      // Gender
                       DropdownButtonFormField<String>(
                         value: _selectedGender,
-                        decoration: InputDecoration(
-                          labelText: 'Gender',
-                          prefixIcon: const Icon(Icons.people),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
+                        decoration: _inputDecoration('Gender', Icons.people),
                         items:
-                            ['Male', 'Female', 'Other'].map((gender) {
-                              return DropdownMenuItem(
-                                value: gender,
-                                child: Text(gender),
-                              );
-                            }).toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              _selectedGender = value;
-                            });
-                          }
-                        },
+                            ['Male', 'Female', 'Other']
+                                .map(
+                                  (g) => DropdownMenuItem(
+                                    value: g,
+                                    child: Text(g),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (v) => setState(() => _selectedGender = v!),
                       ),
                       const SizedBox(height: 16),
 
                       // Date of Birth
                       InkWell(
                         onTap: () async {
-                          final DateTime? picked = await showDatePicker(
+                          final picked = await showDatePicker(
                             context: context,
                             initialDate: _selectedDOB,
                             firstDate: DateTime(1900),
                             lastDate: DateTime.now(),
                           );
-                          if (picked != null && picked != _selectedDOB) {
-                            setState(() {
-                              _selectedDOB = picked;
-                            });
-                          }
+                          if (picked != null)
+                            setState(() => _selectedDOB = picked);
                         },
                         child: InputDecorator(
-                          decoration: InputDecoration(
-                            labelText: 'Date of Birth',
-                            prefixIcon: const Icon(Icons.calendar_today),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                          decoration: _inputDecoration(
+                            'Date of Birth',
+                            Icons.calendar_today,
                           ),
                           child: Text(
                             '${_selectedDOB.day}/${_selectedDOB.month}/${_selectedDOB.year}',
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ),
                       ),
@@ -237,40 +183,37 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       // Email
                       TextFormField(
                         controller: _emailController,
-                        decoration: InputDecoration(
-                          labelText: 'Email Address',
-                          prefixIcon: const Icon(Icons.email),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                        decoration: _inputDecoration(
+                          'Email Address',
+                          Icons.email,
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter email address';
-                          }
-                          if (!value.contains('@') || !value.contains('.')) {
-                            return 'Please enter a valid email';
-                          }
-                          return null;
+                          if (value == null || value.trim().isEmpty)
+                            return 'Enter email';
+                          final regex = RegExp(
+                            r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$',
+                          );
+                          return regex.hasMatch(value) ? null : 'Invalid email';
                         },
                       ),
                       const SizedBox(height: 16),
 
-                      // Phone
+                      // Phone (with +977 visual prefix)
                       TextFormField(
                         controller: _phoneController,
-                        decoration: InputDecoration(
-                          labelText: 'Phone Number',
-                          prefixIcon: const Icon(Icons.phone),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                        decoration: _inputDecoration(
+                          'Phone Number',
+                          Icons.phone,
+                          prefixText: '+977 ',
                         ),
                         keyboardType: TextInputType.phone,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter phone number';
+                          if (value == null || value.trim().isEmpty)
+                            return 'Enter phone number';
+                          final phone = value.trim();
+                          if (!RegExp(r'^(97|98)\d{8}$').hasMatch(phone)) {
+                            return 'Must start with 97 or 98 and be 10 digits';
                           }
                           return null;
                         },
@@ -280,88 +223,61 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       // Address
                       TextFormField(
                         controller: _addressController,
-                        decoration: InputDecoration(
-                          labelText: 'Full Address',
-                          prefixIcon: const Icon(Icons.home),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
+                        decoration: _inputDecoration('Address', Icons.home),
                         maxLines: 2,
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Academic Information Section
-                      const Text(
-                        'Academic Information',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        validator:
+                            (v) =>
+                                v == null || v.trim().isEmpty
+                                    ? 'Enter address'
+                                    : null,
                       ),
                       const SizedBox(height: 16),
 
-                      // Program Selection
+                      // Program
                       DropdownButtonFormField<String>(
                         value: _selectedProgram,
-                        decoration: InputDecoration(
-                          labelText: 'Program',
-                          prefixIcon: const Icon(Icons.school),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
+                        decoration: _inputDecoration('Program', Icons.school),
                         items:
-                            _programs.map((program) {
-                              return DropdownMenuItem(
-                                value: program,
-                                child: Text(program),
-                              );
-                            }).toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              _selectedProgram = value;
-                            });
-                          }
-                        },
+                            _programs
+                                .map(
+                                  (p) => DropdownMenuItem(
+                                    value: p,
+                                    child: Text(p),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (v) => setState(() => _selectedProgram = v!),
                       ),
                       const SizedBox(height: 16),
 
-                      // Student ID (Auto generated)
+                      // Student ID (read-only)
                       TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Student ID (Auto-generated)',
-                          prefixIcon: const Icon(Icons.badge),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
+                        decoration: _inputDecoration('Student ID', Icons.badge),
                         enabled: false,
-                        initialValue:
-                            'STU${DateTime.now().year}${1000 + Random().nextInt(9000)}',
+                        initialValue: _studentId,
                       ),
                       const SizedBox(height: 32),
 
-                      // Submit Button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                      // Submit button
+                      ElevatedButton(
+                        onPressed: _submitForm,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          minimumSize: const Size.fromHeight(50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          onPressed: _submitForm,
-                          child: const Text(
-                            'Add Student',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                        child: Text(
+                          widget.studentData == null
+                              ? 'Add Student'
+                              : 'Save Changes',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 24),
                     ],
                   ),
                 ),

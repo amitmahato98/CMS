@@ -1,24 +1,25 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 
-class AddNewStudentPage extends StatefulWidget {
-  const AddNewStudentPage({Key? key}) : super(key: key);
+class addstudentPage extends StatefulWidget {
+  const addstudentPage({Key? key}) : super(key: key);
 
   @override
-  _AddNewStudentPageState createState() => _AddNewStudentPageState();
+  State<addstudentPage> createState() => _addstudentPageState();
 }
 
-class _AddNewStudentPageState extends State<AddNewStudentPage> {
+class _addstudentPageState extends State<addstudentPage> {
   final _formKey = GlobalKey<FormState>();
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
+
   String _selectedGender = 'Male';
   DateTime _selectedDOB = DateTime.now().subtract(
     const Duration(days: 365 * 18),
-  ); // Default 18 years ago
+  ); // Default 18 years old
   String _selectedProgram = 'BSc.CSIT';
 
   final List<String> _programs = [
@@ -31,6 +32,9 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
 
   bool _isLoading = false;
 
+  String get _generatedStudentId =>
+      'STU${DateTime.now().year}${1000 + Random().nextInt(9000)}';
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -41,55 +45,45 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
   }
 
   void _submitForm() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      try {
-        setState(() {
-          _isLoading = true;
-        });
+    if (!_formKey.currentState!.validate()) return;
 
-        // Create student data to return
-        final studentData = {
-          'name': _nameController.text,
-          'email': _emailController.text,
-          'phone': _phoneController.text,
-          'address': _addressController.text,
-          'gender': _selectedGender,
-          'dateOfBirth': _selectedDOB,
-          'program': _selectedProgram,
-          'studentId':
-              'STU${DateTime.now().year}${1000 + Random().nextInt(9000)}',
-        };
+    try {
+      setState(() => _isLoading = true);
 
-        // Simulate API call
-        await Future.delayed(const Duration(seconds: 2));
+      final studentData = {
+        'name': _nameController.text.trim(),
+        'email': _emailController.text.trim(),
+        'phone': _phoneController.text.trim(),
+        'address': _addressController.text.trim(),
+        'gender': _selectedGender,
+        'dateOfBirth': _selectedDOB.toIso8601String(),
+        'program': _selectedProgram,
+        'studentId': _generatedStudentId,
+      };
 
-        if (!mounted) return; // Check if widget is still mounted
+      await Future.delayed(const Duration(seconds: 2)); // Simulate delay
 
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Student added successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+      if (!mounted) return;
 
-        // Return data to previous screen
-        Navigator.of(context).pop(studentData);
-      } catch (e) {
-        if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Student added successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to add student. Please try again.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
+      Navigator.of(context).pop(studentData);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to add student. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -106,49 +100,12 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
           _isLoading
               ? const Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Student Photo
-                      Center(
-                        child: Stack(
-                          children: [
-                            CircleAvatar(
-                              radius: 60,
-                              backgroundColor: Colors.grey[200],
-                              child: const Icon(
-                                Icons.person,
-                                size: 80,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: CircleAvatar(
-                                backgroundColor: Colors.blue,
-                                radius: 20,
-                                child: IconButton(
-                                  icon: const Icon(
-                                    Icons.camera_alt,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                  onPressed: () {
-                                    // Photo upload functionality
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Personal Information Section
                       const Text(
                         'Personal Information',
                         style: TextStyle(
@@ -158,35 +115,22 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Full Name
+                      // Name
                       TextFormField(
                         controller: _nameController,
-                        decoration: InputDecoration(
-                          labelText: 'Full Name',
-                          prefixIcon: const Icon(Icons.person),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter student name';
-                          }
-                          return null;
-                        },
+                        decoration: _inputDecoration('Full Name', Icons.person),
+                        validator:
+                            (value) =>
+                                value == null || value.trim().isEmpty
+                                    ? 'Please enter student name'
+                                    : null,
                       ),
                       const SizedBox(height: 16),
 
-                      // Gender selection
+                      // Gender
                       DropdownButtonFormField<String>(
                         value: _selectedGender,
-                        decoration: InputDecoration(
-                          labelText: 'Gender',
-                          prefixIcon: const Icon(Icons.people),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
+                        decoration: _inputDecoration('Gender', Icons.people),
                         items:
                             ['Male', 'Female', 'Other'].map((gender) {
                               return DropdownMenuItem(
@@ -195,11 +139,8 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                               );
                             }).toList(),
                         onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              _selectedGender = value;
-                            });
-                          }
+                          if (value != null)
+                            setState(() => _selectedGender = value);
                         },
                       ),
                       const SizedBox(height: 16),
@@ -207,28 +148,23 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       // Date of Birth
                       InkWell(
                         onTap: () async {
-                          final DateTime? picked = await showDatePicker(
+                          final picked = await showDatePicker(
                             context: context,
                             initialDate: _selectedDOB,
                             firstDate: DateTime(1900),
                             lastDate: DateTime.now(),
                           );
-                          if (picked != null && picked != _selectedDOB) {
-                            setState(() {
-                              _selectedDOB = picked;
-                            });
-                          }
+                          if (picked != null)
+                            setState(() => _selectedDOB = picked);
                         },
                         child: InputDecorator(
-                          decoration: InputDecoration(
-                            labelText: 'Date of Birth',
-                            prefixIcon: const Icon(Icons.calendar_today),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                          decoration: _inputDecoration(
+                            'Date of Birth',
+                            Icons.calendar_today,
                           ),
                           child: Text(
                             '${_selectedDOB.day}/${_selectedDOB.month}/${_selectedDOB.year}',
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ),
                       ),
@@ -237,20 +173,18 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       // Email
                       TextFormField(
                         controller: _emailController,
-                        decoration: InputDecoration(
-                          labelText: 'Email Address',
-                          prefixIcon: const Icon(Icons.email),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                        decoration: _inputDecoration(
+                          'Email Address',
+                          Icons.email,
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.trim().isEmpty) {
                             return 'Please enter email address';
-                          }
-                          if (!value.contains('@') || !value.contains('.')) {
-                            return 'Please enter a valid email';
+                          } else if (!RegExp(
+                            r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$',
+                          ).hasMatch(value)) {
+                            return 'Enter a valid email';
                           }
                           return null;
                         },
@@ -260,17 +194,16 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       // Phone
                       TextFormField(
                         controller: _phoneController,
-                        decoration: InputDecoration(
-                          labelText: 'Phone Number',
-                          prefixIcon: const Icon(Icons.phone),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                        decoration: _inputDecoration(
+                          'Phone Number',
+                          Icons.phone,
                         ),
                         keyboardType: TextInputType.phone,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.trim().isEmpty) {
                             return 'Please enter phone number';
+                          } else if (!RegExp(r'^\d{7,15}$').hasMatch(value)) {
+                            return 'Enter a valid phone number';
                           }
                           return null;
                         },
@@ -280,18 +213,19 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       // Address
                       TextFormField(
                         controller: _addressController,
-                        decoration: InputDecoration(
-                          labelText: 'Address',
-                          prefixIcon: const Icon(Icons.home),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                        decoration: _inputDecoration(
+                          'Full Address',
+                          Icons.home,
                         ),
                         maxLines: 2,
+                        validator:
+                            (value) =>
+                                value == null || value.trim().isEmpty
+                                    ? 'Please enter address'
+                                    : null,
                       ),
                       const SizedBox(height: 24),
 
-                      // Academic Information Section
                       const Text(
                         'Academic Information',
                         style: TextStyle(
@@ -301,16 +235,10 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Program Selection
+                      // Program
                       DropdownButtonFormField<String>(
                         value: _selectedProgram,
-                        decoration: InputDecoration(
-                          labelText: 'Program',
-                          prefixIcon: const Icon(Icons.school),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
+                        decoration: _inputDecoration('Program', Icons.school),
                         items:
                             _programs.map((program) {
                               return DropdownMenuItem(
@@ -319,27 +247,20 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                               );
                             }).toList(),
                         onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              _selectedProgram = value;
-                            });
-                          }
+                          if (value != null)
+                            setState(() => _selectedProgram = value);
                         },
                       ),
                       const SizedBox(height: 16),
 
-                      // Student ID (Auto generated)
+                      // Student ID (auto-generated, disabled)
                       TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Student ID (Auto-generated)',
-                          prefixIcon: const Icon(Icons.badge),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                        decoration: _inputDecoration(
+                          'Student ID (Auto-generated)',
+                          Icons.badge,
                         ),
                         enabled: false,
-                        initialValue:
-                            'STU${DateTime.now().year}${1000 + Random().nextInt(9000)}',
+                        initialValue: _generatedStudentId,
                       ),
                       const SizedBox(height: 32),
 
@@ -366,6 +287,14 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                   ),
                 ),
               ),
+    );
+  }
+
+  InputDecoration _inputDecoration(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
     );
   }
 }

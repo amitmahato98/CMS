@@ -1,401 +1,454 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:cms/theme/theme_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
-// Models
-class User {
-  final String id;
-  final String name;
-  final String email;
-  final String role;
-  final String? department;
-  final String? semester;
-
-  User({
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.role,
-    this.department,
-    this.semester,
-  });
-}
-
-class Notification {
+// Model for notifications
+class NotificationModel {
   final String id;
   final String title;
   final String message;
-  final DateTime timestamp;
-  final String senderName;
+  final String
+  targetType; // "teacher", "student", "nonteaching", "parent" or "all"
   final List<String> recipientIds;
-  final NotificationType type;
+  final DateTime timestamp;
 
-  Notification({
+  NotificationModel({
     required this.id,
     required this.title,
     required this.message,
-    required this.timestamp,
-    required this.senderName,
+    required this.targetType,
     required this.recipientIds,
-    required this.type,
+    required this.timestamp,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'message': message,
+      'targetType': targetType,
+      'recipientIds': recipientIds,
+      'timestamp': timestamp.toIso8601String(),
+    };
+  }
+
+  factory NotificationModel.fromJson(Map<String, dynamic> json) {
+    return NotificationModel(
+      id: json['id'],
+      title: json['title'],
+      message: json['message'],
+      targetType: json['targetType'],
+      recipientIds: List<String>.from(json['recipientIds']),
+      timestamp: DateTime.parse(json['timestamp']),
+    );
+  }
+}
+
+// Teacher model
+class Teachers {
+  final String id;
+  final String name;
+  final String department;
+
+  Teachers({required this.id, required this.name, required this.department});
+}
+
+// Student model
+class Students {
+  final String id;
+  final String name;
+  final String course;
+  final int year;
+
+  Students({
+    required this.id,
+    required this.name,
+    required this.course,
+    required this.year,
   });
 }
 
-enum NotificationType { urgent, announcement, event, reminder, general }
+// Non-Teaching Staff model
+class NonTeachingStaff {
+  final String id;
+  final String name;
+  final String role;
+  final String department;
 
-// Service for notifications
-class NotificationService {
-  // Simulate backend service
-  Future<bool> sendNotification(Notification notification) async {
-    // Here you would integrate with your actual backend service
-    // This is a mock implementation
-    await Future.delayed(Duration(seconds: 1));
-    return true;
-  }
+  NonTeachingStaff({
+    required this.id,
+    required this.name,
+    required this.role,
+    required this.department,
+  });
+}
 
-  // Get notification history
-  Future<List<Notification>> getNotificationHistory() async {
-    // Mock implementation
-    await Future.delayed(Duration(milliseconds: 800));
+// Parent model
+class Parents {
+  final String id;
+  final String name;
+  final String studentName;
+  final String studentId;
+  final String contactNumber;
+
+  Parents({
+    required this.id,
+    required this.name,
+    required this.studentName,
+    required this.studentId,
+    required this.contactNumber,
+  });
+}
+
+// Sample data
+class MockDataService {
+  static List<Teachers> getTeachers() {
     return [
-      Notification(
-        id: '1',
-        title: 'Exam Schedule Released',
-        message:
-            'The final examination schedule for this semester has been published.',
-        timestamp: DateTime.now().subtract(Duration(days: 2)),
-        senderName: 'Admin',
-        recipientIds: ['all-students'],
-        type: NotificationType.announcement,
-      ),
-      Notification(
-        id: '2',
-        title: 'Faculty Meeting',
-        message:
-            'Reminder: Faculty meeting tomorrow at 2:00 PM in the conference room.',
-        timestamp: DateTime.now().subtract(Duration(days: 1)),
-        senderName: 'Admin',
-        recipientIds: ['all-teachers'],
-        type: NotificationType.reminder,
-      ),
+      Teachers(id: 't1', name: 'Dr. Sharma', department: 'Computer Science'),
+      Teachers(id: 't2', name: 'Prof. Gupta', department: 'Electronics'),
+      Teachers(id: 't3', name: 'Dr. Patel', department: 'Mathematics'),
+      Teachers(id: 't4', name: 'Prof. Kumar', department: 'Physics'),
+      Teachers(id: 't5', name: 'Dr. Singh', department: 'Mechanical'),
     ];
   }
 
-  // Get mock users for demonstration
-  Future<List<User>> getUsers() async {
-    await Future.delayed(Duration(milliseconds: 500));
+  static List<Students> getStudents() {
     return [
-      User(
-        id: 't1',
-        name: 'Dr. Sarah Johnson',
-        email: 'sarah.johnson@college.edu',
-        role: 'teacher',
+      Students(id: 's1', name: 'Amit Kumar', course: 'B.Tech CSE', year: 2),
+      Students(id: 's2', name: 'Priya Sharma', course: 'B.Tech IT', year: 1),
+      Students(id: 's3', name: 'Rahul Singh', course: 'B.Tech ECE', year: 3),
+      Students(id: 's4', name: 'Neha Patel', course: 'B.Tech ME', year: 4),
+      Students(id: 's5', name: 'Vikram Gupta', course: 'M.Tech CSE', year: 1),
+      Students(id: 's6', name: 'Ananya Roy', course: 'M.Tech ECE', year: 2),
+    ];
+  }
+
+  static List<NonTeachingStaff> getNonTeachingStaff() {
+    return [
+      NonTeachingStaff(
+        id: 'n1',
+        name: 'Ramesh Yadav',
+        role: 'Lab Assistant',
         department: 'Computer Science',
       ),
-      User(
-        id: 't2',
-        name: 'Prof. Michael Chen',
-        email: 'michael.chen@college.edu',
-        role: 'teacher',
-        department: 'Mathematics',
+      NonTeachingStaff(
+        id: 'n2',
+        name: 'Suresh Kumar',
+        role: 'Security Guard',
+        department: 'Administration',
       ),
-      User(
-        id: 't3',
-        name: 'Dr. Emily Rodriguez',
-        email: 'emily.rodriguez@college.edu',
-        role: 'teacher',
-        department: 'Physics',
+      NonTeachingStaff(
+        id: 'n3',
+        name: 'Lakshmi Devi',
+        role: 'Cleaner',
+        department: 'Housekeeping',
       ),
-      User(
-        id: 's1',
-        name: 'John Smith',
-        email: 'john.smith@college.edu',
-        role: 'student',
-        department: 'Computer Science',
-        semester: '4',
+      NonTeachingStaff(
+        id: 'n4',
+        name: 'Mohan Singh',
+        role: 'Librarian',
+        department: 'Library',
       ),
-      User(
-        id: 's2',
-        name: 'Emma Williams',
-        email: 'emma.williams@college.edu',
-        role: 'student',
-        department: 'Physics',
-        semester: '2',
-      ),
-      User(
-        id: 's3',
-        name: 'Alex Johnson',
-        email: 'alex.johnson@college.edu',
-        role: 'student',
-        department: 'Mathematics',
-        semester: '6',
+      NonTeachingStaff(
+        id: 'n5',
+        name: 'Rekha Patel',
+        role: 'Administrative Assistant',
+        department: 'Office',
       ),
     ];
   }
 
-  // Get departments
-  Future<List<String>> getDepartments() async {
-    await Future.delayed(Duration(milliseconds: 300));
+  static List<Parents> getParents() {
     return [
-      'Computer Science',
-      'Mathematics',
-      'Physics',
-      'Chemistry',
-      'Engineering',
+      Parents(
+        id: 'p1',
+        name: 'Mr. Rajesh Kumar',
+        studentName: 'Amit Kumar',
+        studentId: 's1',
+        contactNumber: '9876543210',
+      ),
+      Parents(
+        id: 'p2',
+        name: 'Mrs. Anjali Sharma',
+        studentName: 'Priya Sharma',
+        studentId: 's2',
+        contactNumber: '9876543211',
+      ),
+      Parents(
+        id: 'p3',
+        name: 'Mr. Vijay Singh',
+        studentName: 'Rahul Singh',
+        studentId: 's3',
+        contactNumber: '9876543212',
+      ),
+      Parents(
+        id: 'p4',
+        name: 'Mrs. Meena Patel',
+        studentName: 'Neha Patel',
+        studentId: 's4',
+        contactNumber: '9876543213',
+      ),
+      Parents(
+        id: 'p5',
+        name: 'Mr. Sanjay Gupta',
+        studentName: 'Vikram Gupta',
+        studentId: 's5',
+        contactNumber: '9876543214',
+      ),
+      Parents(
+        id: 'p6',
+        name: 'Mrs. Kavita Roy',
+        studentName: 'Ananya Roy',
+        studentId: 's6',
+        contactNumber: '9876543215',
+      ),
     ];
-  }
-
-  // Get semesters
-  Future<List<String>> getSemesters() async {
-    await Future.delayed(Duration(milliseconds: 300));
-    return ['1', '2', '3', '4', '5', '6', '7', '8'];
   }
 }
 
-// Provider for notification state
-class NotificationProvider with ChangeNotifier {
-  final NotificationService _service = NotificationService();
-  List<User> _allUsers = [];
-  List<User> _selectedUsers = [];
-  List<String> _departments = [];
-  List<String> _semesters = [];
-  List<Notification> _notificationHistory = [];
-  bool _isLoading = false;
-  String _selectedDepartment = 'All';
-  String _selectedSemester = 'All';
-  String _selectedRole = 'All';
+// SharedPreferences service for notifications
+class NotificationStorageService {
+  static const String _notificationsKey = 'college_notifications';
 
-  List<User> get allUsers => _allUsers;
-  List<User> get selectedUsers => _selectedUsers;
-  List<User> get filteredUsers {
-    List<User> filtered = List.from(_allUsers);
-
-    // Apply role filter
-    if (_selectedRole != 'All') {
-      filtered =
-          filtered
-              .where((user) => user.role == _selectedRole.toLowerCase())
-              .toList();
-    }
-
-    // Apply department filter
-    if (_selectedDepartment != 'All') {
-      filtered =
-          filtered
-              .where((user) => user.department == _selectedDepartment)
-              .toList();
-    }
-
-    // Apply semester filter (only for students)
-    if (_selectedSemester != 'All') {
-      filtered =
-          filtered
-              .where(
-                (user) =>
-                    user.role != 'student' ||
-                    user.semester == _selectedSemester,
-              )
-              .toList();
-    }
-
-    return filtered;
-  }
-
-  List<String> get departments => ['All', ..._departments];
-  List<String> get semesters => ['All', ..._semesters];
-  List<Notification> get notificationHistory => _notificationHistory;
-  bool get isLoading => _isLoading;
-  String get selectedDepartment => _selectedDepartment;
-  String get selectedSemester => _selectedSemester;
-  String get selectedRole => _selectedRole;
-
-  Future<void> loadInitialData() async {
-    _setLoading(true);
-
+  // Save notification
+  static Future<bool> saveNotification(NotificationModel notification) async {
     try {
-      _allUsers = await _service.getUsers();
-      _departments = await _service.getDepartments();
-      _semesters = await _service.getSemesters();
-      _notificationHistory = await _service.getNotificationHistory();
+      final prefs = await SharedPreferences.getInstance();
+      List<String> storedNotifications =
+          prefs.getStringList(_notificationsKey) ?? [];
+
+      // Add new notification
+      storedNotifications.add(jsonEncode(notification.toJson()));
+
+      // Save back to prefs
+      return await prefs.setStringList(_notificationsKey, storedNotifications);
     } catch (e) {
-      print('Error loading data: $e');
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  void setSelectedRole(String role) {
-    _selectedRole = role;
-    notifyListeners();
-  }
-
-  void setSelectedDepartment(String department) {
-    _selectedDepartment = department;
-    notifyListeners();
-  }
-
-  void setSelectedSemester(String semester) {
-    _selectedSemester = semester;
-    notifyListeners();
-  }
-
-  void toggleUserSelection(User user) {
-    if (_selectedUsers.any((u) => u.id == user.id)) {
-      _selectedUsers.removeWhere((u) => u.id == user.id);
-    } else {
-      _selectedUsers.add(user);
-    }
-    notifyListeners();
-  }
-
-  void selectAllFilteredUsers() {
-    List<User> filtered = filteredUsers;
-
-    // Check if all filtered users are already selected
-    bool allSelected = filtered.every(
-      (user) =>
-          _selectedUsers.any((selectedUser) => selectedUser.id == user.id),
-    );
-
-    if (allSelected) {
-      // Deselect all filtered users
-      _selectedUsers.removeWhere(
-        (selectedUser) => filtered.any((user) => user.id == selectedUser.id),
-      );
-    } else {
-      // Add all filtered users that aren't already selected
-      for (var user in filtered) {
-        if (!_selectedUsers.any((selectedUser) => selectedUser.id == user.id)) {
-          _selectedUsers.add(user);
-        }
-      }
-    }
-
-    notifyListeners();
-  }
-
-  void clearSelection() {
-    _selectedUsers.clear();
-    notifyListeners();
-  }
-
-  Future<bool> sendNotification({
-    required String title,
-    required String message,
-    required NotificationType type,
-  }) async {
-    if (_selectedUsers.isEmpty) return false;
-
-    _setLoading(true);
-    try {
-      // Create notification object
-      final notification = Notification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: title,
-        message: message,
-        timestamp: DateTime.now(),
-        senderName: 'Admin',
-        recipientIds: _selectedUsers.map((user) => user.id).toList(),
-        type: type,
-      );
-
-      // Send notification
-      final result = await _service.sendNotification(notification);
-
-      if (result) {
-        // Add to history
-        _notificationHistory.insert(0, notification);
-        notifyListeners();
-      }
-
-      return result;
-    } catch (e) {
-      print('Error sending notification: $e');
+      print('Error saving notification: $e');
       return false;
-    } finally {
-      _setLoading(false);
     }
   }
 
-  void _setLoading(bool loading) {
-    _isLoading = loading;
-    notifyListeners();
+  // Get all notifications
+  static Future<List<NotificationModel>> getNotifications() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      List<String> storedNotifications =
+          prefs.getStringList(_notificationsKey) ?? [];
+
+      return storedNotifications
+          .map(
+            (notificationStr) =>
+                NotificationModel.fromJson(jsonDecode(notificationStr)),
+          )
+          .toList()
+        ..sort(
+          (a, b) => b.timestamp.compareTo(a.timestamp),
+        ); // Sort by newest first
+    } catch (e) {
+      print('Error retrieving notifications: $e');
+      return [];
+    }
   }
 }
 
-// Main notification management screen
-class SendNotification extends StatefulWidget {
+class SendNotificationPage extends StatefulWidget {
+  const SendNotificationPage({Key? key}) : super(key: key);
+
   @override
-  _SendNotificationState createState() => _SendNotificationState();
+  _SendNotificationPageState createState() => _SendNotificationPageState();
 }
 
-class _SendNotificationState extends State<SendNotification>
+class _SendNotificationPageState extends State<SendNotificationPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final _titleController = TextEditingController();
+  final _messageController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  String _selectedTargetType = 'all';
+  List<String> _selectedTeacherIds = [];
+  List<String> _selectedStudentIds = [];
+  List<String> _selectedNonTeachingStaffIds = [];
+  List<String> _selectedParentIds = [];
+
+  bool _isSending = false;
+  List<NotificationModel> _notificationHistory = [];
+  bool _isLoading = true;
+
+  // For history filter
+  String _historyFilter = 'all';
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _loadNotificationHistory();
+  }
 
-    // Load initial data when the screen is first created
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<NotificationProvider>(
-        context,
-        listen: false,
-      ).loadInitialData();
+  Future<void> _loadNotificationHistory() async {
+    setState(() {
+      _isLoading = true;
     });
+
+    _notificationHistory = await NotificationStorageService.getNotifications();
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void _toggleSelectAllTeachers(bool select) {
+    if (select) {
+      _selectedTeacherIds =
+          MockDataService.getTeachers().map((t) => t.id).toList();
+    } else {
+      _selectedTeacherIds = [];
+    }
+    setState(() {});
+  }
+
+  void _toggleSelectAllStudents(bool select) {
+    if (select) {
+      _selectedStudentIds =
+          MockDataService.getStudents().map((s) => s.id).toList();
+    } else {
+      _selectedStudentIds = [];
+    }
+    setState(() {});
+  }
+
+  void _toggleSelectAllNonTeachingStaff(bool select) {
+    if (select) {
+      _selectedNonTeachingStaffIds =
+          MockDataService.getNonTeachingStaff().map((n) => n.id).toList();
+    } else {
+      _selectedNonTeachingStaffIds = [];
+    }
+    setState(() {});
+  }
+
+  void _toggleSelectAllParents(bool select) {
+    if (select) {
+      _selectedParentIds =
+          MockDataService.getParents().map((p) => p.id).toList();
+    } else {
+      _selectedParentIds = [];
+    }
+    setState(() {});
+  }
+
+  Future<void> _sendNotification() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    // Validate at least one recipient is selected
+    bool noRecipientsSelected = false;
+
+    if (_selectedTargetType == 'teachers' && _selectedTeacherIds.isEmpty) {
+      noRecipientsSelected = true;
+    } else if (_selectedTargetType == 'students' &&
+        _selectedStudentIds.isEmpty) {
+      noRecipientsSelected = true;
+    } else if (_selectedTargetType == 'nonteaching' &&
+        _selectedNonTeachingStaffIds.isEmpty) {
+      noRecipientsSelected = true;
+    } else if (_selectedTargetType == 'parents' && _selectedParentIds.isEmpty) {
+      noRecipientsSelected = true;
+    } else if (_selectedTargetType == 'all' &&
+        _selectedTeacherIds.isEmpty &&
+        _selectedStudentIds.isEmpty &&
+        _selectedNonTeachingStaffIds.isEmpty &&
+        _selectedParentIds.isEmpty) {
+      noRecipientsSelected = true;
+    }
+
+    if (noRecipientsSelected) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select at least one recipient'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSending = true;
+    });
+
+    try {
+      // Combine recipient IDs based on target type
+      List<String> recipientIds = [];
+      if (_selectedTargetType == 'teachers' || _selectedTargetType == 'all') {
+        recipientIds.addAll(_selectedTeacherIds);
+      }
+      if (_selectedTargetType == 'students' || _selectedTargetType == 'all') {
+        recipientIds.addAll(_selectedStudentIds);
+      }
+      if (_selectedTargetType == 'nonteaching' ||
+          _selectedTargetType == 'all') {
+        recipientIds.addAll(_selectedNonTeachingStaffIds);
+      }
+      if (_selectedTargetType == 'parents' || _selectedTargetType == 'all') {
+        recipientIds.addAll(_selectedParentIds);
+      }
+
+      // Create notification
+      final notification = NotificationModel(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: _titleController.text,
+        message: _messageController.text,
+        targetType: _selectedTargetType,
+        recipientIds: recipientIds,
+        timestamp: DateTime.now(),
+      );
+
+      // Save notification
+      bool success = await NotificationStorageService.saveNotification(
+        notification,
+      );
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Notification sent successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Reset form
+        _titleController.clear();
+        _messageController.clear();
+        setState(() {
+          _selectedTeacherIds = [];
+          _selectedStudentIds = [];
+          _selectedNonTeachingStaffIds = [];
+          _selectedParentIds = [];
+        });
+
+        // Refresh history
+        _loadNotificationHistory();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to send notification'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+      );
+    } finally {
+      setState(() {
+        _isSending = false;
+      });
+    }
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDarkMode = themeProvider.isDarkMode;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Notification Management'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(text: 'Send Notifications', icon: Icon(Icons.send)),
-            Tab(text: 'History', icon: Icon(Icons.history)),
-          ],
-        ),
-      ),
-      body: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => NotificationProvider()),
-        ],
-        child: TabBarView(
-          controller: _tabController,
-          children: [SendNotificationTab(), NotificationHistoryTab()],
-        ),
-      ),
-    );
-  }
-}
-
-// Tab for sending notifications
-class SendNotificationTab extends StatefulWidget {
-  @override
-  _SendNotificationTabState createState() => _SendNotificationTabState();
-}
-
-class _SendNotificationTabState extends State<SendNotificationTab> {
-  final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _messageController = TextEditingController();
-  NotificationType _selectedType = NotificationType.general;
-
-  @override
-  void dispose() {
     _titleController.dispose();
     _messageController.dispose();
     super.dispose();
@@ -403,597 +456,535 @@ class _SendNotificationTabState extends State<SendNotificationTab> {
 
   @override
   Widget build(BuildContext context) {
-    final notificationProvider = Provider.of<NotificationProvider>(context);
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDarkMode = themeProvider.isDarkMode;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Notifications'),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [Tab(text: 'Send Notifications'), Tab(text: 'History')],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [_buildSendNotificationTab(), _buildHistoryTab()],
+      ),
+    );
+  }
 
-    return notificationProvider.isLoading &&
-            notificationProvider.allUsers.isEmpty
-        ? Center(child: CircularProgressIndicator())
-        : Column(
+  Widget _buildSendNotificationTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            FilterSection(),
-            RecipientSelectionSection(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(16),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Notification Details',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      SizedBox(height: 16),
-                      TextFormField(
-                        controller: _titleController,
-                        decoration: InputDecoration(
-                          labelText: 'Title',
-                          prefixIcon: Icon(Icons.title),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+            // Title field
+            TextFormField(
+              controller: _titleController,
+              decoration: const InputDecoration(
+                labelText: 'Notification Title',
+                hintText: 'Enter title',
+                prefixIcon: Icon(Icons.title),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a title';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Message field
+            TextFormField(
+              controller: _messageController,
+              decoration: const InputDecoration(
+                labelText: 'Notification Message',
+                hintText: 'Enter message',
+                prefixIcon: Icon(Icons.message),
+                alignLabelWithHint: true,
+              ),
+              maxLines: 5,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a message';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 24),
+
+            // Target type selection
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Send To:',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Radio buttons for target selection
+                    RadioListTile<String>(
+                      title: const Text('Teachers Only'),
+                      value: 'teachers',
+                      groupValue: _selectedTargetType,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedTargetType = value!;
+                        });
+                      },
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    RadioListTile<String>(
+                      title: const Text('Students Only'),
+                      value: 'students',
+                      groupValue: _selectedTargetType,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedTargetType = value!;
+                        });
+                      },
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    RadioListTile<String>(
+                      title: const Text('Non-Teaching Staff Only'),
+                      value: 'nonteaching',
+                      groupValue: _selectedTargetType,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedTargetType = value!;
+                        });
+                      },
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    RadioListTile<String>(
+                      title: const Text('Parents Only'),
+                      value: 'parents',
+                      groupValue: _selectedTargetType,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedTargetType = value!;
+                        });
+                      },
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    RadioListTile<String>(
+                      title: const Text('All Groups'),
+                      value: 'all',
+                      groupValue: _selectedTargetType,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedTargetType = value!;
+                        });
+                      },
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Teacher selection
+            if (_selectedTargetType == 'teachers' ||
+                _selectedTargetType == 'all')
+              _buildTeacherSelection(),
+
+            const SizedBox(height: 16),
+
+            // Student selection
+            if (_selectedTargetType == 'students' ||
+                _selectedTargetType == 'all')
+              _buildStudentSelection(),
+
+            const SizedBox(height: 16),
+
+            // Non-Teaching Staff selection
+            if (_selectedTargetType == 'nonteaching' ||
+                _selectedTargetType == 'all')
+              _buildNonTeachingStaffSelection(),
+
+            const SizedBox(height: 16),
+
+            // Parents selection
+            if (_selectedTargetType == 'parents' ||
+                _selectedTargetType == 'all')
+              _buildParentsSelection(),
+
+            const SizedBox(height: 24),
+
+            // Send button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton.icon(
+                onPressed: _isSending ? null : _sendNotification,
+                icon:
+                    _isSending
+                        ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
                           ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please enter a title';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 16),
-                      TextFormField(
-                        controller: _messageController,
-                        decoration: InputDecoration(
-                          labelText: 'Message',
-                          prefixIcon: Icon(Icons.message),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          alignLabelWithHint: true,
-                        ),
-                        maxLines: 5,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please enter a message';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        'Notification Type',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      SizedBox(height: 8),
-                      NotificationTypeSelector(
-                        selectedType: _selectedType,
-                        onTypeSelected: (type) {
-                          setState(() {
-                            _selectedType = type;
-                          });
-                        },
-                      ),
-                      SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          icon: Icon(Icons.send),
-                          label: Text('Send Notification'),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed:
-                              notificationProvider.selectedUsers.isEmpty
-                                  ? null
-                                  : () => _sendNotification(context),
-                        ),
-                      ),
-                    ],
+                        )
+                        : const Icon(Icons.send),
+                label: Text(_isSending ? 'Sending...' : 'Send Notification'),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
               ),
             ),
           ],
-        );
-  }
-
-  Future<void> _sendNotification(BuildContext context) async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final notificationProvider = Provider.of<NotificationProvider>(
-      context,
-      listen: false,
-    );
-
-    if (notificationProvider.selectedUsers.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select at least one recipient')),
-      );
-      return;
-    }
-
-    final success = await notificationProvider.sendNotification(
-      title: _titleController.text.trim(),
-      message: _messageController.text.trim(),
-      type: _selectedType,
-    );
-
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Notification sent successfully'),
-          backgroundColor: Colors.green,
         ),
-      );
-
-      // Clear form
-      _titleController.clear();
-      _messageController.clear();
-      setState(() {
-        _selectedType = NotificationType.general;
-      });
-
-      // Clear selection if needed
-      notificationProvider.clearSelection();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to send notification. Please try again.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-}
-
-// Filter section for filtering users
-class FilterSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final notificationProvider = Provider.of<NotificationProvider>(context);
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDarkMode = themeProvider.isDarkMode;
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: isDarkMode ? Color(0xFF151515) : Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: isDarkMode ? Colors.black26 : Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.filter_list,
-                color: themeProvider.currentTheme.primaryColor,
-              ),
-              SizedBox(width: 8),
-              Text(
-                'Filter Recipients',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
+    );
+  }
+
+  Widget _buildTeacherSelection() {
+    List<Teachers> teachers = MockDataService.getTeachers();
+    bool allTeachersSelected =
+        teachers.length == _selectedTeacherIds.length && teachers.isNotEmpty;
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildRoleFilter(context),
-                SizedBox(width: 12),
-                _buildDepartmentFilter(context),
-                SizedBox(width: 12),
-                if (notificationProvider.selectedRole == 'All' ||
-                    notificationProvider.selectedRole == 'Students')
-                  _buildSemesterFilter(context),
+                Text(
+                  'Select Teachers',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      'Select All',
+                      style: TextStyle(color: Theme.of(context).primaryColor),
+                    ),
+                    Checkbox(
+                      value: allTeachersSelected,
+                      onChanged:
+                          (value) => _toggleSelectAllTeachers(value ?? false),
+                    ),
+                  ],
+                ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRoleFilter(BuildContext context) {
-    final notificationProvider = Provider.of<NotificationProvider>(context);
-    final themeProvider = Provider.of<ThemeProvider>(context);
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color:
-              themeProvider.isDarkMode ? Color(0xFF2A2A2A) : Colors.grey[300]!,
-        ),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: notificationProvider.selectedRole,
-          items:
-              ['All', 'Teachers', 'Students'].map((role) {
-                return DropdownMenuItem<String>(value: role, child: Text(role));
-              }).toList(),
-          onChanged: (value) {
-            if (value != null) {
-              notificationProvider.setSelectedRole(value);
-            }
-          },
-          hint: Text('Select Role'),
-          icon: Icon(
-            Icons.arrow_drop_down,
-            color: themeProvider.currentTheme.primaryColor,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDepartmentFilter(BuildContext context) {
-    final notificationProvider = Provider.of<NotificationProvider>(context);
-    final themeProvider = Provider.of<ThemeProvider>(context);
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color:
-              themeProvider.isDarkMode ? Color(0xFF2A2A2A) : Colors.grey[300]!,
-        ),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: notificationProvider.selectedDepartment,
-          items:
-              notificationProvider.departments.map((department) {
-                return DropdownMenuItem<String>(
-                  value: department,
-                  child: Text(department),
-                );
-              }).toList(),
-          onChanged: (value) {
-            if (value != null) {
-              notificationProvider.setSelectedDepartment(value);
-            }
-          },
-          hint: Text('Select Department'),
-          icon: Icon(
-            Icons.arrow_drop_down,
-            color: themeProvider.currentTheme.primaryColor,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSemesterFilter(BuildContext context) {
-    final notificationProvider = Provider.of<NotificationProvider>(context);
-    final themeProvider = Provider.of<ThemeProvider>(context);
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color:
-              themeProvider.isDarkMode ? Color(0xFF2A2A2A) : Colors.grey[300]!,
-        ),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: notificationProvider.selectedSemester,
-          items:
-              notificationProvider.semesters.map((semester) {
-                return DropdownMenuItem<String>(
-                  value: semester,
-                  child: Text(semester),
-                );
-              }).toList(),
-          onChanged: (value) {
-            if (value != null) {
-              notificationProvider.setSelectedSemester(value);
-            }
-          },
-          hint: Text('Select Semester'),
-          icon: Icon(
-            Icons.arrow_drop_down,
-            color: themeProvider.currentTheme.primaryColor,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// Section for selecting recipients
-class RecipientSelectionSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final notificationProvider = Provider.of<NotificationProvider>(context);
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDarkMode = themeProvider.isDarkMode;
-
-    return Container(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.people,
-                    color: themeProvider.currentTheme.primaryColor,
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    'Recipients',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  OutlinedButton.icon(
-                    icon: Icon(Icons.select_all),
-                    label: Text('Select All'),
-                    onPressed: () {
-                      notificationProvider.selectAllFilteredUsers();
-                    },
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  OutlinedButton.icon(
-                    icon: Icon(Icons.clear_all),
-                    label: Text('Clear All'),
-                    onPressed:
-                        notificationProvider.selectedUsers.isEmpty
-                            ? null
-                            : () {
-                              notificationProvider.clearSelection();
-                            },
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(height: 8),
-          Text(
-            '${notificationProvider.selectedUsers.length} recipients selected',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: isDarkMode ? Colors.white70 : Colors.black54,
-            ),
-          ),
-          SizedBox(height: 16),
-          Container(
-            height: 200,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isDarkMode ? Color(0xFF2A2A2A) : Colors.grey[300]!,
-              ),
-            ),
-            child:
-                notificationProvider.filteredUsers.isEmpty
-                    ? Center(
-                      child: Text(
-                        'No users match the selected filters',
-                        style: TextStyle(
-                          color: isDarkMode ? Colors.white70 : Colors.black54,
-                        ),
-                      ),
-                    )
-                    : ListView.builder(
-                      itemCount: notificationProvider.filteredUsers.length,
-                      itemBuilder: (context, index) {
-                        final user = notificationProvider.filteredUsers[index];
-                        final isSelected = notificationProvider.selectedUsers
-                            .any((u) => u.id == user.id);
-
-                        return ListTile(
-                          title: Text(user.name),
-                          subtitle: Text(
-                            user.role.capitalize() +
-                                (user.department != null
-                                    ? ' - ${user.department}'
-                                    : '') +
-                                (user.semester != null
-                                    ? ' (Semester ${user.semester})'
-                                    : ''),
-                          ),
-                          leading: CircleAvatar(
-                            backgroundColor: themeProvider
-                                .currentTheme
-                                .primaryColor
-                                .withOpacity(0.8),
-                            child: Text(
-                              user.name.substring(0, 1),
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                          trailing: Checkbox(
-                            value: isSelected,
-                            onChanged: (_) {
-                              notificationProvider.toggleUserSelection(user);
-                            },
-                            activeColor:
-                                themeProvider.currentTheme.primaryColor,
-                          ),
-                          onTap: () {
-                            notificationProvider.toggleUserSelection(user);
-                          },
-                        );
-                      },
-                    ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// Notification type selector
-class NotificationTypeSelector extends StatelessWidget {
-  final NotificationType selectedType;
-  final Function(NotificationType) onTypeSelected;
-
-  const NotificationTypeSelector({
-    required this.selectedType,
-    required this.onTypeSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDarkMode = themeProvider.isDarkMode;
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children:
-            NotificationType.values.map((type) {
-              final isSelected = type == selectedType;
-
-              return Padding(
-                padding: EdgeInsets.only(right: 8),
-                child: ChoiceChip(
-                  label: Text(_getTypeLabel(type)),
-                  selected: isSelected,
-                  onSelected: (selected) {
-                    if (selected) {
-                      onTypeSelected(type);
-                    }
+            const Divider(),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: teachers.length,
+              itemBuilder: (context, index) {
+                Teachers teacher = teachers[index];
+                return CheckboxListTile(
+                  title: Text(teacher.name),
+                  subtitle: Text(teacher.department),
+                  value: _selectedTeacherIds.contains(teacher.id),
+                  onChanged: (selected) {
+                    setState(() {
+                      if (selected!) {
+                        _selectedTeacherIds.add(teacher.id);
+                      } else {
+                        _selectedTeacherIds.remove(teacher.id);
+                      }
+                    });
                   },
-                  avatar: Icon(
-                    _getTypeIcon(type),
-                    color:
-                        isSelected
-                            ? Colors.white
-                            : isDarkMode
-                            ? Colors.white70
-                            : Colors.black87,
-                    size: 18,
-                  ),
-                  backgroundColor:
-                      isDarkMode ? Color(0xFF1A1A1A) : Colors.grey[200],
-                  selectedColor: _getTypeColor(type),
-                  labelStyle: TextStyle(
-                    color:
-                        isSelected
-                            ? Colors.white
-                            : isDarkMode
-                            ? Colors.white70
-                            : Colors.black87,
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                ),
-              );
-            }).toList(),
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  String _getTypeLabel(NotificationType type) {
-    switch (type) {
-      case NotificationType.urgent:
-        return 'Urgent';
-      case NotificationType.announcement:
-        return 'Announcement';
-      case NotificationType.event:
-        return 'Event';
-      case NotificationType.reminder:
-        return 'Reminder';
-      case NotificationType.general:
-        return 'General';
-    }
+  Widget _buildStudentSelection() {
+    List<Students> students = MockDataService.getStudents();
+    bool allStudentsSelected =
+        students.length == _selectedStudentIds.length && students.isNotEmpty;
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Select Students',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      'Select All',
+                      style: TextStyle(color: Theme.of(context).primaryColor),
+                    ),
+                    Checkbox(
+                      value: allStudentsSelected,
+                      onChanged:
+                          (value) => _toggleSelectAllStudents(value ?? false),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const Divider(),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: students.length,
+              itemBuilder: (context, index) {
+                Students student = students[index];
+                return CheckboxListTile(
+                  title: Text(student.name),
+                  subtitle: Text('${student.course} - Year ${student.year}'),
+                  value: _selectedStudentIds.contains(student.id),
+                  onChanged: (selected) {
+                    setState(() {
+                      if (selected!) {
+                        _selectedStudentIds.add(student.id);
+                      } else {
+                        _selectedStudentIds.remove(student.id);
+                      }
+                    });
+                  },
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  IconData _getTypeIcon(NotificationType type) {
-    switch (type) {
-      case NotificationType.urgent:
-        return Icons.priority_high;
-      case NotificationType.announcement:
-        return Icons.campaign;
-      case NotificationType.event:
-        return Icons.event;
-      case NotificationType.reminder:
-        return Icons.alarm;
-      case NotificationType.general:
-        return Icons.notifications;
-    }
+  Widget _buildNonTeachingStaffSelection() {
+    List<NonTeachingStaff> staffList = MockDataService.getNonTeachingStaff();
+    bool allStaffSelected =
+        staffList.length == _selectedNonTeachingStaffIds.length &&
+        staffList.isNotEmpty;
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Select Non-Teaching Staff',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      'Select All',
+                      style: TextStyle(color: Theme.of(context).primaryColor),
+                    ),
+                    Checkbox(
+                      value: allStaffSelected,
+                      onChanged:
+                          (value) =>
+                              _toggleSelectAllNonTeachingStaff(value ?? false),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const Divider(),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: staffList.length,
+              itemBuilder: (context, index) {
+                NonTeachingStaff staff = staffList[index];
+                return CheckboxListTile(
+                  title: Text(staff.name),
+                  subtitle: Text('${staff.role} - ${staff.department}'),
+                  value: _selectedNonTeachingStaffIds.contains(staff.id),
+                  onChanged: (selected) {
+                    setState(() {
+                      if (selected!) {
+                        _selectedNonTeachingStaffIds.add(staff.id);
+                      } else {
+                        _selectedNonTeachingStaffIds.remove(staff.id);
+                      }
+                    });
+                  },
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  Color _getTypeColor(NotificationType type) {
-    switch (type) {
-      case NotificationType.urgent:
-        return Colors.red;
-      case NotificationType.announcement:
-        return Colors.blue;
-      case NotificationType.event:
-        return Colors.purple;
-      case NotificationType.reminder:
-        return Colors.orange;
-      case NotificationType.general:
-        return Colors.green;
-    }
+  Widget _buildParentsSelection() {
+    List<Parents> parents = MockDataService.getParents();
+    bool allParentsSelected =
+        parents.length == _selectedParentIds.length && parents.isNotEmpty;
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Select Parents',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      'Select All',
+                      style: TextStyle(color: Theme.of(context).primaryColor),
+                    ),
+                    Checkbox(
+                      value: allParentsSelected,
+                      onChanged:
+                          (value) => _toggleSelectAllParents(value ?? false),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const Divider(),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: parents.length,
+              itemBuilder: (context, index) {
+                Parents parent = parents[index];
+                return CheckboxListTile(
+                  title: Text(parent.name),
+                  subtitle: Text(
+                    'Parent of ${parent.studentName} (${parent.contactNumber})',
+                  ),
+                  value: _selectedParentIds.contains(parent.id),
+                  onChanged: (selected) {
+                    setState(() {
+                      if (selected!) {
+                        _selectedParentIds.add(parent.id);
+                      } else {
+                        _selectedParentIds.remove(parent.id);
+                      }
+                    });
+                  },
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
-}
 
-// Tab for notification history
-class NotificationHistoryTab extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final notificationProvider = Provider.of<NotificationProvider>(context);
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDarkMode = themeProvider.isDarkMode;
-
-    if (notificationProvider.isLoading &&
-        notificationProvider.notificationHistory.isEmpty) {
-      return Center(child: CircularProgressIndicator());
+  Widget _buildHistoryTab() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
     }
 
-    if (notificationProvider.notificationHistory.isEmpty) {
+    // Filter notifications based on selected filter
+    List<NotificationModel> filteredNotifications = _notificationHistory;
+    if (_historyFilter != 'all') {
+      filteredNotifications =
+          _notificationHistory.where((notification) {
+            // Check if notification targetType matches filter directly
+            if (notification.targetType == _historyFilter) {
+              return true;
+            }
+
+            // If notification is for all users but we want to filter by specific type
+            if (notification.targetType == 'all') {
+              // Check if any recipient IDs match the filter prefix
+              if (_historyFilter == 'teachers') {
+                return notification.recipientIds.any(
+                  (id) => id.startsWith('t'),
+                );
+              } else if (_historyFilter == 'students') {
+                return notification.recipientIds.any(
+                  (id) => id.startsWith('s'),
+                );
+              } else if (_historyFilter == 'nonteaching') {
+                return notification.recipientIds.any(
+                  (id) => id.startsWith('n'),
+                );
+              } else if (_historyFilter == 'parents') {
+                return notification.recipientIds.any(
+                  (id) => id.startsWith('p'),
+                );
+              }
+            }
+            return false;
+          }).toList();
+    }
+
+    if (filteredNotifications.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.history,
-              size: 64,
-              color: isDarkMode ? Colors.white38 : Colors.black26,
+              Icons.notifications_off_outlined,
+              size: 80,
+              color:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white38
+                      : Colors.grey[400],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
-              'No notification history yet',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: isDarkMode ? Colors.white70 : Colors.black54,
+              _notificationHistory.isEmpty
+                  ? 'No notification history yet'
+                  : 'No notifications found for selected filter',
+              style: TextStyle(
+                fontSize: 18,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white70
+                        : Colors.black87,
               ),
             ),
           ],
@@ -1002,208 +993,179 @@ class NotificationHistoryTab extends StatelessWidget {
     }
 
     return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: notificationProvider.notificationHistory.length,
+      padding: const EdgeInsets.all(16),
+      itemCount: filteredNotifications.length,
       itemBuilder: (context, index) {
-        final notification = notificationProvider.notificationHistory[index];
-        return NotificationHistoryCard(notification: notification);
+        return _buildNotificationCard(filteredNotifications[index]);
       },
     );
   }
-}
 
-// Card for displaying notification history
-class NotificationHistoryCard extends StatelessWidget {
-  final Notification notification;
+  Widget _buildFilterChip(String label, String value) {
+    final isSelected = _historyFilter == value;
 
-  const NotificationHistoryCard({required this.notification});
+    return FilterChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        setState(() {
+          _historyFilter = value;
+        });
+      },
+      selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+      checkmarkColor: Theme.of(context).primaryColor,
+      backgroundColor:
+          Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[700]
+              : Colors.grey[300],
+      labelStyle: TextStyle(
+        color:
+            isSelected
+                ? Theme.of(context).primaryColor
+                : Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black87,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      ),
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDarkMode = themeProvider.isDarkMode;
+  Widget _buildNotificationCard(NotificationModel notification) {
+    final recipients = _formatRecipients(notification);
 
     return Card(
-      margin: EdgeInsets.only(bottom: 16),
-      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Column(
+      elevation: 2,
+      child: ExpansionTile(
+        tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        childrenPadding: const EdgeInsets.all(16),
+        leading: CircleAvatar(
+          backgroundColor: Theme.of(context).primaryColor,
+          child: Icon(
+            _getIconForTargetType(notification.targetType),
+            color: Colors.white,
+          ),
+        ),
+        title: Text(
+          notification.title,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              color: _getTypeColor(notification.type).withOpacity(0.8),
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  Icon(
-                    _getTypeIcon(notification.type),
-                    color: Colors.white,
-                    size: 18,
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    _getTypeLabel(notification.type),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    _formatDate(notification.timestamp),
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                ],
+            const SizedBox(height: 4),
+            Text(
+              recipients,
+              style: TextStyle(
+                fontSize: 12,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white70
+                        : Colors.black54,
               ),
             ),
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    notification.title,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    notification.message,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.person,
-                        size: 16,
-                        color: isDarkMode ? Colors.white54 : Colors.black54,
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        'Sent by: ${notification.senderName}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isDarkMode ? Colors.white54 : Colors.black54,
-                        ),
-                      ),
-                      Spacer(),
-                      Text(
-                        _getRecipientInfo(notification),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isDarkMode ? Colors.white54 : Colors.black54,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+            const SizedBox(height: 4),
+            Text(
+              _formatDateTime(notification.timestamp),
+              style: TextStyle(
+                fontSize: 12,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white70
+                        : Colors.black54,
               ),
             ),
           ],
         ),
+        children: [Text(notification.message)],
       ),
     );
   }
 
-  String _formatDate(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
+  IconData _getIconForTargetType(String targetType) {
+    switch (targetType) {
+      case 'teachers':
+        return Icons.school;
+      case 'students':
+        return Icons.person;
+      case 'nonteaching':
+        return Icons.work;
+      case 'parents':
+        return Icons.family_restroom;
+      case 'all':
+      default:
+        return Icons.people;
+    }
+  }
 
-    if (difference.inDays > 0) {
-      return '${difference.inDays}d ago';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours}h ago';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}m ago';
+  String _formatRecipients(NotificationModel notification) {
+    int totalRecipients = notification.recipientIds.length;
+
+    if (totalRecipients == 0) {
+      return 'No recipients';
+    }
+
+    // Count different recipient types
+    int teacherCount = 0;
+    int studentCount = 0;
+    int staffCount = 0;
+    int parentCount = 0;
+
+    for (var id in notification.recipientIds) {
+      if (id.startsWith('t'))
+        teacherCount++;
+      else if (id.startsWith('s'))
+        studentCount++;
+      else if (id.startsWith('n'))
+        staffCount++;
+      else if (id.startsWith('p'))
+        parentCount++;
+    }
+
+    if (notification.targetType == 'teachers') {
+      return 'Sent to $teacherCount teachers';
+    } else if (notification.targetType == 'students') {
+      return 'Sent to $studentCount students';
+    } else if (notification.targetType == 'nonteaching') {
+      return 'Sent to $staffCount non-teaching staff';
+    } else if (notification.targetType == 'parents') {
+      return 'Sent to $parentCount parents';
     } else {
-      return 'Just now';
+      // Build string for mixed recipients
+      List<String> recipientGroups = [];
+      if (teacherCount > 0) {
+        recipientGroups.add('$teacherCount teachers');
+      }
+      if (studentCount > 0) {
+        recipientGroups.add('$studentCount students');
+      }
+      if (staffCount > 0) {
+        recipientGroups.add('$staffCount non-teaching staff');
+      }
+      if (parentCount > 0) {
+        recipientGroups.add('$parentCount parents');
+      }
+
+      return 'Sent to ' + recipientGroups.join(', ');
     }
   }
 
-  String _getRecipientInfo(Notification notification) {
-    if (notification.recipientIds.contains('all-students')) {
-      return 'To: All Students';
-    } else if (notification.recipientIds.contains('all-teachers')) {
-      return 'To: All Teachers';
+  String _formatDateTime(DateTime dateTime) {
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime yesterday = today.subtract(const Duration(days: 1));
+    DateTime dateOnly = DateTime(dateTime.year, dateTime.month, dateTime.day);
+
+    String time =
+        '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+
+    if (dateOnly == today) {
+      return 'Today, $time';
+    } else if (dateOnly == yesterday) {
+      return 'Yesterday, $time';
     } else {
-      return 'To: ${notification.recipientIds.length} recipients';
+      return '${dateTime.day}/${dateTime.month}/${dateTime.year}, $time';
     }
-  }
-
-  IconData _getTypeIcon(NotificationType type) {
-    switch (type) {
-      case NotificationType.urgent:
-        return Icons.priority_high;
-      case NotificationType.announcement:
-        return Icons.campaign;
-      case NotificationType.event:
-        return Icons.event;
-      case NotificationType.reminder:
-        return Icons.alarm;
-      case NotificationType.general:
-        return Icons.notifications;
-    }
-  }
-
-  String _getTypeLabel(NotificationType type) {
-    switch (type) {
-      case NotificationType.urgent:
-        return 'Urgent';
-      case NotificationType.announcement:
-        return 'Announcement';
-      case NotificationType.event:
-        return 'Event';
-      case NotificationType.reminder:
-        return 'Reminder';
-      case NotificationType.general:
-        return 'General';
-    }
-  }
-
-  Color _getTypeColor(NotificationType type) {
-    switch (type) {
-      case NotificationType.urgent:
-        return Colors.red;
-      case NotificationType.announcement:
-        return Colors.blue;
-      case NotificationType.event:
-        return Colors.purple;
-      case NotificationType.reminder:
-        return Colors.orange;
-      case NotificationType.general:
-        return Colors.green;
-    }
-  }
-}
-
-// Extension for string capitalization
-extension StringExtension on String {
-  String capitalize() {
-    return "${this[0].toUpperCase()}${this.substring(1)}";
-  }
-}
-
-// Widget to integrate the notification system into your app
-class SendNotificationWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => NotificationProvider()),
-      ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, _) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'College Admin - Notifications',
-            theme: themeProvider.currentTheme,
-            home: SendNotification(),
-          );
-        },
-      ),
-    );
   }
 }

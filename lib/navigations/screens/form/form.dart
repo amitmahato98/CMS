@@ -387,7 +387,7 @@ class _FormFillUpState extends State<FormFillUp> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Form'),
-        centerTitle: true,
+        // centerTitle: true,
         elevation: 0,
       ),
       body: GestureDetector(
