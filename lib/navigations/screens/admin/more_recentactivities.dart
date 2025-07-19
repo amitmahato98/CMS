@@ -144,7 +144,7 @@ class ActivityDetailScreen extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Student()),
+                MaterialPageRoute(builder: (context) => NewStudent()),
               );
             },
             icon: Icon(Icons.person),
@@ -208,7 +208,7 @@ class ActivityDetailScreen extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Student()),
+                MaterialPageRoute(builder: (context) => NewStudent()),
               );
             },
             icon: Icon(Icons.email),

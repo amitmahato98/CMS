@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'addnewstudentpage.dart';
 
-class Student extends StatefulWidget {
-  const Student({super.key});
+class NewStudent extends StatefulWidget {
+  const NewStudent({super.key});
 
   @override
-  State<Student> createState() => _StudentState();
+  State<NewStudent> createState() => _NewStudentState();
 }
 
-class _StudentState extends State<Student> {
+class _NewStudentState extends State<NewStudent> {
   List<Map<String, dynamic>> students = [];
   int? _expandedIndex;
 

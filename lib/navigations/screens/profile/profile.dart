@@ -17,13 +17,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final List<Map<String, dynamic>> statsItems = [
-    {"icon": Icons.pending_actions, "label": "Pending", "count": "05"},
-    {"icon": Icons.approval, "label": "Approved", "count": "12"},
-    {"icon": Icons.people_outline, "label": "Students", "count": "1108"},
-    {"icon": Icons.person_outline, "label": "Teachers", "count": "68"},
-  ];
-
   final List<Map<String, dynamic>> menuItems = [
     {
       "icon": Icons.person_outline,
@@ -65,8 +58,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             _buildProfileHeader(),
-            SizedBox(height: 20),
-            _buildStatsSection(),
             SizedBox(height: 20),
             _buildMenuSection(),
           ],
@@ -131,76 +122,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Icon(icon, color: Colors.white, size: 16),
         SizedBox(width: 5),
         Text(text, style: TextStyle(color: Colors.white, fontSize: 14)),
-      ],
-    );
-  }
-
-  Widget _buildStatsSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Overview",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 10),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 1,
-                  blurRadius: 4,
-                  offset: Offset(0, 1),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children:
-                    statsItems.map((item) {
-                      return _buildStatItem(
-                        item["icon"],
-                        item["label"],
-                        item["count"],
-                      );
-                    }).toList(),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatItem(IconData icon, String label, String count) {
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: blueColor.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: blueColor, size: 24),
-        ),
-        SizedBox(height: 8),
-        Text(
-          count,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: blueColor,
-          ),
-        ),
-        SizedBox(height: 4),
-        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
       ],
     );
   }

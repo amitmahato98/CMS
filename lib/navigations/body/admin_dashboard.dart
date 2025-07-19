@@ -1,5 +1,6 @@
 import 'package:cms/datatypes/datatypes.dart';
 import 'package:cms/navigations/screens/admin/admin.dart';
+import 'package:cms/navigations/screens/admin/adminPannel/adminPannel.dart';
 import 'package:cms/navigations/screens/admit-card-generator/admitcardgenerator.dart';
 import 'package:cms/navigations/screens/approve/leave-request/leave-request-approve.dart';
 import 'package:cms/navigations/screens/attendence/attendanceDash.dart';
@@ -473,20 +474,15 @@ class Gridbuild extends StatefulWidget {
 class _GridbuildState extends State<Gridbuild> {
   final List<Map<String, dynamic>> gridMap = [
     {
-      "icon": "assets/icons/icons1-library.png",
-      "title": "Library",
-      "description": "Access digital books, journals, and resources",
+      "icon": "assets/icons/parent.png",
+      "title": "Admin Pannel",
+      "description": "Manage and monitor user accounts, roles.",
     },
     {
       "icon": "assets/icons/icons2-teacher.png",
       "title": "Teacher",
       "description": "Manage teacher profiles and assignments",
     },
-    // {
-    //   "icon": "assets/icons/parent.png",
-    //   "title": "Parents",
-    //   "description": "Parent communication and student progress tracking",
-    // },
     {
       "icon": "assets/icons/icons3-students.png",
       "title": "Students",
@@ -498,20 +494,15 @@ class _GridbuildState extends State<Gridbuild> {
       "description": "Generates Admit Card for Students",
     },
     {
-      "icon": "assets/icons/icons4-admin.png",
-      "title": "Administrator",
-      "description": "System administration and management",
+      "icon": "assets/icons/icons4-approve.png",
+      "title": "Approve",
+      "description": "Review and approve leave requests",
     },
-    // {
-    //   "icon": "assets/icons/icon5-attendance.png",
-    //   "title": "Attendence",
-    //   "description": "Track and manage attendance records",
-    // },
-    // {
-    //   "icon": "assets/icons/icon6-form.png",
-    //   "title": "Form",
-    //   "description": "Create and manage various application forms",
-    // },
+    {
+      "icon": "assets/icons/examination.png",
+      "title": "Examination",
+      "description": "Manage exams, results and grade reports",
+    },
     {
       "icon": "assets/icons/examination.png",
       "title": "ID Card",
@@ -523,20 +514,35 @@ class _GridbuildState extends State<Gridbuild> {
       "description": "Send and manage important announcements",
     },
     // {
+    //   "icon": "assets/icons/icons4-admin.png",
+    //   "title": "Administrator",
+    //   "description": "System administration and management",
+    // },
+    // {
+    //   "icon": "assets/icons/icons1-library.png",
+    //   "title": "Library",
+    //   "description": "Access digital books, journals, and resources",
+    // },
+    // {
+    //   "icon": "assets/icons/parent.png",
+    //   "title": "Parents",
+    //   "description": "Parent communication and student progress tracking",
+    // },
+    // {
+    //   "icon": "assets/icons/icon5-attendance.png",
+    //   "title": "Attendence",
+    //   "description": "Track and manage attendance records",
+    // },
+    // {
+    //   "icon": "assets/icons/icon6-form.png",
+    //   "title": "Form",
+    //   "description": "Create and manage various application forms",
+    // },
+    // {
     //   "icon": "assets/icons/icon8-meeting.png",
     //   "title": "Meeting",
     //   "description": "Schedule and manage virtual meetings",
     // },
-    {
-      "icon": "assets/icons/icons4-approve.png",
-      "title": "Approve",
-      "description": "Review and approve leave requests",
-    },
-    {
-      "icon": "assets/icons/examination.png",
-      "title": "Examination",
-      "description": "Manage exams, results and grade reports",
-    },
 
     // {
     //   "icon": "assets/icons/timetable.png",
@@ -596,19 +602,20 @@ class _GridbuildState extends State<Gridbuild> {
                     onTap: () {
                       final String title = gridMap.elementAt(index)["title"];
                       final Map<String, Widget> screenMap = {
-                        "Students": Student(),
+                        "Students": NewStudent(),
+                        "Admin Pannel": UserManagementScreen(),
                         "Teacher": TeacherScreen(),
                         "Admit Card": AdmitCardGenerator(),
-                        "Administrator": AdminDashboard(),
-                        "Library": Library(),
-                        // "Attendence": AttendanceDashboardScreen(),
                         "Notifications": SendNotificationPage(),
-                        // "Form": FormFillUp(),
-                        // "Meeting": Meeting(),
                         "Approve": LeaveRequestApprove(),
-                        // "Parents": ParentChat(),
                         "Examination": Examination(),
                         "ID Card": IDCardGenerator(),
+                        // "Administrator": AdminDashboard(),
+                        // "Library": Library(),
+                        // "Attendence": AttendanceDashboardScreen(),
+                        // "Form": FormFillUp(),
+                        // "Meeting": Meeting(),
+                        // "Parents": ParentChat(),
                         // "Timetable": Timetable(),
                       };
                       if (screenMap.containsKey(title)) {
