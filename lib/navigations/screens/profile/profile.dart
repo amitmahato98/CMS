@@ -272,9 +272,9 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final textColor = theme.textTheme.bodyLarge?.color;
-    final cardColor = theme.cardColor;
-    final labelStyle = TextStyle(color: theme.hintColor.withOpacity(0.7));
+    // final textColor = theme.textTheme.bodyLarge?.color;
+    // final cardColor = theme.cardColor;
+    // final labelStyle = TextStyle(color: theme.hintColor.withOpacity(0.7));
 
     return Scaffold(
       appBar: AppBar(
@@ -832,7 +832,7 @@ class _EducationalInformationScreenState
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    // final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(

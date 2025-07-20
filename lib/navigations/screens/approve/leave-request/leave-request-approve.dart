@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cms/datatypes/datatypes.dart';
+// import 'package:cms/datatypes/datatypes.dart';
 
 enum StaffCategory { Teaching, Admin }
 
@@ -300,7 +300,7 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    // final theme = Theme.of(context);
 
     final filteredRequests =
         leaveRequests

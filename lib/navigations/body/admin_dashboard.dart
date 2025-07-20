@@ -1,28 +1,20 @@
-import 'package:cms/datatypes/datatypes.dart';
-import 'package:cms/navigations/screens/admin/admin.dart';
 import 'package:cms/navigations/screens/admin/adminPannel/adminPannel.dart';
 import 'package:cms/navigations/screens/admit-card-generator/admitcardgenerator.dart';
 import 'package:cms/navigations/screens/approve/leave-request/leave-request-approve.dart';
-import 'package:cms/navigations/screens/attendence/attendanceDash.dart';
-import 'package:cms/navigations/screens/chat/parent/parentchat.dart';
-import 'package:cms/navigations/screens/chat/student/studentchat.dart';
-import 'package:cms/navigations/screens/chat/teacher/teacherchat.dart';
-import 'package:cms/navigations/screens/form/form.dart';
+
+import 'package:cms/navigations/screens/examination/resultpage.dart';
 import 'package:cms/navigations/screens/id-card-generator/idcardgenerator.dart';
-import 'package:cms/navigations/screens/library/library.dart';
-import 'package:cms/navigations/screens/meeting/meeting.dart';
+
 import 'package:cms/navigations/screens/notifications/notification.dart';
 import 'package:cms/navigations/screens/student/student.dart';
 import 'package:cms/navigations/screens/teacher/teacher.dart';
 import 'package:cms/theme/theme_provider.dart';
-import 'package:cms/utils/full_screen_route.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:cms/navigations/screens/profile/profile.dart';
-import 'package:cms/navigations/screens/examination/examination.dart';
-import 'package:cms/navigations/screens/timetable/timetable.dart';
+
 import 'package:provider/provider.dart';
-import 'package:cms/theme/theme_provider.dart' as theme_provider;
+// import 'package:cms/theme/theme_provider.dart' as theme_provider;
 
 class Dashboard extends StatefulWidget {
   final Function(Widget) onSectionSelected;
@@ -52,9 +44,9 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<theme_provider.ThemeProvider>(context);
-    final isDarkMode = themeProvider.isDarkMode;
-    final theme = Theme.of(context);
+    // final themeProvider = Provider.of<theme_provider.ThemeProvider>(context);
+    // final isDarkMode = themeProvider.isDarkMode;
+    // final theme = Theme.of(context);
 
     return Scaffold(
       body: RefreshIndicator(
@@ -93,8 +85,8 @@ class OverVeiw extends StatefulWidget {
 class _OverVeiwState extends State<OverVeiw> {
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDarkMode = themeProvider.isDarkMode;
+    // final themeProvider = Provider.of<ThemeProvider>(context);
+    // final isDarkMode = themeProvider.isDarkMode;
     final theme = Theme.of(context);
 
     return Padding(
@@ -227,10 +219,6 @@ class _ViewCountState extends State<ViewCount> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDarkMode = themeProvider.isDarkMode;
-    final theme = Theme.of(context);
-
     return Container(
       height: 105,
       width: MediaQuery.of(context).size.width - 75,
@@ -354,113 +342,6 @@ class CircleProgressPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
 
-// class FloatingButtonMenu extends StatefulWidget {
-//   const FloatingButtonMenu({super.key});
-
-//   @override
-//   State<FloatingButtonMenu> createState() => _FloatingButtonMenuState();
-// }
-
-// class _FloatingButtonMenuState extends State<FloatingButtonMenu> {
-//   bool isExpanded = false;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       mainAxisSize: MainAxisSize.min,
-//       crossAxisAlignment: CrossAxisAlignment.end,
-//       children: [
-//         Visibility(
-//           visible: isExpanded,
-//           child: Align(
-//             alignment: Alignment.centerRight,
-//             child: Container(
-//               constraints: BoxConstraints(maxWidth: 150),
-//               child: Material(
-//                 elevation: 10,
-//                 borderRadius: BorderRadius.circular(20),
-//                 child: Padding(
-//                   padding: const EdgeInsets.symmetric(
-//                     vertical: 10,
-//                     horizontal: 15,
-//                   ),
-//                   child: Column(
-//                     mainAxisSize: MainAxisSize.min,
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       _buildOptions(Icons.school, "Teacher"),
-//                       Divider(color: const Color.fromARGB(174, 37, 37, 37)),
-//                       _buildOptions(Icons.family_restroom, "Parent"),
-//                       Divider(color: const Color.fromARGB(174, 37, 37, 37)),
-//                       _buildOptions(Icons.person, "Student"),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         SizedBox(height: 10),
-//         FloatingActionButton(
-//           onPressed: () {
-//             setState(() {
-//               isExpanded = !isExpanded;
-//             });
-//           },
-//           backgroundColor: blueColor,
-//           child: Icon(
-//             isExpanded ? Icons.close : Icons.message,
-//             color: Colors.white,
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-
-//   _buildOptions(IconData icon, String label) {
-//     return GestureDetector(
-//       onTap: () {
-//         if (label == "Teacher") {
-//           setState(() {
-//             Navigator.push(
-//               context,
-//               FullScreenRoute(builder: (context) => Teacherchat()),
-//             );
-//             isExpanded = false;
-//           });
-//         } else if (label == "Parent") {
-//           setState(() {
-//             Navigator.push(
-//               context,
-//               FullScreenRoute(builder: (context) => ParentChat()),
-//             );
-//             isExpanded = false;
-//           });
-//         } else if (label == "Student") {
-//           setState(() {
-//             Navigator.push(
-//               context,
-//               FullScreenRoute(builder: (context) => Studentchat()),
-//             );
-//             isExpanded = false;
-//           });
-//         }
-//       },
-//       child: Row(
-//         mainAxisSize: MainAxisSize.min,
-//         children: [
-//           Icon(icon, color: const Color.fromARGB(255, 124, 124, 124), size: 24),
-//           SizedBox(width: 10),
-//           Text(
-//             label,
-//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
 class Gridbuild extends StatefulWidget {
   final Function(Widget) onSectionSelected;
 
@@ -513,42 +394,6 @@ class _GridbuildState extends State<Gridbuild> {
       "title": "Notifications",
       "description": "Send and manage important announcements",
     },
-    // {
-    //   "icon": "assets/icons/icons4-admin.png",
-    //   "title": "Administrator",
-    //   "description": "System administration and management",
-    // },
-    // {
-    //   "icon": "assets/icons/icons1-library.png",
-    //   "title": "Library",
-    //   "description": "Access digital books, journals, and resources",
-    // },
-    // {
-    //   "icon": "assets/icons/parent.png",
-    //   "title": "Parents",
-    //   "description": "Parent communication and student progress tracking",
-    // },
-    // {
-    //   "icon": "assets/icons/icon5-attendance.png",
-    //   "title": "Attendence",
-    //   "description": "Track and manage attendance records",
-    // },
-    // {
-    //   "icon": "assets/icons/icon6-form.png",
-    //   "title": "Form",
-    //   "description": "Create and manage various application forms",
-    // },
-    // {
-    //   "icon": "assets/icons/icon8-meeting.png",
-    //   "title": "Meeting",
-    //   "description": "Schedule and manage virtual meetings",
-    // },
-
-    // {
-    //   "icon": "assets/icons/timetable.png",
-    //   "title": "Timetable",
-    //   "description": "Class schedules and academic calendar",
-    // },
   ];
 
   bool _isExpanded = false;
@@ -608,15 +453,8 @@ class _GridbuildState extends State<Gridbuild> {
                         "Admit Card": AdmitCardGenerator(),
                         "Notifications": SendNotificationPage(),
                         "Approve": LeaveRequestApprove(),
-                        "Examination": Examination(),
+                        "Examination": ResultPage(),
                         "ID Card": IDCardGenerator(),
-                        // "Administrator": AdminDashboard(),
-                        // "Library": Library(),
-                        // "Attendence": AttendanceDashboardScreen(),
-                        // "Form": FormFillUp(),
-                        // "Meeting": Meeting(),
-                        // "Parents": ParentChat(),
-                        // "Timetable": Timetable(),
                       };
                       if (screenMap.containsKey(title)) {
                         widget.onSectionSelected(screenMap[title]!);

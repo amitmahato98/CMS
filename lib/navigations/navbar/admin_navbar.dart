@@ -1,13 +1,11 @@
 import 'package:cms/datatypes/datatypes.dart';
 import 'package:cms/navigations/screens/aboutus/aboutus.dart';
-import 'package:cms/navigations/screens/admin/admin.dart';
-import 'package:cms/navigations/screens/examination/examination.dart';
+import 'package:cms/navigations/screens/examination/resultpage.dart';
 import 'package:cms/navigations/screens/notifications/notification.dart';
 import 'package:cms/navigations/screens/policies/policies.dart';
 import 'package:cms/navigations/screens/profile/profile.dart';
-import 'package:cms/navigations/screens/setting/setting.dart';
 import 'package:cms/navigations/screens/student/student.dart';
-import 'package:cms/navigations/screens/teacher/teacher.dart';
+// import 'package:cms/navigations/screens/teacher/teacher.dart';
 import 'package:flutter/material.dart';
 
 class Navbar extends StatelessWidget {
@@ -100,7 +98,7 @@ class Navbar extends StatelessWidget {
             onTap:
                 () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Examination()),
+                  MaterialPageRoute(builder: (context) => ResultPage()),
                 ),
           ),
           ListTile(

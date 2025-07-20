@@ -1001,34 +1001,34 @@ class _SendNotificationPageState extends State<SendNotificationPage>
     );
   }
 
-  Widget _buildFilterChip(String label, String value) {
-    final isSelected = _historyFilter == value;
+  // Widget _buildFilterChip(String label, String value) {
+  //   final isSelected = _historyFilter == value;
 
-    return FilterChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (selected) {
-        setState(() {
-          _historyFilter = value;
-        });
-      },
-      selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
-      checkmarkColor: Theme.of(context).primaryColor,
-      backgroundColor:
-          Theme.of(context).brightness == Brightness.dark
-              ? Colors.grey[700]
-              : Colors.grey[300],
-      labelStyle: TextStyle(
-        color:
-            isSelected
-                ? Theme.of(context).primaryColor
-                : Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black87,
-        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-      ),
-    );
-  }
+  //   return FilterChip(
+  //     label: Text(label),
+  //     selected: isSelected,
+  //     onSelected: (selected) {
+  //       setState(() {
+  //         _historyFilter = value;
+  //       });
+  //     },
+  //     selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+  //     checkmarkColor: Theme.of(context).primaryColor,
+  //     backgroundColor:
+  //         Theme.of(context).brightness == Brightness.dark
+  //             ? Colors.grey[700]
+  //             : Colors.grey[300],
+  //     labelStyle: TextStyle(
+  //       color:
+  //           isSelected
+  //               ? Theme.of(context).primaryColor
+  //               : Theme.of(context).brightness == Brightness.dark
+  //               ? Colors.white
+  //               : Colors.black87,
+  //       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+  //     ),
+  //   );
+  // }
 
   Widget _buildNotificationCard(NotificationModel notification) {
     final recipients = _formatRecipients(notification);
