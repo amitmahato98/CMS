@@ -1,4 +1,3 @@
-// AddNewTeacherPage.dart
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -247,7 +246,6 @@ class _AddNewTeacherPageState extends State<AddNewTeacherPage> {
                           vertical: 14,
                         ),
 
-                        // backgroundColor: const Color(0xFF1E88E5),
                         textStyle: const TextStyle(fontSize: 16),
                         iconColor: Colors.white,
                       ),

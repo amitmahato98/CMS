@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-// Model for notifications
 class NotificationModel {
   final String id;
   final String title;
   final String message;
-  final String
-  targetType; // "teacher", "student", "nonteaching", "parent" or "all"
+  final String targetType;
   final List<String> recipientIds;
   final DateTime timestamp;
 
@@ -44,7 +42,6 @@ class NotificationModel {
   }
 }
 
-// Teacher model
 class Teachers {
   final String id;
   final String name;
@@ -53,7 +50,6 @@ class Teachers {
   Teachers({required this.id, required this.name, required this.department});
 }
 
-// Student model
 class Students {
   final String id;
   final String name;
@@ -68,7 +64,6 @@ class Students {
   });
 }
 
-// Non-Teaching Staff model
 class NonTeachingStaff {
   final String id;
   final String name;
@@ -83,7 +78,6 @@ class NonTeachingStaff {
   });
 }
 
-// Parent model
 class Parents {
   final String id;
   final String name;
@@ -100,7 +94,6 @@ class Parents {
   });
 }
 
-// Sample data
 class MockDataService {
   static List<Teachers> getTeachers() {
     return [
@@ -206,21 +199,17 @@ class MockDataService {
   }
 }
 
-// SharedPreferences service for notifications
 class NotificationStorageService {
   static const String _notificationsKey = 'college_notifications';
 
-  // Save notification
   static Future<bool> saveNotification(NotificationModel notification) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       List<String> storedNotifications =
           prefs.getStringList(_notificationsKey) ?? [];
 
-      // Add new notification
       storedNotifications.add(jsonEncode(notification.toJson()));
 
-      // Save back to prefs
       return await prefs.setStringList(_notificationsKey, storedNotifications);
     } catch (e) {
       print('Error saving notification: $e');
@@ -228,7 +217,6 @@ class NotificationStorageService {
     }
   }
 
-  // Get all notifications
   static Future<List<NotificationModel>> getNotifications() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -241,9 +229,7 @@ class NotificationStorageService {
                 NotificationModel.fromJson(jsonDecode(notificationStr)),
           )
           .toList()
-        ..sort(
-          (a, b) => b.timestamp.compareTo(a.timestamp),
-        ); // Sort by newest first
+        ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
     } catch (e) {
       print('Error retrieving notifications: $e');
       return [];
@@ -275,7 +261,6 @@ class _SendNotificationPageState extends State<SendNotificationPage>
   List<NotificationModel> _notificationHistory = [];
   bool _isLoading = true;
 
-  // For history filter
   String _historyFilter = 'all';
 
   @override
@@ -340,7 +325,6 @@ class _SendNotificationPageState extends State<SendNotificationPage>
   Future<void> _sendNotification() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Validate at least one recipient is selected
     bool noRecipientsSelected = false;
 
     if (_selectedTargetType == 'teachers' && _selectedTeacherIds.isEmpty) {
@@ -376,7 +360,6 @@ class _SendNotificationPageState extends State<SendNotificationPage>
     });
 
     try {
-      // Combine recipient IDs based on target type
       List<String> recipientIds = [];
       if (_selectedTargetType == 'teachers' || _selectedTargetType == 'all') {
         recipientIds.addAll(_selectedTeacherIds);
@@ -392,7 +375,6 @@ class _SendNotificationPageState extends State<SendNotificationPage>
         recipientIds.addAll(_selectedParentIds);
       }
 
-      // Create notification
       final notification = NotificationModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: _titleController.text,
@@ -402,7 +384,6 @@ class _SendNotificationPageState extends State<SendNotificationPage>
         timestamp: DateTime.now(),
       );
 
-      // Save notification
       bool success = await NotificationStorageService.saveNotification(
         notification,
       );
@@ -415,7 +396,6 @@ class _SendNotificationPageState extends State<SendNotificationPage>
           ),
         );
 
-        // Reset form
         _titleController.clear();
         _messageController.clear();
         setState(() {
@@ -425,7 +405,6 @@ class _SendNotificationPageState extends State<SendNotificationPage>
           _selectedParentIds = [];
         });
 
-        // Refresh history
         _loadNotificationHistory();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -479,7 +458,6 @@ class _SendNotificationPageState extends State<SendNotificationPage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title field
             TextFormField(
               controller: _titleController,
               decoration: const InputDecoration(
@@ -496,7 +474,6 @@ class _SendNotificationPageState extends State<SendNotificationPage>
             ),
             const SizedBox(height: 16),
 
-            // Message field
             TextFormField(
               controller: _messageController,
               decoration: const InputDecoration(
@@ -515,7 +492,6 @@ class _SendNotificationPageState extends State<SendNotificationPage>
             ),
             const SizedBox(height: 24),
 
-            // Target type selection
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -532,7 +508,6 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                     ),
                     const SizedBox(height: 8),
 
-                    // Radio buttons for target selection
                     RadioListTile<String>(
                       title: const Text('Teachers Only'),
                       value: 'teachers',
@@ -594,35 +569,30 @@ class _SendNotificationPageState extends State<SendNotificationPage>
             ),
             const SizedBox(height: 24),
 
-            // Teacher selection
             if (_selectedTargetType == 'teachers' ||
                 _selectedTargetType == 'all')
               _buildTeacherSelection(),
 
             const SizedBox(height: 16),
 
-            // Student selection
             if (_selectedTargetType == 'students' ||
                 _selectedTargetType == 'all')
               _buildStudentSelection(),
 
             const SizedBox(height: 16),
 
-            // Non-Teaching Staff selection
             if (_selectedTargetType == 'nonteaching' ||
                 _selectedTargetType == 'all')
               _buildNonTeachingStaffSelection(),
 
             const SizedBox(height: 16),
 
-            // Parents selection
             if (_selectedTargetType == 'parents' ||
                 _selectedTargetType == 'all')
               _buildParentsSelection(),
 
             const SizedBox(height: 24),
 
-            // Send button
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -926,19 +896,15 @@ class _SendNotificationPageState extends State<SendNotificationPage>
       return const Center(child: CircularProgressIndicator());
     }
 
-    // Filter notifications based on selected filter
     List<NotificationModel> filteredNotifications = _notificationHistory;
     if (_historyFilter != 'all') {
       filteredNotifications =
           _notificationHistory.where((notification) {
-            // Check if notification targetType matches filter directly
             if (notification.targetType == _historyFilter) {
               return true;
             }
 
-            // If notification is for all users but we want to filter by specific type
             if (notification.targetType == 'all') {
-              // Check if any recipient IDs match the filter prefix
               if (_historyFilter == 'teachers') {
                 return notification.recipientIds.any(
                   (id) => id.startsWith('t'),
@@ -1000,35 +966,6 @@ class _SendNotificationPageState extends State<SendNotificationPage>
       },
     );
   }
-
-  // Widget _buildFilterChip(String label, String value) {
-  //   final isSelected = _historyFilter == value;
-
-  //   return FilterChip(
-  //     label: Text(label),
-  //     selected: isSelected,
-  //     onSelected: (selected) {
-  //       setState(() {
-  //         _historyFilter = value;
-  //       });
-  //     },
-  //     selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
-  //     checkmarkColor: Theme.of(context).primaryColor,
-  //     backgroundColor:
-  //         Theme.of(context).brightness == Brightness.dark
-  //             ? Colors.grey[700]
-  //             : Colors.grey[300],
-  //     labelStyle: TextStyle(
-  //       color:
-  //           isSelected
-  //               ? Theme.of(context).primaryColor
-  //               : Theme.of(context).brightness == Brightness.dark
-  //               ? Colors.white
-  //               : Colors.black87,
-  //       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-  //     ),
-  //   );
-  // }
 
   Widget _buildNotificationCard(NotificationModel notification) {
     final recipients = _formatRecipients(notification);
@@ -1106,7 +1043,6 @@ class _SendNotificationPageState extends State<SendNotificationPage>
       return 'No recipients';
     }
 
-    // Count different recipient types
     int teacherCount = 0;
     int studentCount = 0;
     int staffCount = 0;
@@ -1132,7 +1068,6 @@ class _SendNotificationPageState extends State<SendNotificationPage>
     } else if (notification.targetType == 'parents') {
       return 'Sent to $parentCount parents';
     } else {
-      // Build string for mixed recipients
       List<String> recipientGroups = [];
       if (teacherCount > 0) {
         recipientGroups.add('$teacherCount teachers');

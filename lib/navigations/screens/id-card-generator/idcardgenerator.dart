@@ -114,7 +114,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
         pw.Page(
           pageFormat: PdfPageFormat(
             320 * PdfPageFormat.mm,
-            500 * PdfPageFormat.mm, // width: card width + margins
+            500 * PdfPageFormat.mm,
             marginAll: 10 * PdfPageFormat.mm,
           ),
           build:
@@ -123,9 +123,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
                   mainAxisSize: pw.MainAxisSize.min,
                   children: [
                     pw.Container(
-                      margin: const pw.EdgeInsets.only(
-                        top: 20,
-                      ), // optional: adds space from top
+                      margin: const pw.EdgeInsets.only(top: 20),
                       padding: const pw.EdgeInsets.all(10),
                       width: 280,
                       decoration: pw.BoxDecoration(

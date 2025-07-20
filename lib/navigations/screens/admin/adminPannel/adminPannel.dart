@@ -56,7 +56,6 @@ class _UserManagementScreenState extends State<UserManagementScreen>
             }).toList();
       });
     } else {
-      // Load default users if no saved data exists
       _loadDefaultUsers();
     }
   }
@@ -1012,7 +1011,6 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     });
     _saveUsers();
 
-    // Optionally save deletion log
     _saveDeletionLog(user, reason);
     _showSnackbar('${user.name} deleted successfully', Colors.red);
   }
@@ -1033,7 +1031,6 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     await prefs!.setStringList('deletion_logs', deletionLogs);
   }
 
-  // Method to retrieve deletion logs (for admin audit trail)
   Future<List<Map<String, dynamic>>> getDeletionLogs() async {
     if (prefs == null) return [];
 
@@ -1043,7 +1040,6 @@ class _UserManagementScreenState extends State<UserManagementScreen>
         .toList();
   }
 
-  // Method to clear old logs (optional - call this periodically)
   Future<void> clearOldDeletionLogs({int daysToKeep = 30}) async {
     if (prefs == null) return;
 
@@ -1116,7 +1112,6 @@ class User {
     this.avatarUrl,
   });
 
-  // Convert User to JSON for SharedPreferences
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -1129,7 +1124,6 @@ class User {
     };
   }
 
-  // Create User from JSON
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],

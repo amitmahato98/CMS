@@ -32,7 +32,6 @@ class _DashboardState extends State<Dashboard> {
   Future<void> _handleRefresh() async {
     await Future.delayed(Duration(milliseconds: 1000));
 
-    // Trigger rebuild of OverVeiw by changing its key
     setState(() {
       _refreshKey = UniqueKey();
     });
@@ -44,10 +43,6 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    // final themeProvider = Provider.of<theme_provider.ThemeProvider>(context);
-    // final isDarkMode = themeProvider.isDarkMode;
-    // final theme = Theme.of(context);
-
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: _handleRefresh,
@@ -58,7 +53,7 @@ class _DashboardState extends State<Dashboard> {
             child: Column(
               children: [
                 OverVeiw(
-                  key: _refreshKey, // <-- Important line
+                  key: _refreshKey,
                   onSectionSelected: widget.onSectionSelected,
                 ),
                 SizedBox(height: 20),
@@ -85,8 +80,6 @@ class OverVeiw extends StatefulWidget {
 class _OverVeiwState extends State<OverVeiw> {
   @override
   Widget build(BuildContext context) {
-    // final themeProvider = Provider.of<ThemeProvider>(context);
-    // final isDarkMode = themeProvider.isDarkMode;
     final theme = Theme.of(context);
 
     return Padding(
@@ -300,7 +293,8 @@ class _ViewCountState extends State<ViewCount> {
 }
 
 class CircleProgressPainter extends CustomPainter {
-  final double progress; // 0.0 to 1.0
+  final double progress;
+
   final Color color;
 
   CircleProgressPainter({required this.progress, required this.color});
@@ -324,14 +318,12 @@ class CircleProgressPainter extends CustomPainter {
           ..style = PaintingStyle.stroke
           ..strokeCap = StrokeCap.round;
 
-    // Draw background circle
     canvas.drawCircle(center, radius, backgroundPaint);
 
-    // Draw progress arc
     final angle = 2 * pi * progress;
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
-      -pi / 2, // Start from top
+      -pi / 2,
       angle,
       false,
       foregroundPaint,

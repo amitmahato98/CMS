@@ -5,7 +5,6 @@ import 'package:cms/navigations/screens/notifications/notification.dart';
 import 'package:cms/navigations/screens/policies/policies.dart';
 import 'package:cms/navigations/screens/profile/profile.dart';
 import 'package:cms/navigations/screens/student/student.dart';
-// import 'package:cms/navigations/screens/teacher/teacher.dart';
 import 'package:flutter/material.dart';
 
 class Navbar extends StatelessWidget {
@@ -34,7 +33,6 @@ class Navbar extends StatelessWidget {
                       "assets/images/img1profile.jpg",
                     ),
                     onBackgroundImageError: (exception, stackTrace) {},
-                    // child: const Icon(Icons.person, size: 35),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -72,26 +70,6 @@ class Navbar extends StatelessWidget {
             },
           ),
 
-          // ExpansionTile(
-          //   leading: Icon(Icons.people),
-          //   title: Text("Staff"),
-          //   children: [
-          //     ListTile(
-          //       leading: Icon(Icons.person_4),
-          //       title: Text(" Teaching"),
-          //       onTap:
-          //           () => Navigator.push(
-          //             context,
-          //             MaterialPageRoute(builder: (context) => TeacherScreen()),
-          //           ),
-          //     ),
-          //     ListTile(
-          //       leading: Icon(Icons.engineering),
-          //       title: Text("Non-Teaching"),
-          //       onTap: () => Navigator.pop(context),
-          //     ),
-          //   ],
-          // ),
           ListTile(
             leading: Icon(Icons.edit_document),
             title: Text("Exam Section"),
@@ -129,15 +107,7 @@ class Navbar extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => AboutUs()),
                 ),
           ),
-          // ListTile(
-          //   leading: Icon(Icons.settings),
-          //   title: Text("Setting"),
-          //   onTap:
-          //       () => Navigator.push(
-          //         context,
-          //         MaterialPageRoute(builder: (context) => Setting()),
-          //       ),
-          // ),
+
           ListTile(
             leading: Icon(Icons.logout),
             title: Text("Logout"),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:cms/datatypes/datatypes.dart';
 
 enum StaffCategory { Teaching, Admin }
 
@@ -23,7 +22,6 @@ class LeaveRequest {
     required this.category,
   });
 
-  // Generate a unique ID for each request (e.g., based on name + from date)
   String get id => "$name-${fromDate.toIso8601String()}";
 }
 
@@ -300,8 +298,6 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
 
   @override
   Widget build(BuildContext context) {
-    // final theme = Theme.of(context);
-
     final filteredRequests =
         leaveRequests
             .asMap()

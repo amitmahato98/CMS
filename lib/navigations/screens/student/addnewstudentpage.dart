@@ -126,7 +126,6 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      // Name
                       TextFormField(
                         controller: _nameController,
                         decoration: _inputDecoration('Full Name', Icons.person),
@@ -138,7 +137,6 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Gender
                       DropdownButtonFormField<String>(
                         value: _selectedGender,
                         decoration: _inputDecoration('Gender', Icons.people),
@@ -155,7 +153,6 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Date of Birth
                       InkWell(
                         onTap: () async {
                           final picked = await showDatePicker(
@@ -180,7 +177,6 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Email
                       TextFormField(
                         controller: _emailController,
                         decoration: _inputDecoration(
@@ -199,7 +195,6 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Phone (with +977 visual prefix)
                       TextFormField(
                         controller: _phoneController,
                         decoration: _inputDecoration(
@@ -220,7 +215,6 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Address
                       TextFormField(
                         controller: _addressController,
                         decoration: _inputDecoration('Address', Icons.home),
@@ -233,7 +227,6 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Program
                       DropdownButtonFormField<String>(
                         value: _selectedProgram,
                         decoration: _inputDecoration('Program', Icons.school),
@@ -250,7 +243,6 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Student ID (read-only)
                       TextFormField(
                         decoration: _inputDecoration('Student ID', Icons.badge),
                         enabled: false,
@@ -258,7 +250,6 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       ),
                       const SizedBox(height: 32),
 
-                      // Submit button
                       ElevatedButton(
                         onPressed: _submitForm,
                         style: ElevatedButton.styleFrom(

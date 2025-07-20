@@ -112,7 +112,6 @@ class _PolicyState extends State<Policy> with SingleTickerProviderStateMixin {
     ),
   ];
 
-  // Global identifier for the currently expanded policy, unique string: "categoryIndex-policyIndex"
   String? _currentlyExpanded;
 
   @override
@@ -121,7 +120,7 @@ class _PolicyState extends State<Policy> with SingleTickerProviderStateMixin {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: blueColor, // your blue theme color
+        backgroundColor: blueColor,
         title: const Text("Policies"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -311,7 +310,6 @@ class _PolicyExpansionTileState extends State<_PolicyExpansionTile>
   }
 }
 
-// Your policy data classes (can be in separate file)
 class PolicyCategory {
   final String title;
   final List<PolicyItem> policies;

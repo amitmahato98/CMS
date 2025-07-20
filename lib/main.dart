@@ -79,7 +79,7 @@ class _MainNavigatorState extends State<MainNavigator> {
     bool shouldExit =
         await showDialog(
           context: context,
-          barrierDismissible: false, // User must tap a button to close dialog
+          barrierDismissible: false,
           builder:
               (context) => WillPopScope(
                 onWillPop: () async => false,
@@ -104,7 +104,7 @@ class _MainNavigatorState extends State<MainNavigator> {
         false;
 
     if (shouldExit) {
-      SystemNavigator.pop(); // Use system navigator to exit the app
+      SystemNavigator.pop();
     }
 
     return false;

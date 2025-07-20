@@ -140,11 +140,9 @@ class _NewStudentState extends State<NewStudent> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Top Info
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // ✅ Avatar removed here
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +186,6 @@ class _NewStudentState extends State<NewStudent> {
                             ],
                           ),
 
-                          // Expanded Info Section
                           AnimatedCrossFade(
                             firstChild: const SizedBox.shrink(),
                             secondChild: Padding(

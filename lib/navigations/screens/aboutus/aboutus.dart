@@ -22,7 +22,6 @@ class AboutUs extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // College Logo
             CircleAvatar(
               radius: 50,
               backgroundImage: const AssetImage('assets/collage/cct.jpeg'),
@@ -31,7 +30,6 @@ class AboutUs extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // App Name
             Text(
               "Central Campus of Technology, CMS",
               style: theme.textTheme.headlineSmall?.copyWith(
@@ -53,7 +51,6 @@ class AboutUs extends StatelessWidget {
 
             const Divider(height: 40),
 
-            // Mission
             _buildSectionTitle("Our Mission", theme),
             const SizedBox(height: 6),
             Text(
@@ -64,7 +61,6 @@ class AboutUs extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Vision
             _buildSectionTitle("Our Vision", theme),
             const SizedBox(height: 6),
             Text(
@@ -75,7 +71,6 @@ class AboutUs extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Key Features
             _buildSectionTitle("Key Features", theme),
             const SizedBox(height: 10),
             _buildFeatureItem(
@@ -101,7 +96,6 @@ class AboutUs extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Developed By
             _buildSectionTitle("Developed By", theme),
             const SizedBox(height: 6),
             Text(
@@ -112,7 +106,6 @@ class AboutUs extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Contact Section with shadow
             _buildSectionTitle("Contact", theme),
             const SizedBox(height: 10),
             Container(

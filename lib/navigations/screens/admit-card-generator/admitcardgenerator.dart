@@ -27,7 +27,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
   final _formKey = GlobalKey<FormState>();
   final _picker = ImagePicker();
 
-  // Controllers
   final _fullName = TextEditingController();
   final _fatherName = TextEditingController();
   final _address = TextEditingController();
@@ -138,7 +137,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                 onTap: () async {
                   final todayBs = NepaliDateTime.now();
 
-                  // Max date 18 years before today (in BS)
                   final maxBsDate = NepaliDateTime(
                     todayBs.year - 18,
                     todayBs.month - 2,
@@ -148,7 +146,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                   final picked = await picker.showAdaptiveDatePicker(
                     context: context,
                     initialDate: maxBsDate,
-                    firstDate: NepaliDateTime(2000, 1, 1), // or older if needed
+                    firstDate: NepaliDateTime(2000, 1, 1),
                     lastDate: maxBsDate,
                   );
 
@@ -213,7 +211,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                             : 'Invalid email',
               ),
 
-              // Course dropdown
               DropdownButtonFormField<String>(
                 value: _selectedCourse,
                 decoration: const InputDecoration(
@@ -428,7 +425,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //header with logo and college details
           Column(
             children: [
               Row(
@@ -481,26 +477,22 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(
-                8,
-              ), // Border radius on all sides
+              borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.3),
                   spreadRadius: 2,
                   blurRadius: 5,
-                  offset: const Offset(0, 3), // Shadow position
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
             child: Row(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start, // Aligns image and text top aligned
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start, // Left align text
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text("Full Name: ${_fullName.text}"),
                       const SizedBox(height: 5),
@@ -524,7 +516,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                     ],
                   ),
                 ),
-                const SizedBox(width: 20), // Gap between text and image
+                const SizedBox(width: 20),
                 if (_studentImage != null)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
@@ -588,7 +580,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
 
           const SizedBox(height: 20),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.end, // Align bottom
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               if (_signatureImage != null)
                 Column(
@@ -599,12 +591,11 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                     const Text("Student Signature"),
                   ],
                 ),
-              const SizedBox(width: 130), // Spacing between image and text
+              const SizedBox(width: 130),
               Expanded(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start, // Left-align both text lines
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("Exam Type: $_selectedExamType"),
                     const SizedBox(height: 5),
@@ -622,7 +613,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
   Future<void> downloadAsPdf() async {
     final pdf = pw.Document();
 
-    // Load logo from assets
     final logoImage = await rootBundle.load('assets/collage/logo.png');
     final logoBytes = logoImage.buffer.asUint8List();
 
@@ -632,18 +622,12 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
             (pw.Context context) => [
               pw.Container(
                 decoration: pw.BoxDecoration(
-                  border: pw.Border.all(
-                    color: PdfColors.black,
-                    width: 1,
-                  ), // Black border, width 1, no radius
+                  border: pw.Border.all(color: PdfColors.black, width: 1),
                 ),
-                padding: const pw.EdgeInsets.all(
-                  16,
-                ), // Padding inside the border
+                padding: const pw.EdgeInsets.all(16),
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    // Header with logo and college info
                     pw.Row(
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
@@ -697,7 +681,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                     ),
                     pw.SizedBox(height: 20),
 
-                    // Student details and photo
                     pw.Container(
                       decoration: pw.BoxDecoration(
                         border: pw.Border.all(color: PdfColors.grey),
@@ -748,7 +731,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
 
                     pw.SizedBox(height: 16),
 
-                    // Subjects table
                     pw.Text(
                       "Subjects:",
                       style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
@@ -767,7 +749,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
 
                     pw.SizedBox(height: 20),
 
-                    // Signature and approval section
                     pw.Row(
                       crossAxisAlignment: pw.CrossAxisAlignment.end,
                       children: [
@@ -804,7 +785,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
       ),
     );
 
-    // Your permission and file saving code remains unchanged below...
     try {
       Directory? dir;
 

@@ -26,7 +26,7 @@ class AppRoot extends StatelessWidget {
   }
 }
 
-// ----------------------- Result Page ------------------------
+// ----------------------- Result Page --------------------------------------------------------------------------
 
 class ResultPage extends StatefulWidget {
   const ResultPage({super.key});
@@ -158,9 +158,7 @@ class _ResultPageState extends State<ResultPage> {
                   actions: [
                     TextButton(
                       onPressed: () {
-                        Navigator.of(
-                          dialogContext,
-                        ).pop(); // ✅ only closes dialog
+                        Navigator.of(dialogContext).pop();
                       },
                       child: const Text("OK"),
                     ),
@@ -176,7 +174,7 @@ class _ResultPageState extends State<ResultPage> {
     required String label,
     required IconData icon,
     required TextEditingController controller,
-    String? Function(String?)? validator, // Add this parameter
+    String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
@@ -195,8 +193,6 @@ class _ResultPageState extends State<ResultPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-
     return Scaffold(
       appBar: AppBar(title: const Text("Result")),
       body: Padding(
@@ -228,12 +224,10 @@ class _ResultPageState extends State<ResultPage> {
                   if (value == null || value.trim().isEmpty) {
                     return 'Required';
                   }
-                  // Check at least two words
                   final nameParts = value.trim().split(RegExp(r'\s+'));
                   if (nameParts.length < 2) {
                     return 'Enter first and last name';
                   }
-                  // Only alphabets and spaces allowed (no numbers or special chars)
                   if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value.trim())) {
                     return 'Only alphabets allowed';
                   }
@@ -249,7 +243,6 @@ class _ResultPageState extends State<ResultPage> {
                   if (value == null || value.trim().isEmpty) {
                     return 'Required';
                   }
-                  // Date format: yyyy/m/d
                   if (!RegExp(
                     r'^\d{4}/\d{1,2}/\d{1,2}$',
                   ).hasMatch(value.trim())) {
@@ -295,7 +288,7 @@ class _ResultPageState extends State<ResultPage> {
   }
 }
 
-// ----------------------- GradeSheet Page ------------------------
+// --------------------------------------------- GradeSheet Page ----------------------------------------------------------
 
 class GradeSheetPage extends StatelessWidget {
   final Map<String, dynamic> student;
@@ -594,7 +587,7 @@ class _CloseButtonAnimatedState extends State<CloseButtonAnimated>
     return ScaleTransition(
       scale: _scaleAnim,
       child: GestureDetector(
-        onTap: () => Navigator.pop(context), // ✅ Now this works
+        onTap: () => Navigator.pop(context),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.blue.withOpacity(0.1),

@@ -272,9 +272,6 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // final textColor = theme.textTheme.bodyLarge?.color;
-    // final cardColor = theme.cardColor;
-    // final labelStyle = TextStyle(color: theme.hintColor.withOpacity(0.7));
 
     return Scaffold(
       appBar: AppBar(
@@ -303,7 +300,6 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
           key: _formKey,
           child: Column(
             children: [
-              // Profile Image
               Center(
                 child: CircleAvatar(
                   radius: 55,
@@ -320,7 +316,6 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
               ),
               const SizedBox(height: 24),
 
-              // Fields
               _buildFieldCard(
                 icon: Icons.person,
                 label: "First Name",
@@ -805,7 +800,6 @@ class _EducationalInformationScreenState
         educationList = List<Map<String, dynamic>>.from(decoded);
       });
     } else {
-      // Wrap this in setState to update UI on first load
       setState(() {
         educationList = [
           {
@@ -832,13 +826,8 @@ class _EducationalInformationScreenState
 
   @override
   Widget build(BuildContext context) {
-    // final theme = Theme.of(context);
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Educational Information"),
-        // Removed IconButton here because we use FAB now
-      ),
+      appBar: AppBar(title: Text("Educational Information")),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -878,7 +867,6 @@ class _EducationalInformationScreenState
         ),
       ),
 
-      // WhatsApp-style FAB for adding education
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddEducationDialog,
         child: Icon(Icons.add),
@@ -1091,7 +1079,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       return;
     }
 
-    // Hash the password using SHA-256
     final bytes = utf8.encode(newPassword);
     final digest = sha256.convert(bytes);
 

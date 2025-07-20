@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-import 'AddNewTeacherPage.dart'; // Assuming you created this already
+import 'AddNewTeacherPage.dart';
 
 class Teacher {
   final String id;
@@ -128,9 +128,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(
-                  dialogContext,
-                ).pop(false); // close dialog with false
+                Navigator.of(dialogContext).pop(false);
               },
               child: const Text('Cancel'),
             ),
@@ -205,7 +203,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Header row
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -252,7 +249,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
                             ],
                           ),
 
-                          // Expanded info
                           AnimatedCrossFade(
                             firstChild: const SizedBox.shrink(),
                             secondChild: Padding(
