@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -59,6 +60,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                   title: const Text('Gallery'),
                   onTap: () => Navigator.pop(context, ImageSource.gallery),
                 ),
+                SizedBox(height: 5),
                 ListTile(
                   leading: const Icon(Icons.camera_alt),
                   title: const Text('Camera'),
@@ -91,7 +93,10 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admit Card Generator')),
+      appBar: AppBar(
+        title: const Text('Admit Card Generator'),
+        backgroundColor: blueColor,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -421,7 +426,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
   Widget _buildAdmitCardPreview() {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+      decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -476,11 +481,11 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: blueColor.withOpacity(0.3),
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
+                  color: Colors.grey.withOpacity(0.2),
                   spreadRadius: 2,
                   blurRadius: 5,
                   offset: const Offset(0, 3),
@@ -537,7 +542,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           Table(
-            border: TableBorder.all(),
+            border: TableBorder.all(color: blueColor),
             children: [
               const TableRow(
                 children: [
@@ -622,7 +627,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
             (pw.Context context) => [
               pw.Container(
                 decoration: pw.BoxDecoration(
-                  border: pw.Border.all(color: PdfColors.black, width: 1),
+                  border: pw.Border.all(color: PdfColors.blue, width: 1),
                 ),
                 padding: const pw.EdgeInsets.all(16),
                 child: pw.Column(

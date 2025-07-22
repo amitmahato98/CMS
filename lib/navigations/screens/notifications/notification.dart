@@ -1,3 +1,4 @@
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -438,6 +439,7 @@ class _SendNotificationPageState extends State<SendNotificationPage>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifications'),
+        backgroundColor: blueColor,
         bottom: TabBar(
           controller: _tabController,
           tabs: const [Tab(text: 'Send Notifications'), Tab(text: 'History')],

@@ -827,7 +827,10 @@ class _EducationalInformationScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Educational Information")),
+      appBar: AppBar(
+        title: Text("Educational Information"),
+        backgroundColor: blueColor,
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -1096,7 +1099,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text("Password Hashing")),
+      appBar: AppBar(
+        title: Text("Password Hashing"),
+        backgroundColor: blueColor,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

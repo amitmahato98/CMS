@@ -1,3 +1,4 @@
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:cms/navigations/screens/admin/adminPannel/adminPannel.dart';
 import 'package:cms/navigations/screens/admit-card-generator/admitcardgenerator.dart';
 import 'package:cms/navigations/screens/approve/leave-request/leave-request-approve.dart';
@@ -461,7 +462,10 @@ class _GridbuildState extends State<Gridbuild> {
                                 : Colors.white,
                         boxShadow: [
                           BoxShadow(
-                            color: theme.colorScheme.shadow.withOpacity(0.2),
+                            color:
+                                isDarkMode
+                                    ? blueColor.withOpacity(0.3)
+                                    : theme.colorScheme.shadow.withOpacity(0.3),
                             spreadRadius: 1,
                             blurRadius: 3,
                             offset: Offset(0, 2),

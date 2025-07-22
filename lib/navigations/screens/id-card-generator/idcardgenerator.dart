@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -33,12 +34,44 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
   bool showCard = false;
   bool isGeneratingPDF = false;
 
-  Future pickImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
+  Future<void> _pickImageWithDialog() async {
+    final ImageSource? source = await showDialog<ImageSource>(
+      context: context,
+      builder: (context) {
+        final theme = Theme.of(context);
+        return AlertDialog(
+          backgroundColor: theme.cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: const Text('Select Image Source'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo),
+                title: const Text('Gallery'),
+                onTap: () => Navigator.pop(context, ImageSource.gallery),
+              ),
+              SizedBox(height: 5),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Camera'),
+                onTap: () => Navigator.pop(context, ImageSource.camera),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (source != null) {
+      final pickedFile = await picker.pickImage(source: source);
+      if (pickedFile != null) {
+        setState(() {
+          _image = File(pickedFile.path);
+        });
+      }
     }
   }
 
@@ -281,6 +314,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
               ),
         ),
       );
+
       Directory? directory;
       if (Platform.isAndroid) {
         directory = await getExternalStorageDirectory();
@@ -344,6 +378,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Student ID Card Generator"),
+        backgroundColor: blueColor,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back),
@@ -356,7 +391,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
           child: Column(
             children: [
               ElevatedButton.icon(
-                onPressed: pickImage,
+                onPressed: _pickImageWithDialog,
                 icon: const Icon(Icons.photo),
                 label: const Text("Pick Student Photo"),
               ),
@@ -432,7 +467,6 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
                     ),
                     Text(
                       "Institute of Science & Technology",
-
                       style: TextStyle(fontSize: 8, color: Colors.black),
                     ),
                     Text(

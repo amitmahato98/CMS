@@ -1,3 +1,4 @@
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:cms/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -194,7 +195,7 @@ class _ResultPageState extends State<ResultPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Result")),
+      appBar: AppBar(title: const Text("Result"), backgroundColor: blueColor),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Form(
