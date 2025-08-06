@@ -213,21 +213,29 @@ class _ViewCountState extends State<ViewCount> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 105,
-      width: MediaQuery.of(context).size.width - 75,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children:
-            countMap.map((data) {
-              return _buildCountItem(
-                data["number"],
-                data["Title"],
-                data["icon"],
-              );
-            }).toList(),
-      ),
-    );
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Larger screens: show all 4 animated cards
+    if (screenWidth > 600) {
+      return Container(
+        height: 105,
+        width: screenWidth - 75,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children:
+              countMap.map((data) {
+                return _buildCountItem(
+                  data["number"],
+                  data["Title"],
+                  data["icon"],
+                );
+              }).toList(),
+        ),
+      );
+    }
+
+    // Smaller screens: show single futuristic card
+    return _buildFuturisticCard();
   }
 
   Widget _buildCountItem(String numberStr, String title, IconData icon) {
@@ -289,6 +297,89 @@ class _ViewCountState extends State<ViewCount> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildFuturisticCard() {
+    return Container(
+      margin: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.blue.shade900, Colors.blue.shade600],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.5),
+            blurRadius: 12,
+            spreadRadius: 2,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Campus Overview",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 20,
+            runSpacing: 15,
+            children:
+                countMap.map((data) {
+                  final int targetNumber = int.parse(data["number"]);
+                  return TweenAnimationBuilder<double>(
+                    tween: Tween<double>(
+                      begin: 0,
+                      end: targetNumber.toDouble(),
+                    ),
+                    duration: Duration(seconds: 3),
+                    curve: Curves.easeOut,
+                    builder: (context, value, child) {
+                      return Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: grayColor.withOpacity(0.1),
+                              spreadRadius: 0.5,
+                              blurRadius: 0.5,
+                              offset: Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(data["icon"], color: Colors.white),
+                            const SizedBox(width: 4),
+                            Text(
+                              "${value.toInt()} ${data["Title"]}",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -432,7 +523,7 @@ class _GridbuildState extends State<Gridbuild> {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 20,
-                  mainAxisExtent: 200,
+                  mainAxisExtent: 220,
                   mainAxisSpacing: 20,
                 ),
                 itemBuilder: (_, index) {
@@ -464,8 +555,8 @@ class _GridbuildState extends State<Gridbuild> {
                           BoxShadow(
                             color:
                                 isDarkMode
-                                    ? blueColor.withOpacity(0.3)
-                                    : theme.colorScheme.shadow.withOpacity(0.3),
+                                    ? blueColor.withOpacity(0.4)
+                                    : theme.colorScheme.shadow.withOpacity(0.4),
                             spreadRadius: 1,
                             blurRadius: 3,
                             offset: Offset(0, 2),
@@ -501,14 +592,14 @@ class _GridbuildState extends State<Gridbuild> {
                                   gridMap.elementAt(index)['title'],
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                    fontSize: 14,
                                   ),
                                 ),
                                 SizedBox(height: 4),
                                 Text(
                                   gridMap.elementAt(index)['description'],
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 10,
                                     color:
                                         isDarkMode
                                             ? Colors.white70

@@ -123,7 +123,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                             ? 'Enter first and last name'
                             : null,
               ),
-
               _textField(
                 _symbol,
                 'Symbol No.',
@@ -136,25 +135,21 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                             : 'Enter valid 8-digit number starting with 7/8/9',
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               ),
-
               _textField(_address, 'Address', required: true),
               GestureDetector(
                 onTap: () async {
                   final todayBs = NepaliDateTime.now();
-
                   final maxBsDate = NepaliDateTime(
                     todayBs.year - 18,
                     todayBs.month - 2,
                     todayBs.day - 3,
                   );
-
                   final picked = await picker.showAdaptiveDatePicker(
                     context: context,
                     initialDate: maxBsDate,
                     firstDate: NepaliDateTime(2000, 1, 1),
                     lastDate: maxBsDate,
                   );
-
                   if (picked != null) {
                     setState(() {
                       _dob.text = NepaliDateFormat('yyyy-MM-dd').format(picked);
@@ -170,12 +165,10 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                       if (value == null || value.isEmpty) {
                         return 'Date of Birth is required';
                       }
-
                       try {
                         final selectedBs = NepaliDateTime.parse(value);
                         final todayBs = NepaliDateTime.now();
                         final diff = todayBs.year - selectedBs.year;
-
                         if (diff < 18 ||
                             (diff == 18 &&
                                 (todayBs.month < selectedBs.month ||
@@ -186,13 +179,11 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                       } catch (e) {
                         return 'Invalid date format';
                       }
-
                       return null;
                     },
                   ),
                 ),
               ),
-
               _textField(
                 _mobile,
                 'Mobile No.',
@@ -205,7 +196,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                             : 'Enter valid 10-digit number starting with 97/98',
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               ),
-
               _textField(
                 _email,
                 'Email',
@@ -215,7 +205,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                             ? null
                             : 'Invalid email',
               ),
-
               DropdownButtonFormField<String>(
                 value: _selectedCourse,
                 decoration: const InputDecoration(
@@ -230,7 +219,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                 validator: (v) => v == null ? 'Please select a course' : null,
               ),
               const SizedBox(height: 12),
-
               DropdownButtonFormField<String>(
                 value: _selectedExamType,
                 decoration: const InputDecoration(
@@ -246,7 +234,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                     (v) => v == null ? 'Please select a exam type' : null,
               ),
               const SizedBox(height: 12),
-
               _textField(
                 _year,
                 'Year',
@@ -257,7 +244,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                         RegExp(r'^(20)\d{2}$').hasMatch(v ?? '')
                             ? null
                             : 'Enter valid 4-digit number starting with 20',
-
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               ),
               _textField(
@@ -274,7 +260,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                             ? null
                             : 'Only numbers and "-" allowed',
               ),
-
               const SizedBox(height: 20),
               Row(
                 children: [
@@ -321,7 +306,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                           ],
                         ),
                       ),
-
                       const SizedBox(width: 8),
                       Expanded(
                         child: TextFormField(
@@ -343,7 +327,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                   ),
                 );
               }),
-
               const SizedBox(height: 20),
               Row(
                 children: [
@@ -364,7 +347,6 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
@@ -376,10 +358,8 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                 },
                 child: const Text('Generate Admit Card Preview'),
               ),
-
               const SizedBox(height: 20),
               if (_showPreview) _buildAdmitCardPreview(),
-
               if (_showPreview)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
@@ -424,194 +404,222 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
   }
 
   Widget _buildAdmitCardPreview() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            children: [
-              Row(
+    return SingleChildScrollView(
+      child: Container(
+        decoration: BoxDecoration(
+          color: blueColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+          border: Border.all(color: Colors.blue),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Image.asset(
+                      "assets/collage/logo.png",
+                      width: 60,
+                      height: 60,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        children: const [
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              "TRIBHUVAN UNIVERSITY",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            "Institute of Science & Technology",
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          Text(
+                            "CENTRAL CAMPUS OF TECHNOLOGY",
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          Text(
+                            "Dharan-14, Sunsari",
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          Text(
+                            "www.cctdharan.edu.np",
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                const Center(
+                  child: Text(
+                    "Exam Admit Card",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+
+            Container(
+              padding: const EdgeInsets.all(16),
+
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Image.asset("assets/collage/logo.png", width: 60, height: 60),
-                  const SizedBox(width: 2),
-                  Expanded(
-                    child: Column(
-                      children: const [
-                        Text(
-                          "TRIBHUVAN UNIVERSITY",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                  if (_studentImage != null)
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.memory(
+                          _studentImage!,
+                          width: 150,
+                          height: 180,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 10),
+                  _studentDetails(),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 10),
+            const Text(
+              "Subjects:",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Center(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Table(
+                  border: TableBorder.all(color: blueColor),
+                  defaultColumnWidth: const IntrinsicColumnWidth(),
+                  children: [
+                    const TableRow(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Text("S.N.", textAlign: TextAlign.center),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Text(
+                            "Course Code",
+                            textAlign: TextAlign.center,
                           ),
                         ),
-                        Text(
-                          "Institute of Science & Technology",
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        Text(
-                          "CENTRAL CAMPUS OF TECHNOLOGY",
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        Text(
-                          "Dharan-14, Sunsari",
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        Text(
-                          "www.cctdharan.edu.np",
-                          style: TextStyle(fontSize: 14),
+                        Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Text(
+                            "Course Name",
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              const Center(
-                child: Text(
-                  "Exam Admit Card",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ..._subjects.asMap().entries.map((e) {
+                      final i = e.key + 1;
+                      final subj = e.value;
+                      return TableRow(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Text('$i', textAlign: TextAlign.center),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Text(subj.code, textAlign: TextAlign.center),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Text(subj.name, textAlign: TextAlign.center),
+                          ),
+                        ],
+                      );
+                    }),
+                  ],
                 ),
               ),
-              const SizedBox(height: 10),
-            ],
-          ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: blueColor.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
-                ),
-              ],
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+
+            const SizedBox(height: 20),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Expanded(
-                  child: Column(
+                if (_signatureImage != null)
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Full Name: ${_fullName.text}"),
+                      Image.memory(_signatureImage!, width: 60, height: 120),
+                      const SizedBox(height: 4),
+                      const Text("Student Signature"),
+                    ],
+                  ),
+                const SizedBox(width: 60),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Exam Type: $_selectedExamType"),
                       const SizedBox(height: 5),
-                      Text("Father's Name: ${_fatherName.text}"),
-                      const SizedBox(height: 5),
-                      Text("Address: ${_address.text}"),
-                      const SizedBox(height: 5),
-                      Text("Mobile No. : ${_mobile.text}"),
-                      const SizedBox(height: 5),
-                      Text("Email: ${_email.text}"),
-                      const SizedBox(height: 5),
-                      Text("Symbol No. : ${_symbol.text}"),
-                      const SizedBox(height: 5),
-                      Text("Course: $_selectedCourse"),
-                      const SizedBox(height: 5),
-                      Text("Year: ${_year.text}"),
-                      const SizedBox(height: 5),
-                      Text("Date of Birth: ${_dob.text}"),
-                      const SizedBox(height: 5),
-                      Text("Regd No: ${_registrationNumber.text}"),
+                      const Text("Approved by: Admin. Amit M."),
                     ],
                   ),
                 ),
-                const SizedBox(width: 20),
-                if (_studentImage != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.memory(
-                      _studentImage!,
-                      width: 200,
-                      height: 240,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
               ],
             ),
-          ),
-
-          const SizedBox(height: 10),
-          const Text(
-            "Subjects:",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Table(
-            border: TableBorder.all(color: blueColor),
-            children: [
-              const TableRow(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Text("S.N.", textAlign: TextAlign.center),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Text("Course Code", textAlign: TextAlign.center),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Text("Course Name", textAlign: TextAlign.center),
-                  ),
-                ],
-              ),
-              ..._subjects.asMap().entries.map((e) {
-                final i = e.key + 1;
-                final subj = e.value;
-                return TableRow(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: Text('$i', textAlign: TextAlign.center),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: Text(subj.code, textAlign: TextAlign.center),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: Text(subj.name, textAlign: TextAlign.center),
-                    ),
-                  ],
-                );
-              }),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              if (_signatureImage != null)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Image.memory(_signatureImage!, width: 60, height: 120),
-                    const SizedBox(height: 4),
-                    const Text("Student Signature"),
-                  ],
-                ),
-              const SizedBox(width: 130),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Exam Type: $_selectedExamType"),
-                    const SizedBox(height: 5),
-                    const Text("Approved by: Admin. Amit M."),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _studentDetails() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Full Name: ${_fullName.text}"),
+        const SizedBox(height: 5),
+        Text("Father's Name: ${_fatherName.text}"),
+        const SizedBox(height: 5),
+        Text("Address: ${_address.text}"),
+        const SizedBox(height: 5),
+        Text("Mobile No. : ${_mobile.text}"),
+        const SizedBox(height: 5),
+        Text("Email: ${_email.text}"),
+        const SizedBox(height: 5),
+        Text("Symbol No. : ${_symbol.text}"),
+        const SizedBox(height: 5),
+        Text("Course: $_selectedCourse"),
+        const SizedBox(height: 5),
+        Text("Year: ${_year.text}"),
+        const SizedBox(height: 5),
+        Text("Date of Birth: ${_dob.text}"),
+        const SizedBox(height: 5),
+        Text("Regd No: ${_registrationNumber.text}"),
+      ],
     );
   }
 
@@ -770,7 +778,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                               pw.Text("Student Signature"),
                             ],
                           ),
-                        pw.SizedBox(width: 100),
+                        pw.SizedBox(width: 180),
                         pw.Expanded(
                           child: pw.Column(
                             crossAxisAlignment: pw.CrossAxisAlignment.start,
