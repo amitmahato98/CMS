@@ -88,7 +88,8 @@ class _OverVeiwState extends State<OverVeiw> {
       child: Material(
         elevation: 10,
         borderRadius: BorderRadius.circular(10),
-        color: theme.colorScheme.primary,
+        color: blueColor,
+        // color: blueColor,
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
@@ -263,7 +264,8 @@ class _ViewCountState extends State<ViewCount> {
                 CustomPaint(
                   painter: CircleProgressPainter(
                     progress: progress,
-                    color: theme.colorScheme.primary,
+                    // color: blueColor,
+                    color: blueColor,
                   ),
                   child: Container(
                     width: 50,
@@ -276,11 +278,13 @@ class _ViewCountState extends State<ViewCount> {
                           value.toInt().toString(),
                           style: TextStyle(
                             fontSize: 14,
-                            color: theme.colorScheme.primary,
+                            color: blueColor,
+
+                            // color: blueColor,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        Icon(icon, size: 16, color: theme.colorScheme.primary),
+                        Icon(icon, size: 16, color: blueColor),
                       ],
                     ),
                   ),
@@ -306,14 +310,14 @@ class _ViewCountState extends State<ViewCount> {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.blue.shade900, Colors.blue.shade600],
+          colors: [blueColor.withOpacity(0.6), Colors.transparent],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.5),
+            color: blueColor.withOpacity(0.5),
             blurRadius: 12,
             spreadRadius: 2,
             offset: Offset(0, 5),
@@ -465,7 +469,7 @@ class _GridbuildState extends State<Gridbuild> {
     },
     {
       "icon": "assets/icons/examination.png",
-      "title": "Examination",
+      "title": "Result",
       "description": "Manage exams, results and grade reports",
     },
     {
@@ -537,7 +541,7 @@ class _GridbuildState extends State<Gridbuild> {
                         "Admit Card": AdmitCardGenerator(),
                         "Notifications": SendNotificationPage(),
                         "Approve": LeaveRequestApprove(),
-                        "Examination": ResultPage(),
+                        "Result": ResultPage(),
                         "ID Card": IDCardGenerator(),
                       };
                       if (screenMap.containsKey(title)) {
@@ -570,7 +574,7 @@ class _GridbuildState extends State<Gridbuild> {
                           Container(
                             height: 110,
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withOpacity(0.1),
+                              color: blueColor.withOpacity(0.3),
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(12),
                                 topRight: Radius.circular(12),
@@ -630,7 +634,7 @@ class _GridbuildState extends State<Gridbuild> {
                 });
               },
               style: TextButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                backgroundColor: blueColor.withOpacity(0.3),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
@@ -642,7 +646,7 @@ class _GridbuildState extends State<Gridbuild> {
                   Text(
                     _isExpanded ? "Show Less" : "Show More",
                     style: TextStyle(
-                      color: theme.colorScheme.primary,
+                      color: blueColor,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -652,7 +656,7 @@ class _GridbuildState extends State<Gridbuild> {
                     _isExpanded
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down,
-                    color: theme.colorScheme.primary,
+                    color: blueColor,
                     size: 20,
                   ),
                 ],

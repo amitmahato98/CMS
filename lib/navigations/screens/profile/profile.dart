@@ -372,19 +372,30 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   }) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(width: 1, color: blueColor),
+      ),
       elevation: 2,
       child: ListTile(
-        leading: Icon(icon),
+        leading: Icon(icon, color: blueColor),
         title:
             isEditable
                 ? TextFormField(
                   controller: controller,
+                  cursorColor: blueColor,
                   keyboardType: keyboardType,
                   maxLines: maxLines,
                   decoration: InputDecoration(
                     labelText: label,
-                    border: InputBorder.none,
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(width: 1.5, color: blueColor),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(width: 0.5, color: blueColor),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -428,10 +439,13 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(width: 1, color: blueColor),
+      ),
       elevation: 2,
       child: ListTile(
-        leading: Icon(icon),
+        leading: Icon(icon, color: blueColor),
         title:
             isEditable
                 ? InkWell(
@@ -457,7 +471,11 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                           formattedDate,
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
-                        const Icon(Icons.edit_calendar, size: 18),
+                        const Icon(
+                          Icons.edit_calendar,
+                          color: blueColor,
+                          size: 18,
+                        ),
                       ],
                     ),
                   ),
@@ -642,18 +660,29 @@ class _ProfessionalInformationScreenState
   }) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(width: 1, color: blueColor),
+      ),
       elevation: 2,
       child: ListTile(
-        leading: Icon(icon),
+        leading: Icon(icon, color: blueColor),
         title:
             isEditable
                 ? TextFormField(
                   controller: controller,
+                  cursorColor: blueColor,
                   maxLines: maxLines,
                   decoration: InputDecoration(
                     labelText: label,
-                    border: InputBorder.none,
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(width: 1.5, color: blueColor),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(width: 0.5, color: blueColor),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -697,10 +726,13 @@ class _ProfessionalInformationScreenState
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(width: 1, color: blueColor),
+      ),
       elevation: 2,
       child: ListTile(
-        leading: Icon(icon),
+        leading: Icon(icon, color: blueColor),
         title:
             isEditable
                 ? InkWell(
@@ -764,9 +796,12 @@ class _ProfessionalInformationScreenState
     return Card(
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(width: 1, color: blueColor),
+      ),
       child: ListTile(
-        leading: Icon(icon, color: theme.colorScheme.primary),
+        leading: Icon(icon, color: blueColor),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(description),
       ),
@@ -871,6 +906,7 @@ class _EducationalInformationScreenState
       ),
 
       floatingActionButton: FloatingActionButton(
+        backgroundColor: blueColor,
         onPressed: _showAddEducationDialog,
         child: Icon(Icons.add),
         tooltip: "Add Education",
@@ -916,7 +952,7 @@ class _EducationalInformationScreenState
             SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.school, size: 16, color: theme.colorScheme.primary),
+                Icon(Icons.school, size: 16, color: blueColor),
                 SizedBox(width: 8),
                 Text(education["institution"]),
               ],
@@ -924,15 +960,11 @@ class _EducationalInformationScreenState
             SizedBox(height: 4),
             Row(
               children: [
-                Icon(
-                  Icons.calendar_today,
-                  size: 16,
-                  color: theme.colorScheme.primary,
-                ),
+                Icon(Icons.calendar_today, size: 16, color: blueColor),
                 SizedBox(width: 8),
                 Text(education["year"]),
                 SizedBox(width: 20),
-                Icon(Icons.grade, size: 16, color: theme.colorScheme.primary),
+                Icon(Icons.grade, size: 16, color: blueColor),
                 SizedBox(width: 8),
                 Text(education["grade"]),
               ],
@@ -947,7 +979,7 @@ class _EducationalInformationScreenState
     final theme = Theme.of(context);
     return Card(
       child: ListTile(
-        leading: Icon(Icons.verified, color: theme.colorScheme.primary),
+        leading: Icon(Icons.verified, color: blueColor),
         title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text("$issuer • $year"),
       ),
@@ -974,7 +1006,18 @@ class _EducationalInformationScreenState
                   children: [
                     TextFormField(
                       controller: degreeController,
-                      decoration: InputDecoration(labelText: "Degree"),
+                      cursorColor: blueColor,
+                      decoration: InputDecoration(
+                        labelText: "Degree",
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(width: 1.5, color: blueColor),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(width: 0.5, color: blueColor),
+                        ),
+                      ),
                       validator:
                           (value) =>
                               (value == null || value.trim().isEmpty)
@@ -984,7 +1027,18 @@ class _EducationalInformationScreenState
                     SizedBox(height: 8),
                     TextFormField(
                       controller: institutionController,
-                      decoration: InputDecoration(labelText: "Institution"),
+                      cursorColor: blueColor,
+                      decoration: InputDecoration(
+                        labelText: "Institution",
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(width: 1.5, color: blueColor),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(width: 0.5, color: blueColor),
+                        ),
+                      ),
                       validator:
                           (value) =>
                               (value == null || value.trim().isEmpty)
@@ -994,7 +1048,18 @@ class _EducationalInformationScreenState
                     SizedBox(height: 8),
                     TextFormField(
                       controller: yearController,
-                      decoration: InputDecoration(labelText: "Year"),
+                      cursorColor: blueColor,
+                      decoration: InputDecoration(
+                        labelText: "Year",
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(width: 1.5, color: blueColor),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(width: 0.5, color: blueColor),
+                        ),
+                      ),
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty)
@@ -1007,7 +1072,18 @@ class _EducationalInformationScreenState
                     SizedBox(height: 8),
                     TextFormField(
                       controller: gradeController,
-                      decoration: InputDecoration(labelText: "Grade"),
+                      cursorColor: blueColor,
+                      decoration: InputDecoration(
+                        labelText: "Grade",
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(width: 1.5, color: blueColor),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(width: 0.5, color: blueColor),
+                        ),
+                      ),
                       validator:
                           (value) =>
                               (value == null || value.trim().isEmpty)
@@ -1021,7 +1097,7 @@ class _EducationalInformationScreenState
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text("Cancel"),
+                child: Text("Cancel", style: TextStyle(color: blueColor)),
               ),
               TextButton(
                 onPressed: () async {
@@ -1038,7 +1114,7 @@ class _EducationalInformationScreenState
                     Navigator.pop(context);
                   }
                 },
-                child: Text("Add"),
+                child: Text("Add", style: TextStyle(color: blueColor)),
               ),
             ],
           ),
@@ -1147,7 +1223,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.primary,
+                  color: blueColor,
                 ),
               ),
               SizedBox(height: 24),

@@ -136,6 +136,7 @@ class _PolicyState extends State<Policy> with SingleTickerProviderStateMixin {
             margin: const EdgeInsets.symmetric(vertical: 10),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
+              side: BorderSide(width: 1, color: blueColor),
             ),
             elevation: 3,
             child: Padding(
@@ -147,7 +148,7 @@ class _PolicyState extends State<Policy> with SingleTickerProviderStateMixin {
                     category.title,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.primary,
+                      color: blueColor,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -279,10 +280,7 @@ class _PolicyExpansionTileState extends State<_PolicyExpansionTile>
                     ),
                     RotationTransition(
                       turns: _iconTurns,
-                      child: Icon(
-                        Icons.expand_more_rounded,
-                        color: theme.colorScheme.primary,
-                      ),
+                      child: Icon(Icons.expand_more_rounded, color: blueColor),
                     ),
                   ],
                 ),

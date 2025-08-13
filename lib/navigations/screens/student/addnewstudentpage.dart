@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
 
 class AddNewStudentPage extends StatefulWidget {
@@ -25,13 +26,7 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
   String _selectedProgram = 'BSc.CSIT';
   String _studentId = '';
 
-  final List<String> _programs = [
-    'BSc.CSIT',
-    'BIT',
-    'BTECH',
-    'Physics',
-    'Nutrition',
-  ];
+  final List<String> _programs = ['BSc.CSIT', 'BIT'];
 
   bool _isLoading = false;
 
@@ -101,9 +96,16 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
   }) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon),
+      labelStyle: const TextStyle(color: blueColor),
+      prefixIcon: Icon(icon, color: blueColor),
       prefixText: prefixText,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: blueColor, width: 0.5),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: blueColor, width: 1.5),
+      ),
     );
   }
 
@@ -114,8 +116,8 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
         title: Text(
           widget.studentData == null ? 'Add Student' : 'Edit Student',
         ),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
+        backgroundColor: blueColor,
+        foregroundColor: whiteColor,
       ),
       body:
           _isLoading
@@ -127,6 +129,7 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                   child: Column(
                     children: [
                       TextFormField(
+                        cursorColor: blueColor,
                         controller: _nameController,
                         decoration: _inputDecoration('Full Name', Icons.person),
                         validator:
@@ -161,8 +164,9 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                             firstDate: DateTime(1900),
                             lastDate: DateTime.now(),
                           );
-                          if (picked != null)
+                          if (picked != null) {
                             setState(() => _selectedDOB = picked);
+                          }
                         },
                         child: InputDecorator(
                           decoration: _inputDecoration(
@@ -179,14 +183,16 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
 
                       TextFormField(
                         controller: _emailController,
+                        cursorColor: blueColor,
                         decoration: _inputDecoration(
                           'Email Address',
                           Icons.email,
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
-                          if (value == null || value.trim().isEmpty)
+                          if (value == null || value.trim().isEmpty) {
                             return 'Enter email';
+                          }
                           final regex = RegExp(
                             r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$',
                           );
@@ -197,6 +203,7 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
 
                       TextFormField(
                         controller: _phoneController,
+                        cursorColor: blueColor,
                         decoration: _inputDecoration(
                           'Phone Number',
                           Icons.phone,
@@ -204,8 +211,9 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                         ),
                         keyboardType: TextInputType.phone,
                         validator: (value) {
-                          if (value == null || value.trim().isEmpty)
+                          if (value == null || value.trim().isEmpty) {
                             return 'Enter phone number';
+                          }
                           final phone = value.trim();
                           if (!RegExp(r'^(97|98)\d{8}$').hasMatch(phone)) {
                             return 'Must start with 97 or 98 and be 10 digits';
@@ -217,6 +225,7 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
 
                       TextFormField(
                         controller: _addressController,
+                        cursorColor: blueColor,
                         decoration: _inputDecoration('Address', Icons.home),
                         maxLines: 2,
                         validator:
@@ -250,22 +259,28 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
                       ),
                       const SizedBox(height: 32),
 
-                      ElevatedButton(
-                        onPressed: _submitForm,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          minimumSize: const Size.fromHeight(50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      Center(
+                        child: ElevatedButton.icon(
+                          icon: Icon(
+                            widget.studentData == null ? Icons.add : Icons.save,
+                            color: whiteColor,
                           ),
-                        ),
-                        child: Text(
-                          widget.studentData == null
-                              ? 'Add Student'
-                              : 'Save Changes',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
+                          onPressed: _submitForm,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: blueColor,
+                            minimumSize: const Size.fromHeight(50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          label: Text(
+                            widget.studentData == null
+                                ? 'Add Student'
+                                : 'Save Changes',
+                            style: const TextStyle(
+                              color: whiteColor,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ),

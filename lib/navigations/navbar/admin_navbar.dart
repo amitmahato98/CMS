@@ -40,8 +40,14 @@ class Navbar extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Amit Mahato", style: TextStyle(fontSize: 20)),
-                        Text("Admin", style: TextStyle(fontSize: 15)),
+                        Text(
+                          "Amit Mahato",
+                          style: TextStyle(fontSize: 20, color: whiteColor),
+                        ),
+                        Text(
+                          "Admin",
+                          style: TextStyle(fontSize: 15, color: whiteColor),
+                        ),
                       ],
                     ),
                   ),
@@ -72,7 +78,7 @@ class Navbar extends StatelessWidget {
 
           ListTile(
             leading: Icon(Icons.edit_document),
-            title: Text("Exam Section"),
+            title: Text("Result "),
             onTap:
                 () => Navigator.push(
                   context,

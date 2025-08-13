@@ -1,3 +1,4 @@
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -130,13 +131,19 @@ class _TeacherScreenState extends State<TeacherScreen> {
               onPressed: () {
                 Navigator.of(dialogContext).pop(false);
               },
-              child: const Text('Cancel'),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.green),
+              ),
             ),
-            ElevatedButton(
+            TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop(true); // close dialog with true
               },
-              child: const Text('Delete'),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.redAccent),
+              ),
             ),
           ],
         );
@@ -166,10 +173,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Teachers'),
-        backgroundColor: const Color(0xFF1E88E5),
-      ),
+      appBar: AppBar(title: const Text('Teachers'), backgroundColor: blueColor),
       body:
           _teachers.isEmpty
               ? const Center(child: Text('No teachers added yet.'))
@@ -190,7 +194,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         color:
                             isDark
                                 ? theme.cardColor
-                                : colorScheme.primary.withOpacity(0.95),
+                                : blueColor.withOpacity(0.95),
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
@@ -303,25 +307,27 @@ class _TeacherScreenState extends State<TeacherScreen> {
                                               teacher: t,
                                               index: index,
                                             ),
-                                        icon: const Icon(Icons.edit),
-                                        label: const Text('Edit'),
-                                        style: TextButton.styleFrom(
-                                          foregroundColor:
-                                              isDark
-                                                  ? Colors.amber
-                                                  : Colors.white,
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          color: Colors.amber,
+                                        ),
+                                        label: const Text(
+                                          'Edit',
+                                          style: TextStyle(color: Colors.amber),
                                         ),
                                       ),
                                       const SizedBox(width: 12),
                                       TextButton.icon(
                                         onPressed: () => _deleteTeacher(index),
-                                        icon: const Icon(Icons.delete),
-                                        label: const Text('Delete'),
-                                        style: TextButton.styleFrom(
-                                          foregroundColor:
-                                              isDark
-                                                  ? Colors.redAccent
-                                                  : Colors.white,
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          color: Colors.redAccent,
+                                        ),
+                                        label: const Text(
+                                          'Delete',
+                                          style: TextStyle(
+                                            color: Colors.redAccent,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -343,7 +349,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
               ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAdd,
-        backgroundColor: colorScheme.primary,
+        backgroundColor: blueColor,
         child: const Icon(Icons.add),
       ),
     );

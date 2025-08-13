@@ -25,7 +25,7 @@ class AboutUs extends StatelessWidget {
             CircleAvatar(
               radius: 50,
               backgroundImage: const AssetImage('assets/collage/cct.jpeg'),
-              backgroundColor: Colors.white,
+              backgroundColor: whiteColor,
             ),
 
             const SizedBox(height: 16),
@@ -34,7 +34,7 @@ class AboutUs extends StatelessWidget {
               "Central Campus of Technology, CMS",
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
+                color: blueColor,
               ),
               textAlign: TextAlign.center,
             ),
@@ -44,7 +44,7 @@ class AboutUs extends StatelessWidget {
             Text(
               "Empowering Education with Smart Digital Tools",
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.secondary,
+                color: blueColor.withOpacity(0.5),
               ),
               textAlign: TextAlign.center,
             ),
@@ -64,7 +64,7 @@ class AboutUs extends StatelessWidget {
             _buildSectionTitle("Our Vision", theme),
             const SizedBox(height: 6),
             Text(
-              "To be Nepal’s most advanced and user-friendly education management platform, driving academic excellence and innovation through smart technology.",
+              "To be Nepal's most advanced and user-friendly education management platform, driving academic excellence and innovation through smart technology.",
               style: theme.textTheme.bodyMedium,
               textAlign: TextAlign.justify,
             ),
@@ -124,10 +124,7 @@ class AboutUs extends StatelessWidget {
               child: Column(
                 children: [
                   ListTile(
-                    leading: Icon(
-                      Icons.email,
-                      color: theme.colorScheme.primary,
-                    ),
+                    leading: Icon(Icons.email, color: blueColor),
                     title: GestureDetector(
                       onTap:
                           () => launchUrl(
@@ -137,17 +134,11 @@ class AboutUs extends StatelessWidget {
                     ),
                   ),
                   ListTile(
-                    leading: Icon(
-                      Icons.phone,
-                      color: theme.colorScheme.primary,
-                    ),
+                    leading: Icon(Icons.phone, color: blueColor),
                     title: const Text("+977-9762921925"),
                   ),
                   ListTile(
-                    leading: Icon(
-                      Icons.language,
-                      color: theme.colorScheme.primary,
-                    ),
+                    leading: Icon(Icons.language, color: blueColor),
                     title: GestureDetector(
                       onTap:
                           () => launchUrl(Uri.parse('https://cct.tu.edu.np/')),
@@ -161,7 +152,9 @@ class AboutUs extends StatelessWidget {
             const SizedBox(height: 40),
             Text(
               "Version 1.0.0 • © 2025 Central Campus of Technology",
-              style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: blueColor.withOpacity(0.5),
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -177,7 +170,7 @@ class AboutUs extends StatelessWidget {
         title,
         style: theme.textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
-          color: theme.colorScheme.primary,
+          color: blueColor,
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -112,7 +113,7 @@ class _AddNewTeacherPageState extends State<AddNewTeacherPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? 'Edit Teacher' : 'Add Teacher'),
-        backgroundColor: const Color(0xFF1E88E5),
+        backgroundColor: blueColor,
       ),
       body: SafeArea(
         child: GestureDetector(
@@ -128,84 +129,187 @@ class _AddNewTeacherPageState extends State<AddNewTeacherPage> {
                 children: [
                   const SizedBox(height: 10),
                   TextFormField(
+                    cursorColor: blueColor,
                     controller: name,
-                    decoration: const InputDecoration(labelText: 'Name'),
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      labelStyle: const TextStyle(color: blueColor),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: blueColor,
+                          width: 0.5,
+                        ),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: blueColor, width: 1.5),
+                      ),
+                    ),
                     validator: (v) {
                       if (v == null || v.isEmpty) return 'Required';
-                      if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(v))
+                      if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(v)) {
                         return 'Only alphabets allowed';
+                      }
                       return null;
                     },
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
+                    cursorColor: blueColor,
                     controller: email,
-                    decoration: const InputDecoration(labelText: 'Email'),
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: const TextStyle(color: blueColor),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: blueColor,
+                          width: 0.5,
+                        ),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: blueColor, width: 1.5),
+                      ),
+                    ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (v) {
                       if (v == null || v.isEmpty) return 'Required';
                       if (!RegExp(
                         r'^[\w-.]+@([\w-]+\.)+[\w]{2,4}$',
-                      ).hasMatch(v))
+                      ).hasMatch(v)) {
                         return 'Enter valid email';
+                      }
                       return null;
                     },
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
+                    cursorColor: blueColor,
                     controller: phone,
-                    decoration: const InputDecoration(labelText: 'Phone'),
+                    decoration: InputDecoration(
+                      labelText: 'Phone',
+                      labelStyle: const TextStyle(color: blueColor),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: blueColor,
+                          width: 0.5,
+                        ),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: blueColor, width: 1.5),
+                      ),
+                    ),
                     keyboardType: TextInputType.phone,
                     validator: (v) {
                       if (v == null || v.isEmpty) return 'Required';
-                      if (!RegExp(r'^\d{10}$').hasMatch(v))
+                      if (!RegExp(r'^\d{10}$').hasMatch(v)) {
                         return 'Enter 10-digit number';
+                      }
                       return null;
                     },
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
+                    cursorColor: blueColor,
                     controller: address,
-                    decoration: const InputDecoration(labelText: 'Address'),
+                    decoration: InputDecoration(
+                      labelText: 'Address',
+                      labelStyle: const TextStyle(color: blueColor),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: blueColor,
+                          width: 0.5,
+                        ),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: blueColor, width: 1.5),
+                      ),
+                    ),
                     validator:
                         (v) => v == null || v.isEmpty ? 'Required' : null,
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
+                    cursorColor: blueColor,
                     controller: qualification,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Qualification',
+                      labelStyle: const TextStyle(color: blueColor),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: blueColor,
+                          width: 0.5,
+                        ),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: blueColor, width: 1.5),
+                      ),
                     ),
                     validator:
                         (v) => v == null || v.isEmpty ? 'Required' : null,
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
+                    cursorColor: blueColor,
                     controller: specialization,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Specialization',
+                      labelStyle: TextStyle(color: blueColor),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: blueColor, width: 0.5),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: blueColor, width: 1.5),
+                      ),
                     ),
                     validator:
                         (v) => v == null || v.isEmpty ? 'Required' : null,
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
+                    cursorColor: blueColor,
                     controller: experience,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Experience (years)',
+                      labelStyle: const TextStyle(color: blueColor),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: blueColor,
+                          width: 0.5,
+                        ),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: blueColor, width: 1.5),
+                      ),
                     ),
                     keyboardType: TextInputType.number,
                     validator: (v) {
                       if (v == null || v.isEmpty) return 'Required';
-                      if (int.tryParse(v) == null || int.parse(v) < 0)
+                      if (int.tryParse(v) == null || int.parse(v) < 0) {
                         return 'Enter a valid number';
+                      }
                       return null;
                     },
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     value: designation.isNotEmpty ? designation : null,
-                    decoration: const InputDecoration(labelText: 'Designation'),
+                    decoration: InputDecoration(
+                      labelText: 'Designation',
+                      labelStyle: TextStyle(color: blueColor),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: blueColor, width: 0.5),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: blueColor, width: 1.5),
+                      ),
+                    ),
                     items:
                         ['Lecturer', 'Assistant Professor', 'Professor']
                             .map(
@@ -229,25 +333,33 @@ class _AddNewTeacherPageState extends State<AddNewTeacherPage> {
                       ),
                       ElevatedButton(
                         onPressed: _pickDate,
-                        child: const Text('Pick Date'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: blueColor,
+                        ),
+                        child: const Text(
+                          'Pick Date',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 30),
                   Center(
                     child: ElevatedButton.icon(
-                      icon: Icon(isEditing ? Icons.save : Icons.add),
-
+                      icon: Icon(
+                        isEditing ? Icons.save : Icons.add,
+                        color: whiteColor,
+                      ),
                       onPressed: _saveTeacher,
                       label: Text(isEditing ? 'Update Teacher' : 'Add Teacher'),
                       style: ElevatedButton.styleFrom(
+                        backgroundColor: blueColor,
+                        foregroundColor: whiteColor,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 14,
                         ),
-
                         textStyle: const TextStyle(fontSize: 16),
-                        iconColor: Colors.white,
                       ),
                     ),
                   ),

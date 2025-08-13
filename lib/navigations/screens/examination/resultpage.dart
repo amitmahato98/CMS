@@ -1,6 +1,7 @@
 import 'package:cms/datatypes/datatypes.dart';
 import 'package:cms/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -161,7 +162,10 @@ class _ResultPageState extends State<ResultPage> {
                       onPressed: () {
                         Navigator.of(dialogContext).pop();
                       },
-                      child: const Text("OK"),
+                      child: const Text(
+                        "OK",
+                        style: TextStyle(color: blueColor),
+                      ),
                     ),
                   ],
                 ),
@@ -174,16 +178,28 @@ class _ResultPageState extends State<ResultPage> {
   Widget _buildTextField({
     required String label,
     required IconData icon,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormaters,
     required TextEditingController controller,
     String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
+      keyboardType: keyboardType,
+      inputFormatters: inputFormaters,
+      cursorColor: blueColor,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.blue),
-        prefixIcon: Icon(icon),
+        labelStyle: const TextStyle(color: blueColor),
+        prefixIcon: Icon(icon, color: blueColor),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: blueColor, width: 0.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: blueColor, width: 1.5),
+        ),
         filled: true,
       ),
       validator:
@@ -206,6 +222,9 @@ class _ResultPageState extends State<ResultPage> {
                 label: "Symbol No",
                 icon: Icons.confirmation_number,
                 controller: _symbolNoController,
+                keyboardType: TextInputType.number,
+                inputFormaters: [FilteringTextInputFormatter.digitsOnly],
+
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Required';
@@ -221,6 +240,8 @@ class _ResultPageState extends State<ResultPage> {
                 label: "Full Name",
                 icon: Icons.person,
                 controller: _nameController,
+                keyboardType: TextInputType.text,
+                // inputFormaters: [FilteringTextInputFormatter.],
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Required';
@@ -240,6 +261,7 @@ class _ResultPageState extends State<ResultPage> {
                 label: "Date of Birth",
                 icon: Icons.date_range,
                 controller: _dobController,
+                keyboardType: TextInputType.datetime,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Required';
@@ -264,13 +286,13 @@ class _ResultPageState extends State<ResultPage> {
                             color: Colors.white,
                           ),
                         )
-                        : const Icon(Icons.search),
+                        : const Icon(Icons.search, color: whiteColor),
                 label: Text(
                   isLoading ? "Searching..." : "Find Result",
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: whiteColor),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
+                  backgroundColor: blueColor,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,
                     vertical: 14,
@@ -294,7 +316,7 @@ class _ResultPageState extends State<ResultPage> {
 class GradeSheetPage extends StatelessWidget {
   final Map<String, dynamic> student;
 
-  GradeSheetPage({required this.student});
+  const GradeSheetPage({super.key, required this.student});
 
   @override
   Widget build(BuildContext context) {
@@ -358,7 +380,7 @@ class GradeSheetPage extends StatelessWidget {
 
 class InfoSection extends StatelessWidget {
   final Map<String, dynamic> student;
-  InfoSection({required this.student});
+  const InfoSection({super.key, required this.student});
 
   @override
   Widget build(BuildContext context) {
@@ -396,7 +418,7 @@ class InfoSection extends StatelessWidget {
 
 class GradeTable extends StatelessWidget {
   final List<List<String>> data;
-  GradeTable({required this.data});
+  const GradeTable({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -410,11 +432,11 @@ class GradeTable extends StatelessWidget {
           0: FixedColumnWidth(90),
           1: FlexColumnWidth(),
           2: FixedColumnWidth(70),
-          3: FixedColumnWidth(50),
+          3: FixedColumnWidth(70),
         },
         children: [
           TableRow(
-            decoration: BoxDecoration(color: Colors.blueGrey[50]),
+            decoration: BoxDecoration(color: grayColor.withOpacity(0.5)),
             children: [
               tableHeader("Subject Code"),
               tableHeader("Subjects"),
@@ -454,7 +476,7 @@ class GradeTable extends StatelessWidget {
 
 class GPASection extends StatelessWidget {
   final double gpa;
-  GPASection({required this.gpa});
+  const GPASection({super.key, required this.gpa});
 
   @override
   Widget build(BuildContext context) {
@@ -470,12 +492,14 @@ class GPASection extends StatelessWidget {
 }
 
 class NotesSection extends StatelessWidget {
+  const NotesSection({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: Card(
-        color: Color(0xFFEDF4FA),
+        color: Colors.grey[300],
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         child: Padding(
@@ -488,7 +512,7 @@ class NotesSection extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
-                  color: Colors.blueGrey[900],
+                  // color: grayColor[900],
                 ),
               ),
               SizedBox(height: 8),
@@ -497,7 +521,7 @@ class NotesSection extends StatelessWidget {
                 "• EACH SUBJECT CARRIES 3 CREDIT HOURS.\n"
                 "• PR = PRACTICAL     TH = THEORY\n"
                 "• AB = ABSENT        W = WITHHELD",
-                style: TextStyle(fontSize: 13, height: 1.6, color: Colors.blue),
+                style: TextStyle(fontSize: 13, height: 1.6, color: blueColor),
               ),
             ],
           ),
@@ -508,6 +532,8 @@ class NotesSection extends StatelessWidget {
 }
 
 class HeaderSection extends StatelessWidget {
+  const HeaderSection({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -538,12 +564,16 @@ class HeaderSection extends StatelessWidget {
                 'CENTRAL CAMPUS OF TECHNOLOGY',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 6),
-              Text('GRADE SHEET', style: TextStyle(fontSize: 15)),
+
               SizedBox(height: 6),
               Text(
                 'www.cctdharan.edu.np | 025-570228 / 576530',
                 style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+              ),
+              SizedBox(height: 12),
+              Text(
+                'GRADE SHEET',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -554,6 +584,8 @@ class HeaderSection extends StatelessWidget {
 }
 
 class CloseButtonAnimated extends StatefulWidget {
+  const CloseButtonAnimated({super.key});
+
   @override
   _CloseButtonAnimatedState createState() => _CloseButtonAnimatedState();
 }
@@ -591,11 +623,11 @@ class _CloseButtonAnimatedState extends State<CloseButtonAnimated>
         onTap: () => Navigator.pop(context),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.1),
+            color: blueColor.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
           padding: EdgeInsets.all(8),
-          child: Icon(Icons.close, color: Colors.blue, size: 24),
+          child: Icon(Icons.close, color: blueColor, size: 24),
         ),
       ),
     );

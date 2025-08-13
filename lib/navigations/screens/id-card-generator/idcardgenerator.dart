@@ -44,7 +44,10 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          title: const Text('Select Image Source'),
+          title: const Text(
+            'Select Image Source',
+            style: TextStyle(color: blueColor),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -78,7 +81,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
   Future pickNepaliDate() async {
     final picked = await nepali.showAdaptiveDatePicker(
       context: context,
-      initialDate: nepali.NepaliDateTime(2050),
+      initialDate: nepali.NepaliDateTime(2060),
       firstDate: nepali.NepaliDateTime(2000),
       lastDate: nepali.NepaliDateTime.now(),
     );
@@ -114,6 +117,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
               const SnackBar(
                 content: Text('Storage permission is required to download PDF'),
                 backgroundColor: Colors.red,
+                duration: Duration(seconds: 5),
               ),
             );
           }
@@ -344,6 +348,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
               content: Text('PDF saved successfully!\nLocation: $filePath'),
               backgroundColor: Colors.green,
               duration: const Duration(seconds: 4),
+              behavior: SnackBarBehavior.floating,
               action: SnackBarAction(
                 label: 'Open',
                 onPressed: () => OpenFile.open(filePath),
@@ -391,9 +396,13 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
           child: Column(
             children: [
               ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(backgroundColor: blueColor),
                 onPressed: _pickImageWithDialog,
-                icon: const Icon(Icons.photo),
-                label: const Text("Pick Student Photo"),
+                icon: const Icon(Icons.photo, color: whiteColor),
+                label: const Text(
+                  "Pick Student Photo",
+                  style: TextStyle(color: whiteColor),
+                ),
               ),
               const SizedBox(height: 10),
               buildNameField(),
@@ -403,6 +412,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
               buildCourseDropdown(),
               const SizedBox(height: 15),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: blueColor),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     setState(() {
@@ -410,22 +420,34 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
                     });
                   }
                 },
-                child: const Text("Generate ID Card"),
+                child: const Text(
+                  "Generate ID Card",
+                  style: TextStyle(color: whiteColor),
+                ),
               ),
               const SizedBox(height: 10),
               if (showCard)
                 ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isGeneratingPDF ? blueColor : blueColor,
+                  ),
                   onPressed: isGeneratingPDF ? null : downloadPDF,
                   icon:
                       isGeneratingPDF
                           ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: blueColor,
+                            ),
                           )
-                          : const Icon(Icons.download),
+                          : const Icon(Icons.download, color: whiteColor),
                   label: Text(
                     isGeneratingPDF ? "Generating..." : "Download PDF",
+                    style: TextStyle(
+                      color: isGeneratingPDF ? whiteColor : whiteColor,
+                    ),
                   ),
                 ),
               const SizedBox(height: 20),
@@ -574,6 +596,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
   Widget buildNameField() => buildTextField(
     "Full Name",
     nameController,
+    keyboardType: TextInputType.text,
     validator: (value) {
       if (value == null || value.trim().isEmpty) return 'Name is required';
       if (!value.trim().contains(' ')) return 'Enter full name';
@@ -584,6 +607,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
   Widget buildRollField() => buildTextField(
     "Roll No.",
     rollController,
+
     keyboardType: TextInputType.number,
     validator: (value) {
       if (value == null || value.isEmpty) return 'Roll number required';
@@ -610,6 +634,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
   Widget buildBatchField() => buildTextField(
     "Batch Year",
     batchController,
+
     keyboardType: TextInputType.number,
     validator: (value) {
       if (value == null || value.isEmpty) return 'Batch year required';
@@ -626,8 +651,14 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
     child: DropdownButtonFormField<String>(
       value: selectedCourse,
       decoration: const InputDecoration(
-        border: OutlineInputBorder(),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: blueColor, width: 0.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: blueColor, width: 1.5),
+        ),
         labelText: 'Course',
+        labelStyle: TextStyle(color: blueColor),
       ),
       items:
           ['BIT', 'BSc.CSIT']
@@ -645,6 +676,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
 
   Widget buildTextField(
     String label,
+
     TextEditingController controller, {
     String? Function(String?)? validator,
     TextInputType keyboardType = TextInputType.text,
@@ -654,9 +686,18 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
       controller: controller,
       keyboardType: keyboardType,
       validator: validator,
+      cursorColor: blueColor,
       decoration: InputDecoration(
-        border: const OutlineInputBorder(),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: blueColor, width: 0.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: blueColor, width: 1.5),
+        ),
         labelText: label,
+        labelStyle: TextStyle(color: blueColor),
       ),
     ),
   );

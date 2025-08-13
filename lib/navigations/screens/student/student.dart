@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'addnewstudentpage.dart';
@@ -69,16 +70,21 @@ class _NewStudentState extends State<NewStudent> {
               onPressed: () {
                 Navigator.of(context).pop(false); // Properly closes the dialog
               },
-              child: const Text('Cancel'),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.green),
+              ),
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            TextButton(
               onPressed: () {
                 Navigator.of(
                   context,
                 ).pop(true); // Confirm delete and close dialog
               },
-              child: const Text('Delete'),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.redAccent),
+              ),
             ),
           ],
         );
@@ -103,7 +109,7 @@ class _NewStudentState extends State<NewStudent> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final primary = theme.colorScheme.primary;
+    final primary = blueColor;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Students"), backgroundColor: primary),
@@ -222,10 +228,14 @@ class _NewStudentState extends State<NewStudent> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      IconButton(
+                                      TextButton.icon(
                                         icon: const Icon(
                                           Icons.edit,
                                           color: Colors.amber,
+                                        ),
+                                        label: const Text(
+                                          'Edit',
+                                          style: TextStyle(color: Colors.amber),
                                         ),
                                         onPressed: () async {
                                           final updated = await Navigator.push(
@@ -245,10 +255,16 @@ class _NewStudentState extends State<NewStudent> {
                                           }
                                         },
                                       ),
-                                      IconButton(
+                                      TextButton.icon(
                                         icon: const Icon(
                                           Icons.delete,
-                                          color: Colors.red,
+                                          color: Colors.redAccent,
+                                        ),
+                                        label: const Text(
+                                          'Delete',
+                                          style: TextStyle(
+                                            color: Colors.redAccent,
+                                          ),
                                         ),
                                         onPressed: () => _confirmDelete(index),
                                       ),

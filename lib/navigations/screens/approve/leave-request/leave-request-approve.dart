@@ -1,3 +1,4 @@
+import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -184,7 +185,11 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
         "${request.toDate.day}/${request.toDate.month}/${request.toDate.year}";
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      // color: grayColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: blueColor.withOpacity(0.5), width: 1),
+      ),
       margin: const EdgeInsets.symmetric(vertical: 8),
       elevation: 3,
       child: Padding(
@@ -196,7 +201,7 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
               request.name,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: theme.primaryColor,
+                color: blueColor,
               ),
             ),
             const SizedBox(height: 4),
@@ -204,7 +209,7 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.calendar_today, size: 16, color: theme.primaryColor),
+                Icon(Icons.calendar_today, size: 16, color: blueColor),
                 const SizedBox(width: 6),
                 Text(
                   "From: $formattedFrom  To: $formattedTo",
@@ -230,14 +235,14 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
                       request.status == 'Approved'
                           ? Colors.green.withOpacity(0.2)
                           : request.status == 'Rejected'
-                          ? Colors.red.withOpacity(0.2)
+                          ? Colors.redAccent.withOpacity(0.2)
                           : theme.colorScheme.primary.withOpacity(0.2),
                   labelStyle: TextStyle(
                     color:
                         request.status == 'Approved'
                             ? Colors.green
                             : request.status == 'Rejected'
-                            ? Colors.red
+                            ? Colors.redAccent
                             : theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
@@ -250,7 +255,7 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
                       onPressed: () => updateStatus(index, 'Approved'),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.cancel, color: Colors.red),
+                      icon: const Icon(Icons.cancel, color: Colors.redAccent),
                       tooltip: 'Reject',
                       onPressed: () => updateStatus(index, 'Rejected'),
                     ),
@@ -277,7 +282,10 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
                                 ),
                                 actions: [
                                   TextButton(
-                                    child: const Text("Close"),
+                                    child: const Text(
+                                      "Close",
+                                      style: TextStyle(color: blueColor),
+                                    ),
                                     onPressed:
                                         () => Navigator.pop(dialogContext),
                                   ),
@@ -308,7 +316,7 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Leave Requests"),
-        backgroundColor: Colors.blue,
+        backgroundColor: blueColor,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -326,7 +334,7 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           selectedCategory == StaffCategory.Teaching
-                              ? Colors.blue
+                              ? blueColor
                               : Colors.grey[300],
                       foregroundColor:
                           selectedCategory == StaffCategory.Teaching
@@ -346,7 +354,7 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           selectedCategory == StaffCategory.Admin
-                              ? Colors.blue
+                              ? blueColor
                               : Colors.grey[300],
                       foregroundColor:
                           selectedCategory == StaffCategory.Admin

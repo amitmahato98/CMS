@@ -51,7 +51,10 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Select Image Source'),
+            title: const Text(
+              'Select Image Source',
+              style: TextStyle(color: blueColor),
+            ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -207,9 +210,13 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
               ),
               DropdownButtonFormField<String>(
                 value: _selectedCourse,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Course',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: blueColor),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: blueColor, width: 0.5),
+                  ),
                 ),
                 items: const [
                   DropdownMenuItem(value: 'BIT', child: Text('BIT')),
@@ -221,9 +228,13 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: _selectedExamType,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Exam Type',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: blueColor),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: blueColor, width: 0.5),
+                  ),
                 ),
                 items: const [
                   DropdownMenuItem(value: 'Regular', child: Text('Regular')),
@@ -269,8 +280,12 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                   ),
                   const Spacer(),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: blueColor),
                     onPressed: _addSubject,
-                    child: const Text('Add Subject'),
+                    child: const Text(
+                      'Add Subject',
+                      style: TextStyle(color: whiteColor),
+                    ),
                   ),
                 ],
               ),
@@ -287,7 +302,24 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                       Expanded(
                         child: TextFormField(
                           initialValue: subj.code,
-                          decoration: const InputDecoration(labelText: 'Code'),
+                          cursorColor: blueColor,
+                          decoration: InputDecoration(
+                            labelText: 'Code',
+                            labelStyle: TextStyle(color: blueColor),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: blueColor,
+                                width: 0.5,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: blueColor,
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
                           validator: (v) {
                             if (v == null || v.isEmpty) {
                               return 'Code required';
@@ -309,8 +341,25 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: TextFormField(
+                          cursorColor: blueColor,
                           initialValue: subj.name,
-                          decoration: const InputDecoration(labelText: 'Name'),
+                          decoration: InputDecoration(
+                            labelText: 'Name',
+                            labelStyle: TextStyle(color: blueColor),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: blueColor,
+                                width: 0.5,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: blueColor,
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
                           validator:
                               (v) =>
                                   v == null || v.isEmpty
@@ -320,7 +369,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete),
+                        icon: const Icon(Icons.delete, color: blueColor),
                         onPressed: () => _removeSubject(i),
                       ),
                     ],
@@ -331,24 +380,33 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
               Row(
                 children: [
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: blueColor),
                     onPressed:
                         () => _pickImage(
                           (b) => setState(() => _studentImage = b),
                         ),
-                    child: const Text('Pick Student Photo'),
+                    child: const Text(
+                      'Pick Student Photo',
+                      style: TextStyle(color: whiteColor),
+                    ),
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: blueColor),
                     onPressed:
                         () => _pickImage(
                           (b) => setState(() => _signatureImage = b),
                         ),
-                    child: const Text('Pick Signature'),
+                    child: const Text(
+                      'Pick Signature',
+                      style: TextStyle(color: whiteColor),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 30),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: blueColor),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     setState(() => _showPreview = true);
@@ -356,7 +414,10 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                     setState(() => _showPreview = false);
                   }
                 },
-                child: const Text('Generate Admit Card Preview'),
+                child: const Text(
+                  'Generate Admit Card Preview',
+                  style: TextStyle(color: whiteColor),
+                ),
               ),
               const SizedBox(height: 20),
               if (_showPreview) _buildAdmitCardPreview(),
@@ -364,8 +425,12 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   child: ElevatedButton.icon(
-                    icon: const Icon(Icons.download),
-                    label: const Text("Download PDF"),
+                    icon: const Icon(Icons.download, color: blueColor),
+                    label: const Text(
+                      "Download PDF",
+                      style: TextStyle(color: whiteColor),
+                    ),
+                    style: ElevatedButton.styleFrom(backgroundColor: blueColor),
                     onPressed: downloadAsPdf,
                   ),
                 ),
@@ -388,11 +453,19 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
         controller: ctr,
+        cursorColor: blueColor,
         keyboardType: type,
         inputFormatters: inputFormatters,
         decoration: InputDecoration(
           labelText: label,
-          border: const OutlineInputBorder(),
+          labelStyle: TextStyle(color: blueColor),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: blueColor, width: 0.5),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: blueColor, width: 1.5),
+          ),
         ),
         validator:
             validator ??
@@ -417,7 +490,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
               offset: const Offset(0, 3),
             ),
           ],
-          border: Border.all(color: Colors.blue),
+          border: Border.all(color: blueColor),
         ),
         padding: const EdgeInsets.all(16),
         child: Column(

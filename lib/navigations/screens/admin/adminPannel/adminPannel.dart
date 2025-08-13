@@ -308,10 +308,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
         decoration: BoxDecoration(
           color: isDark ? darkBlack : Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isDark ? darkBlack : Colors.grey.shade200,
-            width: 1,
-          ),
+          border: Border.all(color: blueColor, width: 1),
           boxShadow: [
             BoxShadow(
               color: isDark ? Colors.black26 : Colors.grey.withOpacity(0.1),
@@ -322,11 +319,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
         ),
         child: Row(
           children: [
-            Icon(
-              Icons.search,
-              color: isDark ? Colors.white70 : Colors.grey.shade600,
-              size: 20,
-            ),
+            Icon(Icons.search, color: blueColor, size: 20),
             SizedBox(width: 12),
             Expanded(
               child: TextField(
@@ -340,9 +333,18 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   color: isDark ? Colors.white : Colors.black87,
                   fontSize: 16,
                 ),
+                cursorColor: blueColor,
                 decoration: InputDecoration(
                   hintText: 'Search users...',
-                  border: InputBorder.none,
+                  // border: InputBorder.none,
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(width: 1.5, color: blueColor),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(width: 0.5, color: blueColor),
+                  ),
                   hintStyle: GoogleFonts.inter(
                     color: isDark ? Colors.white54 : Colors.grey.shade500,
                     fontSize: 16,
@@ -525,10 +527,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                 decoration: BoxDecoration(
                   color: isDark ? darkBlack : Colors.white,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isDark ? darkBlack : Colors.grey.shade200,
-                    width: 1,
-                  ),
+                  border: Border.all(color: blueColor, width: 1),
                   boxShadow: [
                     BoxShadow(
                       color:
@@ -587,7 +586,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                           _buildActionButton(
                             context,
                             icon: Icons.delete_outline,
-                            color: const Color.fromARGB(255, 226, 88, 85),
+                            color: blueColor.withOpacity(0.6),
                             onPressed: () => _showDeleteDialog(context, user),
                           ),
                         ],
@@ -785,7 +784,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
           mainAxisSize: isExpanded ? MainAxisSize.max : MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: isExpanded ? 18 : 16),
+            Icon(icon, size: isExpanded ? 18 : 16, color: whiteColor),
             if (label != null && isExpanded) ...[
               SizedBox(width: 8),
               Text(
@@ -815,6 +814,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
+
             child: Container(
               decoration: BoxDecoration(
                 color: isDark ? darkBlack : Colors.white,

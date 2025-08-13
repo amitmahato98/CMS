@@ -350,7 +350,7 @@ class _SendNotificationPageState extends State<SendNotificationPage>
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please select at least one recipient'),
-          backgroundColor: Colors.red,
+          backgroundColor: blueColor,
         ),
       );
       return;
@@ -411,13 +411,13 @@ class _SendNotificationPageState extends State<SendNotificationPage>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to send notification'),
-            backgroundColor: Colors.red,
+            backgroundColor: blueColor,
           ),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text('Error: $e'), backgroundColor: blueColor),
       );
     } finally {
       setState(() {
@@ -441,12 +441,14 @@ class _SendNotificationPageState extends State<SendNotificationPage>
         title: const Text('Notifications'),
         backgroundColor: blueColor,
         bottom: TabBar(
+          // indicatorColor: blueColor,
           controller: _tabController,
           tabs: const [Tab(text: 'Send Notifications'), Tab(text: 'History')],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
+
         children: [_buildSendNotificationTab(), _buildHistoryTab()],
       ),
     );
@@ -462,11 +464,22 @@ class _SendNotificationPageState extends State<SendNotificationPage>
           children: [
             TextFormField(
               controller: _titleController,
-              decoration: const InputDecoration(
+              cursorColor: blueColor,
+              decoration: InputDecoration(
                 labelText: 'Notification Title',
-                hintText: 'Enter title',
-                prefixIcon: Icon(Icons.title),
+
+                labelStyle: const TextStyle(color: blueColor),
+                prefixIcon: const Icon(Icons.title_sharp, color: blueColor),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(width: 0.5, color: blueColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: blueColor, width: 1.5),
+                ),
               ),
+
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a title';
@@ -478,12 +491,23 @@ class _SendNotificationPageState extends State<SendNotificationPage>
 
             TextFormField(
               controller: _messageController,
-              decoration: const InputDecoration(
+              cursorColor: blueColor,
+              decoration: InputDecoration(
                 labelText: 'Notification Message',
-                hintText: 'Enter message',
-                prefixIcon: Icon(Icons.message),
+
+                labelStyle: TextStyle(color: blueColor),
+                prefixIcon: Icon(Icons.message, color: blueColor),
                 alignLabelWithHint: true,
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(width: 1.5, color: blueColor),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(width: 0.5, color: blueColor),
+                ),
               ),
+
               maxLines: 5,
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -497,6 +521,7 @@ class _SendNotificationPageState extends State<SendNotificationPage>
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
+                side: BorderSide(width: 0.5, color: blueColor),
               ),
               elevation: 2,
               child: Padding(
@@ -511,6 +536,8 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                     const SizedBox(height: 8),
 
                     RadioListTile<String>(
+                      activeColor: blueColor,
+
                       title: const Text('Teachers Only'),
                       value: 'teachers',
                       groupValue: _selectedTargetType,
@@ -521,7 +548,10 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                       },
                       contentPadding: EdgeInsets.zero,
                     ),
+                    const SizedBox(height: 8),
                     RadioListTile<String>(
+                      activeColor: blueColor,
+
                       title: const Text('Students Only'),
                       value: 'students',
                       groupValue: _selectedTargetType,
@@ -532,7 +562,10 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                       },
                       contentPadding: EdgeInsets.zero,
                     ),
+                    const SizedBox(height: 8),
                     RadioListTile<String>(
+                      activeColor: blueColor,
+
                       title: const Text('Non-Teaching Staff Only'),
                       value: 'nonteaching',
                       groupValue: _selectedTargetType,
@@ -543,7 +576,10 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                       },
                       contentPadding: EdgeInsets.zero,
                     ),
+                    const SizedBox(height: 8),
                     RadioListTile<String>(
+                      activeColor: blueColor,
+
                       title: const Text('Parents Only'),
                       value: 'parents',
                       groupValue: _selectedTargetType,
@@ -554,7 +590,10 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                       },
                       contentPadding: EdgeInsets.zero,
                     ),
+                    const SizedBox(height: 8),
                     RadioListTile<String>(
+                      activeColor: blueColor,
+
                       title: const Text('All Groups'),
                       value: 'all',
                       groupValue: _selectedTargetType,
@@ -565,6 +604,7 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                       },
                       contentPadding: EdgeInsets.zero,
                     ),
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),
@@ -606,12 +646,15 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
-                            color: Colors.white,
+                            color: blueColor,
                             strokeWidth: 2,
                           ),
                         )
-                        : const Icon(Icons.send),
-                label: Text(_isSending ? 'Sending...' : 'Send Notification'),
+                        : const Icon(Icons.send, color: blueColor),
+                label: Text(
+                  _isSending ? 'Sending...' : 'Send Notification',
+                  style: TextStyle(color: blueColor),
+                ),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -631,7 +674,10 @@ class _SendNotificationPageState extends State<SendNotificationPage>
         teachers.length == _selectedTeacherIds.length && teachers.isNotEmpty;
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(width: 0.5, color: blueColor),
+      ),
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -647,11 +693,10 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                 ),
                 Row(
                   children: [
-                    Text(
-                      'Select All',
-                      style: TextStyle(color: Theme.of(context).primaryColor),
-                    ),
+                    Text('Select All', style: TextStyle(color: blueColor)),
                     Checkbox(
+                      activeColor: blueColor,
+
                       value: allTeachersSelected,
                       onChanged:
                           (value) => _toggleSelectAllTeachers(value ?? false),
@@ -668,6 +713,8 @@ class _SendNotificationPageState extends State<SendNotificationPage>
               itemBuilder: (context, index) {
                 Teachers teacher = teachers[index];
                 return CheckboxListTile(
+                  activeColor: blueColor,
+
                   title: Text(teacher.name),
                   subtitle: Text(teacher.department),
                   value: _selectedTeacherIds.contains(teacher.id),
@@ -697,7 +744,10 @@ class _SendNotificationPageState extends State<SendNotificationPage>
         students.length == _selectedStudentIds.length && students.isNotEmpty;
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(width: 0.5, color: blueColor),
+      ),
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -713,11 +763,10 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                 ),
                 Row(
                   children: [
-                    Text(
-                      'Select All',
-                      style: TextStyle(color: Theme.of(context).primaryColor),
-                    ),
+                    Text('Select All', style: TextStyle(color: blueColor)),
                     Checkbox(
+                      activeColor: blueColor,
+
                       value: allStudentsSelected,
                       onChanged:
                           (value) => _toggleSelectAllStudents(value ?? false),
@@ -734,6 +783,8 @@ class _SendNotificationPageState extends State<SendNotificationPage>
               itemBuilder: (context, index) {
                 Students student = students[index];
                 return CheckboxListTile(
+                  activeColor: blueColor,
+
                   title: Text(student.name),
                   subtitle: Text('${student.course} - Year ${student.year}'),
                   value: _selectedStudentIds.contains(student.id),
@@ -764,7 +815,10 @@ class _SendNotificationPageState extends State<SendNotificationPage>
         staffList.isNotEmpty;
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(width: 0.5, color: blueColor),
+      ),
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -780,11 +834,10 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                 ),
                 Row(
                   children: [
-                    Text(
-                      'Select All',
-                      style: TextStyle(color: Theme.of(context).primaryColor),
-                    ),
+                    Text('Select All', style: TextStyle(color: blueColor)),
                     Checkbox(
+                      activeColor: blueColor,
+
                       value: allStaffSelected,
                       onChanged:
                           (value) =>
@@ -802,6 +855,8 @@ class _SendNotificationPageState extends State<SendNotificationPage>
               itemBuilder: (context, index) {
                 NonTeachingStaff staff = staffList[index];
                 return CheckboxListTile(
+                  activeColor: blueColor,
+
                   title: Text(staff.name),
                   subtitle: Text('${staff.role} - ${staff.department}'),
                   value: _selectedNonTeachingStaffIds.contains(staff.id),
@@ -831,7 +886,10 @@ class _SendNotificationPageState extends State<SendNotificationPage>
         parents.length == _selectedParentIds.length && parents.isNotEmpty;
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(width: 0.5, color: blueColor),
+      ),
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -847,11 +905,9 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                 ),
                 Row(
                   children: [
-                    Text(
-                      'Select All',
-                      style: TextStyle(color: Theme.of(context).primaryColor),
-                    ),
+                    Text('Select All', style: TextStyle(color: blueColor)),
                     Checkbox(
+                      activeColor: blueColor,
                       value: allParentsSelected,
                       onChanged:
                           (value) => _toggleSelectAllParents(value ?? false),
@@ -868,6 +924,9 @@ class _SendNotificationPageState extends State<SendNotificationPage>
               itemBuilder: (context, index) {
                 Parents parent = parents[index];
                 return CheckboxListTile(
+                  activeColor: blueColor,
+
+                  // checkColor: blueColor,
                   title: Text(parent.name),
                   subtitle: Text(
                     'Parent of ${parent.studentName} (${parent.contactNumber})',
@@ -907,11 +966,11 @@ class _SendNotificationPageState extends State<SendNotificationPage>
             }
 
             if (notification.targetType == 'all') {
-              if (_historyFilter == 'teachers') {
+              if (_historyFilter == 'teacher') {
                 return notification.recipientIds.any(
                   (id) => id.startsWith('t'),
                 );
-              } else if (_historyFilter == 'students') {
+              } else if (_historyFilter == 'student') {
                 return notification.recipientIds.any(
                   (id) => id.startsWith('s'),
                 );
@@ -919,7 +978,7 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                 return notification.recipientIds.any(
                   (id) => id.startsWith('n'),
                 );
-              } else if (_historyFilter == 'parents') {
+              } else if (_historyFilter == 'parent') {
                 return notification.recipientIds.any(
                   (id) => id.startsWith('p'),
                 );
@@ -939,7 +998,7 @@ class _SendNotificationPageState extends State<SendNotificationPage>
               size: 80,
               color:
                   Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white38
+                      ? whiteColor.withOpacity(0.38)
                       : Colors.grey[400],
             ),
             const SizedBox(height: 16),
@@ -951,7 +1010,7 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                 fontSize: 18,
                 color:
                     Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white70
+                        ? whiteColor.withOpacity(0.7)
                         : Colors.black87,
               ),
             ),
@@ -974,16 +1033,20 @@ class _SendNotificationPageState extends State<SendNotificationPage>
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(width: 0.5, color: blueColor),
+      ),
       elevation: 2,
       child: ExpansionTile(
+        collapsedIconColor: blueColor,
         tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         childrenPadding: const EdgeInsets.all(16),
         leading: CircleAvatar(
-          backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: blueColor,
           child: Icon(
             _getIconForTargetType(notification.targetType),
-            color: Colors.white,
+            color: whiteColor,
           ),
         ),
         title: Text(
@@ -1000,7 +1063,7 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                 fontSize: 12,
                 color:
                     Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white70
+                        ? whiteColor.withOpacity(0.7)
                         : Colors.black54,
               ),
             ),
@@ -1011,7 +1074,7 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                 fontSize: 12,
                 color:
                     Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white70
+                        ? whiteColor.withOpacity(0.7)
                         : Colors.black54,
               ),
             ),
