@@ -471,11 +471,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                           formattedDate,
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
-                        const Icon(
-                          Icons.edit_calendar,
-                          color: blueColor,
-                          size: 18,
-                        ),
+                        Icon(Icons.edit_calendar, color: blueColor, size: 18),
                       ],
                     ),
                   ),
@@ -792,7 +788,6 @@ class _ProfessionalInformationScreenState
     String description,
     IconData icon,
   ) {
-    final theme = Theme.of(context);
     return Card(
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 6),
@@ -915,73 +910,88 @@ class _EducationalInformationScreenState
   }
 
   Widget _buildEducationCard(Map<String, dynamic> education, int index) {
-    final theme = Theme.of(context);
-    return Card(
-      margin: EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    education["degree"],
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+    return Container(
+      margin: EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        border: Border.all(color: blueColor, width: 1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      education["degree"],
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
-                PopupMenuButton(
-                  itemBuilder:
-                      (context) => [
-                        PopupMenuItem(child: Text("Edit"), value: "edit"),
-                        PopupMenuItem(child: Text("Delete"), value: "delete"),
-                      ],
-                  onSelected: (value) async {
-                    if (value == "delete") {
-                      setState(() {
-                        educationList.removeAt(index);
-                      });
-                      await _saveEducationData();
-                    }
-                  },
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.school, size: 16, color: blueColor),
-                SizedBox(width: 8),
-                Text(education["institution"]),
-              ],
-            ),
-            SizedBox(height: 4),
-            Row(
-              children: [
-                Icon(Icons.calendar_today, size: 16, color: blueColor),
-                SizedBox(width: 8),
-                Text(education["year"]),
-                SizedBox(width: 20),
-                Icon(Icons.grade, size: 16, color: blueColor),
-                SizedBox(width: 8),
-                Text(education["grade"]),
-              ],
-            ),
-          ],
+                  PopupMenuButton(
+                    itemBuilder:
+                        (context) => [
+                          PopupMenuItem(child: Text("Delete"), value: "delete"),
+                        ],
+                    onSelected: (value) async {
+                      if (value == "delete") {
+                        setState(() {
+                          educationList.removeAt(index);
+                        });
+                        await _saveEducationData();
+                      }
+                    },
+                  ),
+                ],
+              ),
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(Icons.school, size: 16, color: blueColor),
+                  SizedBox(width: 8),
+                  Text(education["institution"]),
+                ],
+              ),
+              SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(Icons.calendar_today, size: 16, color: blueColor),
+                  SizedBox(width: 8),
+                  Text(education["year"]),
+                  SizedBox(width: 20),
+                  Icon(Icons.grade, size: 16, color: blueColor),
+                  SizedBox(width: 8),
+                  Text(education["grade"]),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildCertificationCard(String title, String issuer, String year) {
-    final theme = Theme.of(context);
-    return Card(
-      child: ListTile(
-        leading: Icon(Icons.verified, color: blueColor),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text("$issuer • $year"),
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: blueColor, width: 1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: ListTile(
+          leading: Icon(Icons.verified, color: blueColor),
+          title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text("$issuer • $year"),
+        ),
       ),
     );
   }
@@ -997,7 +1007,10 @@ class _EducationalInformationScreenState
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text("Add Education"),
+            title: Text(
+              "Add Education",
+              style: TextStyle(fontWeight: FontWeight.bold, color: blueColor),
+            ),
             content: Form(
               key: _formKey,
               child: SingleChildScrollView(
@@ -1009,6 +1022,7 @@ class _EducationalInformationScreenState
                       cursorColor: blueColor,
                       decoration: InputDecoration(
                         labelText: "Degree",
+                        labelStyle: TextStyle(color: blueColor),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(width: 1.5, color: blueColor),
@@ -1030,6 +1044,7 @@ class _EducationalInformationScreenState
                       cursorColor: blueColor,
                       decoration: InputDecoration(
                         labelText: "Institution",
+                        labelStyle: TextStyle(color: blueColor),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(width: 1.5, color: blueColor),
@@ -1051,6 +1066,7 @@ class _EducationalInformationScreenState
                       cursorColor: blueColor,
                       decoration: InputDecoration(
                         labelText: "Year",
+                        labelStyle: TextStyle(color: blueColor),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(width: 1.5, color: blueColor),
@@ -1074,6 +1090,7 @@ class _EducationalInformationScreenState
                       controller: gradeController,
                       cursorColor: blueColor,
                       decoration: InputDecoration(
+                        labelStyle: TextStyle(color: blueColor),
                         labelText: "Grade",
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),

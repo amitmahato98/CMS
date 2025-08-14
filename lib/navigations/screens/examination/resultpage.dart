@@ -162,10 +162,7 @@ class _ResultPageState extends State<ResultPage> {
                       onPressed: () {
                         Navigator.of(dialogContext).pop();
                       },
-                      child: const Text(
-                        "OK",
-                        style: TextStyle(color: blueColor),
-                      ),
+                      child: Text("OK", style: TextStyle(color: blueColor)),
                     ),
                   ],
                 ),
@@ -190,7 +187,7 @@ class _ResultPageState extends State<ResultPage> {
       cursorColor: blueColor,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: blueColor),
+        labelStyle: TextStyle(color: blueColor),
         prefixIcon: Icon(icon, color: blueColor),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(

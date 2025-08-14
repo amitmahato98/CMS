@@ -133,15 +133,12 @@ class _AddNewTeacherPageState extends State<AddNewTeacherPage> {
                     controller: name,
                     decoration: InputDecoration(
                       labelText: 'Name',
-                      labelStyle: const TextStyle(color: blueColor),
+                      labelStyle: TextStyle(color: blueColor),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: blueColor,
-                          width: 0.5,
-                        ),
+                        borderSide: BorderSide(color: blueColor, width: 0.5),
                       ),
-                      focusedBorder: const OutlineInputBorder(
+                      focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: blueColor, width: 1.5),
                       ),
                     ),
@@ -159,15 +156,12 @@ class _AddNewTeacherPageState extends State<AddNewTeacherPage> {
                     controller: email,
                     decoration: InputDecoration(
                       labelText: 'Email',
-                      labelStyle: const TextStyle(color: blueColor),
+                      labelStyle: TextStyle(color: blueColor),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: blueColor,
-                          width: 0.5,
-                        ),
+                        borderSide: BorderSide(color: blueColor, width: 0.5),
                       ),
-                      focusedBorder: const OutlineInputBorder(
+                      focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: blueColor, width: 1.5),
                       ),
                     ),
@@ -188,15 +182,12 @@ class _AddNewTeacherPageState extends State<AddNewTeacherPage> {
                     controller: phone,
                     decoration: InputDecoration(
                       labelText: 'Phone',
-                      labelStyle: const TextStyle(color: blueColor),
+                      labelStyle: TextStyle(color: blueColor),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: blueColor,
-                          width: 0.5,
-                        ),
+                        borderSide: BorderSide(color: blueColor, width: 0.5),
                       ),
-                      focusedBorder: const OutlineInputBorder(
+                      focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: blueColor, width: 1.5),
                       ),
                     ),
@@ -215,15 +206,12 @@ class _AddNewTeacherPageState extends State<AddNewTeacherPage> {
                     controller: address,
                     decoration: InputDecoration(
                       labelText: 'Address',
-                      labelStyle: const TextStyle(color: blueColor),
+                      labelStyle: TextStyle(color: blueColor),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: blueColor,
-                          width: 0.5,
-                        ),
+                        borderSide: BorderSide(color: blueColor, width: 0.5),
                       ),
-                      focusedBorder: const OutlineInputBorder(
+                      focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: blueColor, width: 1.5),
                       ),
                     ),
@@ -236,15 +224,12 @@ class _AddNewTeacherPageState extends State<AddNewTeacherPage> {
                     controller: qualification,
                     decoration: InputDecoration(
                       labelText: 'Qualification',
-                      labelStyle: const TextStyle(color: blueColor),
+                      labelStyle: TextStyle(color: blueColor),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: blueColor,
-                          width: 0.5,
-                        ),
+                        borderSide: BorderSide(color: blueColor, width: 0.5),
                       ),
-                      focusedBorder: const OutlineInputBorder(
+                      focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: blueColor, width: 1.5),
                       ),
                     ),
@@ -275,15 +260,12 @@ class _AddNewTeacherPageState extends State<AddNewTeacherPage> {
                     controller: experience,
                     decoration: InputDecoration(
                       labelText: 'Experience (years)',
-                      labelStyle: const TextStyle(color: blueColor),
+                      labelStyle: TextStyle(color: blueColor),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: blueColor,
-                          width: 0.5,
-                        ),
+                        borderSide: BorderSide(color: blueColor, width: 0.5),
                       ),
-                      focusedBorder: const OutlineInputBorder(
+                      focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: blueColor, width: 1.5),
                       ),
                     ),

@@ -196,6 +196,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                                 ? theme.cardColor
                                 : blueColor.withOpacity(0.95),
                         borderRadius: BorderRadius.circular(12),
+                        border: Border.all(width: 1, color: blueColor),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.08),

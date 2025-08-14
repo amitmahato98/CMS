@@ -51,22 +51,22 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text(
+            title: Text(
               'Select Image Source',
-              style: TextStyle(color: blueColor),
+              style: TextStyle(fontWeight: FontWeight.bold, color: blueColor),
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 ListTile(
-                  leading: const Icon(Icons.photo),
-                  title: const Text('Gallery'),
+                  leading: Icon(Icons.photo, color: blueColor),
+                  title: Text('Gallery', style: TextStyle(color: blueColor)),
                   onTap: () => Navigator.pop(context, ImageSource.gallery),
                 ),
                 SizedBox(height: 5),
                 ListTile(
-                  leading: const Icon(Icons.camera_alt),
-                  title: const Text('Camera'),
+                  leading: Icon(Icons.camera_alt, color: blueColor),
+                  title: Text('Camera', style: TextStyle(color: blueColor)),
                   onTap: () => Navigator.pop(context, ImageSource.camera),
                 ),
               ],
@@ -369,7 +369,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete, color: blueColor),
+                        icon: Icon(Icons.delete, color: blueColor),
                         onPressed: () => _removeSubject(i),
                       ),
                     ],
@@ -425,7 +425,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   child: ElevatedButton.icon(
-                    icon: const Icon(Icons.download, color: blueColor),
+                    icon: Icon(Icons.download, color: blueColor),
                     label: const Text(
                       "Download PDF",
                       style: TextStyle(color: whiteColor),

@@ -44,7 +44,7 @@ class AboutUs extends StatelessWidget {
             Text(
               "Empowering Education with Smart Digital Tools",
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: blueColor.withOpacity(0.5),
+                color: blueColor.withOpacity(0.8),
               ),
               textAlign: TextAlign.center,
             ),
@@ -153,7 +153,7 @@ class AboutUs extends StatelessWidget {
             Text(
               "Version 1.0.0 • © 2025 Central Campus of Technology",
               style: theme.textTheme.bodySmall?.copyWith(
-                color: blueColor.withOpacity(0.5),
+                color: blueColor.withOpacity(0.8),
               ),
               textAlign: TextAlign.center,
             ),

@@ -44,22 +44,22 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          title: const Text(
+          title: Text(
             'Select Image Source',
-            style: TextStyle(color: blueColor),
+            style: TextStyle(color: blueColor, fontWeight: FontWeight.bold),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(Icons.photo),
-                title: const Text('Gallery'),
+                leading: Icon(Icons.photo, color: blueColor),
+                title: Text('Gallery', style: TextStyle(color: blueColor)),
                 onTap: () => Navigator.pop(context, ImageSource.gallery),
               ),
               SizedBox(height: 5),
               ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: const Text('Camera'),
+                leading: Icon(Icons.camera_alt, color: blueColor),
+                title: Text('Camera', style: TextStyle(color: blueColor)),
                 onTap: () => Navigator.pop(context, ImageSource.camera),
               ),
             ],
@@ -114,7 +114,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
+              SnackBar(
                 content: Text('Storage permission is required to download PDF'),
                 backgroundColor: Colors.red,
                 duration: Duration(seconds: 5),
@@ -160,7 +160,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
                   mainAxisSize: pw.MainAxisSize.min,
                   children: [
                     pw.Container(
-                      margin: const pw.EdgeInsets.only(top: 20),
+                      margin: pw.EdgeInsets.only(top: 20),
                       padding: const pw.EdgeInsets.all(10),
                       width: 280,
                       decoration: pw.BoxDecoration(
@@ -434,7 +434,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
                   onPressed: isGeneratingPDF ? null : downloadPDF,
                   icon:
                       isGeneratingPDF
-                          ? const SizedBox(
+                          ? SizedBox(
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
@@ -650,7 +650,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
     padding: const EdgeInsets.symmetric(vertical: 4.0),
     child: DropdownButtonFormField<String>(
       value: selectedCourse,
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: blueColor, width: 0.5),
         ),

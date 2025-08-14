@@ -527,7 +527,7 @@ class _GridbuildState extends State<Gridbuild> {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 20,
-                  mainAxisExtent: 220,
+                  mainAxisExtent: 210,
                   mainAxisSpacing: 20,
                 ),
                 itemBuilder: (_, index) {

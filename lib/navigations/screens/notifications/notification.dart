@@ -348,7 +348,7 @@ class _SendNotificationPageState extends State<SendNotificationPage>
 
     if (noRecipientsSelected) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Please select at least one recipient'),
           backgroundColor: blueColor,
         ),
@@ -409,7 +409,7 @@ class _SendNotificationPageState extends State<SendNotificationPage>
         _loadNotificationHistory();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Failed to send notification'),
             backgroundColor: blueColor,
           ),
@@ -468,8 +468,8 @@ class _SendNotificationPageState extends State<SendNotificationPage>
               decoration: InputDecoration(
                 labelText: 'Notification Title',
 
-                labelStyle: const TextStyle(color: blueColor),
-                prefixIcon: const Icon(Icons.title_sharp, color: blueColor),
+                labelStyle: TextStyle(color: blueColor),
+                prefixIcon: Icon(Icons.title_sharp, color: blueColor),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(width: 0.5, color: blueColor),
@@ -642,7 +642,7 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                 onPressed: _isSending ? null : _sendNotification,
                 icon:
                     _isSending
-                        ? const SizedBox(
+                        ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
@@ -650,7 +650,7 @@ class _SendNotificationPageState extends State<SendNotificationPage>
                             strokeWidth: 2,
                           ),
                         )
-                        : const Icon(Icons.send, color: blueColor),
+                        : Icon(Icons.send, color: blueColor),
                 label: Text(
                   _isSending ? 'Sending...' : 'Send Notification',
                   style: TextStyle(color: blueColor),

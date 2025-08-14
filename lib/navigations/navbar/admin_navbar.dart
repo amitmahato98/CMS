@@ -56,7 +56,7 @@ class Navbar extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.person),
+            leading: Icon(Icons.person, color: blueColor),
             title: const Text("Profile"),
             onTap: () {
               Navigator.push(
@@ -66,7 +66,7 @@ class Navbar extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.supervised_user_circle),
+            leading: Icon(Icons.supervised_user_circle, color: blueColor),
             title: const Text("Students"),
             onTap: () {
               Navigator.push(
@@ -77,7 +77,7 @@ class Navbar extends StatelessWidget {
           ),
 
           ListTile(
-            leading: Icon(Icons.edit_document),
+            leading: Icon(Icons.edit_document, color: blueColor),
             title: Text("Result "),
             onTap:
                 () => Navigator.push(
@@ -86,7 +86,7 @@ class Navbar extends StatelessWidget {
                 ),
           ),
           ListTile(
-            leading: const Icon(Icons.notifications),
+            leading: Icon(Icons.notifications, color: blueColor),
             title: const Text("Send Notification"),
             onTap: () {
               Navigator.push(
@@ -95,8 +95,9 @@ class Navbar extends StatelessWidget {
               );
             },
           ),
+
           ListTile(
-            leading: const Icon(Icons.policy_rounded),
+            leading: Icon(Icons.policy_rounded, color: blueColor),
             title: Text("Policies"),
             onTap:
                 () => Navigator.push(
@@ -105,7 +106,7 @@ class Navbar extends StatelessWidget {
                 ),
           ),
           ListTile(
-            leading: Icon(Icons.info),
+            leading: Icon(Icons.info, color: blueColor),
             title: Text("About Us"),
             onTap:
                 () => Navigator.push(
@@ -115,7 +116,7 @@ class Navbar extends StatelessWidget {
           ),
 
           ListTile(
-            leading: Icon(Icons.logout),
+            leading: Icon(Icons.logout_rounded, color: blueColor),
             title: Text("Logout"),
             onTap: () => Navigator.pop(context),
           ),

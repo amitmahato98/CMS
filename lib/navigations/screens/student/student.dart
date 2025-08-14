@@ -135,6 +135,7 @@ class _NewStudentState extends State<NewStudent> {
                                 ? theme.cardColor
                                 : primary.withOpacity(0.95),
                         borderRadius: BorderRadius.circular(12),
+                        border: Border.all(width: 1, color: blueColor),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.08),

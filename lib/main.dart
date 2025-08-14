@@ -75,7 +75,6 @@ class _MainNavigatorState extends State<MainNavigator> {
       return false;
     }
 
-    // Show exit confirmation dialog when on main screen
     bool shouldExit =
         await showDialog(
           context: context,
@@ -146,19 +145,32 @@ class _MainNavigatorState extends State<MainNavigator> {
                   ],
                 )
                 : null,
-
-        body: Navigator(
-          key: _navigatorKey,
-          onGenerateRoute: (settings) {
-            return MaterialPageRoute(
-              builder:
-                  (context) => Dashboard(
-                    onSectionSelected: (Widget page) {
-                      _pushPage(page);
-                    },
-                  ),
-            );
-          },
+        body: Stack(
+          children: [
+            Navigator(
+              key: _navigatorKey,
+              onGenerateRoute: (settings) {
+                return MaterialPageRoute(
+                  builder:
+                      (context) => Dashboard(
+                        onSectionSelected: (Widget page) {
+                          _pushPage(page);
+                        },
+                      ),
+                );
+              },
+            ),
+            if (_showingDashboard)
+              Positioned(
+                right: 60,
+                bottom: 60,
+                child: FloatingActionButton(
+                  onPressed: () => _pushPage(ThemeSelector()),
+                  backgroundColor: blueColor,
+                  child: Icon(Icons.color_lens, color: Colors.white),
+                ),
+              ),
+          ],
         ),
       ),
     );

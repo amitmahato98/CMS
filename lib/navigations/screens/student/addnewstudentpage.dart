@@ -96,7 +96,7 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
   }) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: blueColor),
+      labelStyle: TextStyle(color: blueColor),
       prefixIcon: Icon(icon, color: blueColor),
       prefixText: prefixText,
       enabledBorder: OutlineInputBorder(

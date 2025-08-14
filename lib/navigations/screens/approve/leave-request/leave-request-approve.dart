@@ -282,7 +282,7 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
                                 ),
                                 actions: [
                                   TextButton(
-                                    child: const Text(
+                                    child: Text(
                                       "Close",
                                       style: TextStyle(color: blueColor),
                                     ),
