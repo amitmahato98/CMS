@@ -586,6 +586,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                           _buildActionButton(
                             context,
                             icon: Icons.delete_outline,
+
                             color: blueColor.withOpacity(0.6),
                             onPressed: () => _showDeleteDialog(context, user),
                           ),
@@ -759,6 +760,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     BuildContext context, {
     required IconData icon,
     required Color color,
+
     String? label,
     bool isExpanded = false,
     required VoidCallback onPressed,
@@ -767,8 +769,10 @@ class _UserManagementScreenState extends State<UserManagementScreen>
       height: isExpanded ? 44 : 36,
       child: ElevatedButton(
         onPressed: onPressed,
+
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
+
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(isExpanded ? 12 : 18),
@@ -838,10 +842,12 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: Colors.red.shade100,
+
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
                           Icons.delete_outline,
+
                           color: Colors.red.shade400,
                           size: 24,
                         ),

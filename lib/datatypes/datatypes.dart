@@ -1,33 +1,30 @@
-// import 'package:flutter/material.dart';
-// // import 'package:flutter/rendering.dart';
-
-// const String cms = "Collage Management System";
-// const Color grayColor = Color(0xFFA9A9A9);
-// const Color darkBlue = Color(0xFF167AFA);
-// const Color darkBlack = Color.fromARGB(255, 0, 0, 0);
-// const Color blueColor = Colors.pink;
-// // const Color blueColor = Color(0xFF167AFA);
-// const Color cardTextColor = Colors.white;
-// const Color backgroundColor = Color(0xFFF5F7FA);
-// const Color whiteColor = Colors.white;
-// DateTime selectedMonth = DateTime(2025, 3, 1); // Initialize with March 2025
-
-// class ThemeSelector extends StatelessWidget {
-//   const ThemeSelector({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container();
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+// ===== NEW CODE START =====
+import 'package:uuid/uuid.dart';
+
+Future<String> getDeviceId() async {
+  final prefs = await SharedPreferences.getInstance();
+  String? storedId = prefs.getString('device_id');
+
+  if (storedId != null && storedId.isNotEmpty) return storedId;
+
+  // Generate a new UUID
+  String newId = const Uuid().v4();
+  await prefs.setString('device_id', newId);
+  return newId;
+}
+// ===== NEW CODE END =====
+
+// Global theme color
+Color blueColor = Colors.blue; // used throughout the app
 
 const String cms = "Collage Management System";
 const Color grayColor = Color.fromARGB(255, 170, 169, 169);
 const Color darkBlue = Color.fromARGB(255, 22, 122, 250);
 const Color darkBlack = Color.fromARGB(255, 0, 0, 0);
-Color blueColor = Colors.blue; // global theme color
 const Color cardTextColor = Colors.white;
 const Color backgroundColor = Color.fromARGB(255, 243, 245, 248);
 const Color whiteColor = Colors.white;
@@ -40,8 +37,9 @@ class ThemeSelector extends StatefulWidget {
   State<ThemeSelector> createState() => _ThemeSelectorState();
 }
 
-class _ThemeSelectorState extends State<ThemeSelector>
-    with SingleTickerProviderStateMixin {
+class _ThemeSelectorState extends State<ThemeSelector> {
+  late Color _selectedColor; // local selected color
+
   final List<Color> colors = [
     Colors.blue,
     Colors.green,
@@ -145,28 +143,96 @@ class _ThemeSelectorState extends State<ThemeSelector>
   @override
   void initState() {
     super.initState();
-    _loadSavedColor();
+    _selectedColor = blueColor; // start with current global color
+    _initializeTheme();
   }
 
-  Future<void> _loadSavedColor() async {
-    final prefs = await SharedPreferences.getInstance();
-    int? colorValue = prefs.getInt('themeColor');
-    if (colorValue != null) {
-      setState(() {
-        blueColor = Color(colorValue);
-      });
+  Future<void> _initializeTheme() async {
+    final deviceId = await getDeviceId(); // ===== NEW CODE =====
+    final docRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(deviceId)
+        .collection('settings')
+        .doc('theme_color');
+
+    final doc = await docRef.get();
+    if (!doc.exists) {
+      // Create document with default color
+      await docRef.set({'colorValue': blueColor.value});
     }
+
+    // Then load theme from Firebase or local
+    await _loadThemeColor();
+  }
+
+  Future<void> _loadThemeColor() async {
+    int? firebaseColor;
+    int? localColor;
+
+    final deviceId = await getDeviceId(); // ===== NEW CODE =====
+
+    // Try fetch from Firebase
+    try {
+      final doc =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(deviceId)
+              .collection('settings')
+              .doc('theme_color')
+              .get();
+
+      if (doc.exists && doc.data()!.containsKey('colorValue')) {
+        firebaseColor = doc['colorValue'] as int;
+      }
+    } catch (e) {
+      // ignore error, fallback to local
+    }
+
+    // Fetch from SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    localColor = prefs.getInt('themeColor');
+
+    // Choose color: Firebase > Local > Default
+    final int finalColorValue =
+        firebaseColor ?? localColor ?? Colors.blue.value;
+
+    // Update state and global color
+    if (!mounted) return;
+    setState(() {
+      _selectedColor = Color(finalColorValue);
+      blueColor = Color(finalColorValue);
+    });
   }
 
   Future<void> _saveSelectedColor(Color color) async {
+    // Update UI immediately
+    setState(() {
+      _selectedColor = color;
+      blueColor = color;
+    });
+
+    // Save locally
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('themeColor', color.value);
+
+    // Try saving to Firebase (but don’t block UI)
+    try {
+      final deviceId = await getDeviceId();
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(deviceId)
+          .collection('settings')
+          .doc('theme_color')
+          .set({'colorValue': color.value});
+    } catch (e) {
+      debugPrint("⚠️ Failed to save to Firebase: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(cms), backgroundColor: blueColor),
+      appBar: AppBar(title: Text(cms), backgroundColor: _selectedColor),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.builder(
@@ -179,18 +245,14 @@ class _ThemeSelectorState extends State<ThemeSelector>
           itemBuilder: (context, index) {
             final color = colors[index];
             final colorName = colorNames[index];
-            final isSelected = blueColor == color;
+            final isSelected = _selectedColor.value == color.value;
 
-            // Choose text color for readability
             final textColor =
                 color.computeLuminance() > 0.5 ? Colors.black : Colors.white;
 
             return GestureDetector(
-              onTap: () {
-                setState(() {
-                  blueColor = color;
-                  _saveSelectedColor(color);
-                });
+              onTap: () async {
+                await _saveSelectedColor(color); // save local + firebase
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
@@ -220,16 +282,10 @@ class _ThemeSelectorState extends State<ThemeSelector>
                 ),
                 child: Stack(
                   children: [
-                    Center(
-                      child:
-                          isSelected
-                              ? const Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 32,
-                              )
-                              : null,
-                    ),
+                    if (isSelected)
+                      const Center(
+                        child: Icon(Icons.check, color: Colors.white, size: 32),
+                      ),
                     Positioned(
                       bottom: 8,
                       left: 0,

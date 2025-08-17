@@ -6,7 +6,6 @@ import 'package:cms/datatypes/datatypes.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Import the theme provider
 // import 'theme_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -388,6 +387,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                   maxLines: maxLines,
                   decoration: InputDecoration(
                     labelText: label,
+                    labelStyle: TextStyle(color: blueColor),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(width: 1.5, color: blueColor),
@@ -671,6 +671,8 @@ class _ProfessionalInformationScreenState
                   maxLines: maxLines,
                   decoration: InputDecoration(
                     labelText: label,
+                    labelStyle: TextStyle(color: blueColor),
+
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(width: 1.5, color: blueColor),

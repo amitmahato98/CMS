@@ -7,8 +7,31 @@ import 'package:cms/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  final prefs = await SharedPreferences.getInstance();
+  int? localColor = prefs.getInt('themeColor');
+
+  int? firebaseColor;
+  try {
+    final doc =
+        await FirebaseFirestore.instance
+            .collection('app_settings')
+            .doc('theme_color')
+            .get();
+    if (doc.exists) firebaseColor = doc['colorValue'] as int;
+  } catch (_) {}
+
+  // Corrected: use .value for default Color
+  blueColor = Color(firebaseColor ?? localColor ?? blueColor.value);
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
@@ -124,6 +147,7 @@ class _MainNavigatorState extends State<MainNavigator> {
                   backgroundColor: blueColor,
                   leading: IconButton(
                     icon: Icon(Icons.menu),
+                    tooltip: 'Open Menu',
                     onPressed: () {
                       _scaffoldKey.currentState?.openDrawer();
                     },
@@ -136,10 +160,15 @@ class _MainNavigatorState extends State<MainNavigator> {
                             ? Icons.light_mode
                             : Icons.dark_mode,
                       ),
+                      tooltip:
+                          themeProvider.isDarkMode
+                              ? 'Bright Mode'
+                              : 'Dark Mode',
                       onPressed: () => themeProvider.toggleTheme(),
                     ),
                     IconButton(
                       icon: Icon(Icons.notifications),
+                      tooltip: 'Notifications',
                       onPressed: () => _pushPage(SendNotificationPage()),
                     ),
                   ],
@@ -160,16 +189,48 @@ class _MainNavigatorState extends State<MainNavigator> {
                 );
               },
             ),
-            if (_showingDashboard)
+            if (_showingDashboard) ...[
               Positioned(
                 right: 60,
                 bottom: 60,
                 child: FloatingActionButton(
                   onPressed: () => _pushPage(ThemeSelector()),
                   backgroundColor: blueColor,
+                  tooltip: 'Theme Selector',
                   child: Icon(Icons.color_lens, color: Colors.white),
                 ),
               ),
+              // Firebase test button
+              Positioned(
+                right: 60,
+                bottom: 130,
+                child: FloatingActionButton(
+                  onPressed: () async {
+                    try {
+                      final doc =
+                          await FirebaseFirestore.instance
+                              .collection('test')
+                              .doc('ping')
+                              .get();
+
+                      if (doc.exists) {
+                        print("Firebase apps: ${Firebase.apps}");
+                        print("Firebase connected! Doc data: ${doc.data()}");
+                      } else {
+                        print("Firebase apps: ${Firebase.apps}");
+                        print(" Firebase connected, but no doc found.");
+                      }
+                    } catch (e) {
+                      print("Firebase apps: ${Firebase.apps}");
+                      print(" Firebase test failed: $e");
+                    }
+                  },
+                  backgroundColor: blueColor,
+                  tooltip: 'Connection Test',
+                  child: Icon(Icons.cloud, color: Colors.white),
+                ),
+              ),
+            ],
           ],
         ),
       ),
