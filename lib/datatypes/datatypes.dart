@@ -1,22 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-// ===== NEW CODE START =====
-import 'package:uuid/uuid.dart';
-
-Future<String> getDeviceId() async {
-  final prefs = await SharedPreferences.getInstance();
-  String? storedId = prefs.getString('device_id');
-
-  if (storedId != null && storedId.isNotEmpty) return storedId;
-
-  // Generate a new UUID
-  String newId = const Uuid().v4();
-  await prefs.setString('device_id', newId);
-  return newId;
-}
-// ===== NEW CODE END =====
+import 'package:firebase_auth/firebase_auth.dart'; // ✅ import Firebase Auth
 
 // Global theme color
 Color blueColor = Colors.blue; // used throughout the app
@@ -148,55 +133,72 @@ class _ThemeSelectorState extends State<ThemeSelector> {
   }
 
   Future<void> _initializeTheme() async {
-    final deviceId = await getDeviceId(); // ===== NEW CODE =====
-    final docRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(deviceId)
-        .collection('settings')
-        .doc('theme_color');
+    try {
+      final deviceId =
+          FirebaseAuth.instance.currentUser?.uid; // fetch actual user id
+      if (deviceId == null) return;
 
-    final doc = await docRef.get();
-    if (!doc.exists) {
-      // Create document with default color
-      await docRef.set({'colorValue': blueColor.value});
+      final docRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(deviceId)
+          .collection('settings')
+          .doc('theme_color');
+
+      final doc = await docRef.get();
+      if (!doc.exists) {
+        // Create document with default color safely
+        await docRef.set({'colorValue': blueColor.value});
+      }
+
+      // Then load theme from Firebase or local
+      await _loadThemeColor();
+    } catch (e) {
+      debugPrint("⚠️ _initializeTheme error: $e");
     }
-
-    // Then load theme from Firebase or local
-    await _loadThemeColor();
   }
 
   Future<void> _loadThemeColor() async {
     int? firebaseColor;
     int? localColor;
 
-    final deviceId = await getDeviceId(); // ===== NEW CODE =====
-
-    // Try fetch from Firebase
     try {
-      final doc =
+      final deviceId = FirebaseAuth.instance.currentUser?.uid;
+      if (deviceId != null) {
+        final doc =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(deviceId)
+                .collection('settings')
+                .doc('theme_color')
+                .get();
+
+        if (doc.exists && doc.data()!.containsKey('colorValue')) {
+          firebaseColor = doc['colorValue'] as int;
+        } else {
+          // document missing, create default
           await FirebaseFirestore.instance
               .collection('users')
               .doc(deviceId)
               .collection('settings')
               .doc('theme_color')
-              .get();
-
-      if (doc.exists && doc.data()!.containsKey('colorValue')) {
-        firebaseColor = doc['colorValue'] as int;
+              .set({'colorValue': blueColor.value});
+          firebaseColor = blueColor.value;
+        }
       }
     } catch (e) {
-      // ignore error, fallback to local
+      debugPrint("⚠️ _loadThemeColor error: $e");
     }
 
-    // Fetch from SharedPreferences
-    final prefs = await SharedPreferences.getInstance();
-    localColor = prefs.getInt('themeColor');
+    // Fetch local fallback
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      localColor = prefs.getInt('themeColor');
+    } catch (_) {}
 
     // Choose color: Firebase > Local > Default
     final int finalColorValue =
         firebaseColor ?? localColor ?? Colors.blue.value;
 
-    // Update state and global color
     if (!mounted) return;
     setState(() {
       _selectedColor = Color(finalColorValue);
@@ -205,25 +207,26 @@ class _ThemeSelectorState extends State<ThemeSelector> {
   }
 
   Future<void> _saveSelectedColor(Color color) async {
-    // Update UI immediately
     setState(() {
       _selectedColor = color;
       blueColor = color;
     });
 
-    // Save locally
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('themeColor', color.value);
-
-    // Try saving to Firebase (but don’t block UI)
     try {
-      final deviceId = await getDeviceId();
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(deviceId)
-          .collection('settings')
-          .doc('theme_color')
-          .set({'colorValue': color.value});
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('themeColor', color.value);
+    } catch (_) {}
+
+    try {
+      final deviceId = FirebaseAuth.instance.currentUser?.uid;
+      if (deviceId != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(deviceId)
+            .collection('settings')
+            .doc('theme_color')
+            .set({'colorValue': color.value});
+      }
     } catch (e) {
       debugPrint("⚠️ Failed to save to Firebase: $e");
     }
@@ -310,3 +313,31 @@ class _ThemeSelectorState extends State<ThemeSelector> {
     );
   }
 }
+
+//user info from firebase fetched
+// Future<void> loadUserInfo() async {
+//   final uid = FirebaseAuth.instance.currentUser?.uid;
+//   if (uid == null) return;
+
+//   final doc =
+//       await FirebaseFirestore.instance.collection('users').doc(uid).get();
+//   if (doc.exists) {
+//     GlobalUser.updateFromMap(uid, doc.data()!);
+//   }
+// }
+
+// class GlobalUser {
+//   static String uid = "";
+//   static String name = "";
+//   static String email = "";
+//   static String phone = "";
+//   static String photoUrl = "";
+
+//   static void updateFromMap(String id, Map<String, dynamic> data) {
+//     uid = id;
+//     name = data['name'] ?? "";
+//     email = data['email'] ?? "";
+//     phone = data['phone'] ?? "";
+//     photoUrl = data['photoUrl'] ?? "";
+//   }
+// }

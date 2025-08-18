@@ -1,3 +1,5 @@
+import 'package:cms/auth/auth_service.dart';
+import 'package:cms/auth/login_page.dart';
 import 'package:cms/datatypes/datatypes.dart';
 import 'package:cms/navigations/screens/aboutus/aboutus.dart';
 import 'package:cms/navigations/screens/examination/resultpage.dart';
@@ -118,7 +120,18 @@ class Navbar extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.logout_rounded, color: blueColor),
             title: Text("Logout"),
-            onTap: () => Navigator.pop(context),
+            onTap: () async {
+              Navigator.of(context).pop(); // close drawer
+              await AuthService().signOut(); // sign out
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+                (route) => false, // remove all previous routes
+              );
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Logged out successfully")),
+              );
+            },
           ),
         ],
       ),

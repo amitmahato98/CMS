@@ -1,3 +1,5 @@
+import 'package:cms/auth/auth_service.dart';
+import 'package:cms/auth/login_page.dart';
 import 'package:cms/datatypes/datatypes.dart';
 import 'package:cms/navigations/body/admin_dashboard.dart';
 import 'package:cms/navigations/navbar/admin_navbar.dart';
@@ -11,6 +13,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +54,21 @@ class MyApp extends StatelessWidget {
           title: 'CMS',
           debugShowCheckedModeBanner: false,
           theme: themeProvider.currentTheme,
-          home: MainNavigator(),
+          home: StreamBuilder<User?>(
+            stream: AuthService().auth$(),
+
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasData) {
+                // user is logged in
+                return MainNavigator();
+              }
+              // user is not logged in
+              return const LoginPage();
+            },
+          ),
         );
       },
     );
@@ -114,8 +131,17 @@ class _MainNavigatorState extends State<MainNavigator> {
                       child: Text('No'),
                     ),
                     TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(true);
+                      onPressed: () async {
+                        Navigator.of(context).pop(); // close drawer
+                        await AuthService().signOut(); // sign out
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (_) => const LoginPage()),
+                          (route) => false, // remove all previous routes
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Logged out successfully")),
+                        );
                       },
                       child: Text('Yes'),
                     ),
@@ -207,6 +233,13 @@ class _MainNavigatorState extends State<MainNavigator> {
                 child: FloatingActionButton(
                   onPressed: () async {
                     try {
+                      final user = FirebaseAuth.instance.currentUser;
+
+                      if (user != null) {
+                        print("User is logged in: ${user.uid}");
+                      } else {
+                        print("No user is logged in");
+                      }
                       final doc =
                           await FirebaseFirestore.instance
                               .collection('test')
