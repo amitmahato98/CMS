@@ -23,7 +23,7 @@ class _ResetPageState extends State<ResetPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Password reset email sent!')),
       );
-      Navigator.pop(context); //sent sucess thrn go login page
+      Navigator.pop(context); // sucess thrn go login page
     } catch (e) {
       ScaffoldMessenger.of(
         context,

@@ -22,25 +22,21 @@ class _SignupPageState extends State<SignupPage> {
 
     setState(() => loading = true); // spinner start
     try {
-      // Sign up user and ensure Firestore write succeeds
       await AuthService().signUp(
         name: nameController.text,
         email: emailController.text,
         password: passwordController.text,
       );
 
-      // Only show success if both Auth and Firestore succeeded
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Account created successfully!")),
       );
 
-      // Navigate to Login page
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const LoginPage()),
       );
     } catch (e) {
-      // Show meaningful error (Auth + Firestore)
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(mapAuthError(e))));

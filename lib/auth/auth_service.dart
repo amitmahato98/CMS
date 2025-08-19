@@ -1,4 +1,3 @@
-// auth_service.dart
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,32 +14,27 @@ class AuthService {
     required String password,
     bool createProfileDoc = true,
   }) async {
-    // 1️⃣ Create user in Firebase Auth
     final cred = await _auth.createUserWithEmailAndPassword(
       email: email.trim(),
       password: password.trim(),
     );
     await cred.user?.updateDisplayName(name.trim());
 
-    // 2️⃣ Create Firestore profile document
     if (createProfileDoc) {
       final userDoc = _db.collection('users').doc(cred.user!.uid);
 
       try {
-        // Main user document
         await userDoc.set({
           'name': name.trim(),
           'email': email.trim(),
           'createdAt': FieldValue.serverTimestamp(),
         });
 
-        // Default theme color subcollection
         await userDoc.collection('settings').doc('theme_color').set({
-          'colorValue': 0xFF167AFA, // default blue
+          'colorValue': 427041274,
         });
       } on FirebaseException catch (e) {
-        // Firestore failed, show proper message
-        debugPrint("⚠️ Firestore write failed: ${e.message}");
+        debugPrint("Firestore write failed: ${e.message}");
         throw FirebaseAuthException(
           code: 'firestore-failed',
           message: 'Signup succeeded, but failed to save profile. Try again.',

@@ -237,6 +237,9 @@ class _MainNavigatorState extends State<MainNavigator> {
 
                       if (user != null) {
                         print("User is logged in: ${user.uid}");
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(user.uid)));
                       } else {
                         print("No user is logged in");
                       }

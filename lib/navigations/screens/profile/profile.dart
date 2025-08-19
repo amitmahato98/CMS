@@ -1,10 +1,11 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cms/datatypes/datatypes.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:nepali_date_picker/nepali_date_picker.dart';
 
 // import 'theme_provider.dart';
 
@@ -44,6 +45,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     },
   ];
 
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,19 +56,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildProfileHeader(),
-            SizedBox(height: 20),
-            _buildMenuSection(),
-          ],
-        ),
+      body: StreamBuilder<DocumentSnapshot>(
+        stream:
+            FirebaseFirestore.instance.collection("users").doc(uid).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || !snapshot.data!.exists) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text("User info not found!")));
+          }
+          final userData = snapshot.data!.data() as Map<String, dynamic>;
+          final firstName = userData['firstName'] ?? "Guest";
+          final lastName = userData['lastName'] ?? "Guest";
+          final email = userData['eMail'] ?? "admin@examplecollege.edu.np";
+          final mobNo = userData['mobNo'] ?? "98xxxxxxxx";
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildProfileHeader(firstName, lastName, email, mobNo),
+                SizedBox(height: 20),
+                _buildMenuSection(),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(
+    String firstName,
+    String lastName,
+    String email,
+    String mobNo,
+  ) {
     return Container(
       color: blueColor,
       padding: EdgeInsets.only(bottom: 30.0),
@@ -86,7 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           SizedBox(height: 10),
           Text(
-            "Mr. Amit Mahato",
+            "Mr. $firstName $lastName",
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -105,9 +132,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildContactInfo(Icons.email, "amitm@examplecollege.edu.np"),
+              _buildContactInfo(Icons.email, email),
               SizedBox(width: 20),
-              _buildContactInfo(Icons.phone, "+977-9825780505"),
+              _buildContactInfo(Icons.phone, mobNo),
             ],
           ),
         ],
@@ -223,48 +250,50 @@ class PersonalInformationScreen extends StatefulWidget {
 
 class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _addressController = TextEditingController();
+  final _firstNameController = TextEditingController(text: "Guest");
+  final _lastNameController = TextEditingController(text: "User");
+  final _emailController = TextEditingController(text: "admin@college.edu.np");
+  final _phoneController = TextEditingController(text: "+977-98xxxxxxxx");
+  final _addressController = TextEditingController(text: "Adresss, Nepal");
 
-  DateTime? _selectedDate;
+  DateTime? _selectedDate = DateTime(2035, 5, 15);
   bool _isEditing = false;
 
   @override
   void initState() {
     super.initState();
-    _loadPersonalInfo();
+    _loadUserInfo(uid!);
   }
 
-  Future<void> _loadPersonalInfo() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _firstNameController.text = prefs.getString('firstName') ?? "Amit";
-      _lastNameController.text = prefs.getString('lastName') ?? "Mahato";
-      _emailController.text =
-          prefs.getString('email') ?? "amitm@examplecollege.edu.np";
-      _phoneController.text = prefs.getString('phone') ?? "+977-9825780505";
-      _addressController.text =
-          prefs.getString('address') ?? "Kathmandu, Nepal";
-      final dobString = prefs.getString('dob');
-      _selectedDate =
-          dobString != null
-              ? DateTime.tryParse(dobString)
-              : DateTime(1985, 5, 15);
-    });
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+
+  Future<void> _saveUserInfo(String uid) async {
+    final userdoc = FirebaseFirestore.instance.collection('users').doc(uid);
+    await userdoc.set({
+      "firstName": _firstNameController.text.trim(),
+      "lastName": _lastNameController.text.trim(),
+      "eMail": _emailController.text.trim(),
+      "mobNo": _phoneController.text.trim(),
+      "address": _addressController.text.trim(),
+      "DoB": _selectedDate?.toIso8601String(),
+      "createdAt": FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
   }
 
-  Future<void> _savePersonalInfo() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('firstName', _firstNameController.text);
-    await prefs.setString('lastName', _lastNameController.text);
-    await prefs.setString('email', _emailController.text);
-    await prefs.setString('phone', _phoneController.text);
-    await prefs.setString('address', _addressController.text);
-    if (_selectedDate != null) {
-      await prefs.setString('dob', _selectedDate!.toIso8601String());
+  Future<void> _loadUserInfo(String uid) async {
+    final userdoc =
+        await FirebaseFirestore.instance.collection("users").doc(uid).get();
+    if (userdoc.exists && userdoc.data() != null) {
+      final userdata = userdoc.data()!;
+      setState(() {
+        _firstNameController.text = userdata["firstName"] ?? "guest";
+        _lastNameController.text = userdata["lastName"] ?? "user";
+        _emailController.text = userdata["eMail"] ?? "mai@mail.com";
+        _phoneController.text = userdata["mobNo"] ?? "98xxxxxxxx";
+        _addressController.text = userdata["address"] ?? "xxxxxxx";
+        _selectedDate =
+            userdata["DoB"] != null ? DateTime.tryParse(userdata["DoB"]) : null;
+      });
     }
   }
 
@@ -282,7 +311,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
             onPressed: () async {
               if (_isEditing) {
                 if (_formKey.currentState!.validate()) {
-                  await _savePersonalInfo();
+                  _saveUserInfo(uid!);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Information saved")),
                   );
@@ -450,12 +479,16 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
             isEditable
                 ? InkWell(
                   onTap: () async {
-                    final picked = await showDatePicker(
+                    final picked = await showMaterialDatePicker(
                       context: context,
-                      initialDate: date ?? DateTime(1990),
-                      firstDate: DateTime(1950),
-                      lastDate: DateTime.now(),
+                      initialDate:
+                          date != null
+                              ? NepaliDateTime.fromDateTime(date)
+                              : NepaliDateTime(2045),
+                      firstDate: NepaliDateTime(2040),
+                      lastDate: NepaliDateTime.now(),
                     );
+
                     if (picked != null) {
                       setState(() {
                         _selectedDate = picked;
@@ -525,29 +558,17 @@ class _ProfessionalInformationScreenState
   }
 
   Future<void> _loadProfessionalInfo() async {
-    final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _positionController.text = prefs.getString('position') ?? "Campus Chief";
-      _departmentController.text =
-          prefs.getString('department') ?? "Administration";
-      _experienceController.text = prefs.getString('experience') ?? "15 years";
-      _skillsController.text =
-          prefs.getString('skills') ?? "Leadership, Management, Education";
-      final dateStr = prefs.getString('joinDate');
-      _joinDate =
-          dateStr != null ? DateTime.tryParse(dateStr) : DateTime(2010, 1, 15);
+      _positionController.text = "Campus Chief";
+      _departmentController.text = "Administration";
+      _experienceController.text = "15 years";
+      _skillsController.text = "Leadership, Management, Education";
+      _joinDate = DateTime(2010, 1, 15);
     });
   }
 
   Future<void> _saveProfessionalInfo() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('position', _positionController.text);
-    await prefs.setString('department', _departmentController.text);
-    await prefs.setString('experience', _experienceController.text);
-    await prefs.setString('skills', _skillsController.text);
-    if (_joinDate != null) {
-      await prefs.setString('joinDate', _joinDate!.toIso8601String());
-    }
+    // Removed SharedPreferences saving
   }
 
   @override
@@ -672,7 +693,6 @@ class _ProfessionalInformationScreenState
                   decoration: InputDecoration(
                     labelText: label,
                     labelStyle: TextStyle(color: blueColor),
-
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(width: 1.5, color: blueColor),
@@ -824,36 +844,26 @@ class _EducationalInformationScreenState
   }
 
   Future<void> _loadEducationData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? storedData = prefs.getString('educationList');
-    if (storedData != null) {
-      final List decoded = jsonDecode(storedData);
-      setState(() {
-        educationList = List<Map<String, dynamic>>.from(decoded);
-      });
-    } else {
-      setState(() {
-        educationList = [
-          {
-            "degree": "Master of Business Administration",
-            "institution": "Tribhuvan University",
-            "year": "2008",
-            "grade": "First Division",
-          },
-          {
-            "degree": "Bachelor of Business Studies",
-            "institution": "Kathmandu University",
-            "year": "2005",
-            "grade": "Distinction",
-          },
-        ];
-      });
-    }
+    setState(() {
+      educationList = [
+        {
+          "degree": "Master of Business Administration",
+          "institution": "Tribhuvan University",
+          "year": "2008",
+          "grade": "First Division",
+        },
+        {
+          "degree": "Bachelor of Business Studies",
+          "institution": "Kathmandu University",
+          "year": "2005",
+          "grade": "Distinction",
+        },
+      ];
+    });
   }
 
   Future<void> _saveEducationData() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('educationList', jsonEncode(educationList));
+    // Removed SharedPreferences saving
   }
 
   @override
@@ -901,7 +911,6 @@ class _EducationalInformationScreenState
           ],
         ),
       ),
-
       floatingActionButton: FloatingActionButton(
         backgroundColor: blueColor,
         onPressed: _showAddEducationDialog,

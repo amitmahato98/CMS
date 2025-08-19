@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // ✅ import Firebase Auth
+import 'package:firebase_auth/firebase_auth.dart';
 
 // Global theme color
-Color blueColor = Colors.blue; // used throughout the app
+Color blueColor = const Color(0xFF2196F3);
 
 const String cms = "Collage Management System";
 const Color grayColor = Color.fromARGB(255, 170, 169, 169);
@@ -23,7 +23,7 @@ class ThemeSelector extends StatefulWidget {
 }
 
 class _ThemeSelectorState extends State<ThemeSelector> {
-  late Color _selectedColor; // local selected color
+  late Color _selectedColor;
 
   final List<Color> colors = [
     Colors.blue,
@@ -61,8 +61,6 @@ class _ThemeSelectorState extends State<ThemeSelector> {
     Colors.lightGreenAccent,
     Colors.pinkAccent,
     Colors.yellowAccent,
-    Colors.brown.shade300,
-    Colors.brown.shade500,
     Colors.blue.shade200,
     Colors.blue.shade700,
     Colors.green.shade200,
@@ -111,8 +109,6 @@ class _ThemeSelectorState extends State<ThemeSelector> {
     "Light Green Accent",
     "Pink Accent",
     "Yellow Accent",
-    "Brown 300",
-    "Brown 500",
     "Blue 200",
     "Blue 700",
     "Green 200",
@@ -128,76 +124,20 @@ class _ThemeSelectorState extends State<ThemeSelector> {
   @override
   void initState() {
     super.initState();
-    _selectedColor = blueColor; // start with current global color
-    _initializeTheme();
-  }
-
-  Future<void> _initializeTheme() async {
-    try {
-      final deviceId =
-          FirebaseAuth.instance.currentUser?.uid; // fetch actual user id
-      if (deviceId == null) return;
-
-      final docRef = FirebaseFirestore.instance
-          .collection('users')
-          .doc(deviceId)
-          .collection('settings')
-          .doc('theme_color');
-
-      final doc = await docRef.get();
-      if (!doc.exists) {
-        // Create document with default color safely
-        await docRef.set({'colorValue': blueColor.value});
-      }
-
-      // Then load theme from Firebase or local
-      await _loadThemeColor();
-    } catch (e) {
-      debugPrint("⚠️ _initializeTheme error: $e");
-    }
+    _selectedColor = blueColor; // ✅ Default Blue
+    _loadThemeColor();
   }
 
   Future<void> _loadThemeColor() async {
-    int? firebaseColor;
-    int? localColor;
+    int? savedColor;
 
-    try {
-      final deviceId = FirebaseAuth.instance.currentUser?.uid;
-      if (deviceId != null) {
-        final doc =
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(deviceId)
-                .collection('settings')
-                .doc('theme_color')
-                .get();
-
-        if (doc.exists && doc.data()!.containsKey('colorValue')) {
-          firebaseColor = doc['colorValue'] as int;
-        } else {
-          // document missing, create default
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(deviceId)
-              .collection('settings')
-              .doc('theme_color')
-              .set({'colorValue': blueColor.value});
-          firebaseColor = blueColor.value;
-        }
-      }
-    } catch (e) {
-      debugPrint("⚠️ _loadThemeColor error: $e");
-    }
-
-    // Fetch local fallback
     try {
       final prefs = await SharedPreferences.getInstance();
-      localColor = prefs.getInt('themeColor');
+      savedColor = prefs.getInt('themeColor');
     } catch (_) {}
 
-    // Choose color: Firebase > Local > Default
-    final int finalColorValue =
-        firebaseColor ?? localColor ?? Colors.blue.value;
+    // ✅ Use saved color if exists, else default blue
+    final int finalColorValue = savedColor ?? blueColor.value;
 
     if (!mounted) return;
     setState(() {
@@ -235,7 +175,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(cms), backgroundColor: _selectedColor),
+      appBar: AppBar(title: const Text(cms), backgroundColor: _selectedColor),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.builder(
@@ -255,7 +195,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
 
             return GestureDetector(
               onTap: () async {
-                await _saveSelectedColor(color); // save local + firebase
+                await _saveSelectedColor(color); // ✅ save only when user taps
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
@@ -313,31 +253,3 @@ class _ThemeSelectorState extends State<ThemeSelector> {
     );
   }
 }
-
-//user info from firebase fetched
-// Future<void> loadUserInfo() async {
-//   final uid = FirebaseAuth.instance.currentUser?.uid;
-//   if (uid == null) return;
-
-//   final doc =
-//       await FirebaseFirestore.instance.collection('users').doc(uid).get();
-//   if (doc.exists) {
-//     GlobalUser.updateFromMap(uid, doc.data()!);
-//   }
-// }
-
-// class GlobalUser {
-//   static String uid = "";
-//   static String name = "";
-//   static String email = "";
-//   static String phone = "";
-//   static String photoUrl = "";
-
-//   static void updateFromMap(String id, Map<String, dynamic> data) {
-//     uid = id;
-//     name = data['name'] ?? "";
-//     email = data['email'] ?? "";
-//     phone = data['phone'] ?? "";
-//     photoUrl = data['photoUrl'] ?? "";
-//   }
-// }

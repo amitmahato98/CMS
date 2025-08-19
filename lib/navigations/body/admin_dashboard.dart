@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cms/datatypes/datatypes.dart';
 import 'package:cms/navigations/screens/admin/adminPannel/adminPannel.dart';
 import 'package:cms/navigations/screens/admit-card-generator/admitcardgenerator.dart';
@@ -10,6 +11,7 @@ import 'package:cms/navigations/screens/notifications/notification.dart';
 import 'package:cms/navigations/screens/student/student.dart';
 import 'package:cms/navigations/screens/teacher/teacher.dart';
 import 'package:cms/theme/theme_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:cms/navigations/screens/profile/profile.dart';
@@ -82,113 +84,133 @@ class _OverVeiwState extends State<OverVeiw> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final uid = FirebaseAuth.instance.currentUser?.uid;
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 0, right: 8, left: 8, bottom: 8),
-      child: Material(
-        elevation: 10,
-        borderRadius: BorderRadius.circular(10),
-        color: blueColor,
-        // color: blueColor,
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    widget.onSectionSelected(ProfileScreen());
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+    return StreamBuilder<DocumentSnapshot>(
+      stream:
+          FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (!snapshot.hasData || !snapshot.data!.exists) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("Name not Found !")));
+        }
+        final userData = snapshot.data!.data() as Map<String, dynamic>;
+        final firstName = userData['firstName'] ?? "Guest";
+        final lastName = userData['lastName'] ?? "User";
+
+        return Padding(
+          padding: const EdgeInsets.only(top: 0, right: 8, left: 8, bottom: 8),
+          child: Material(
+            elevation: 10,
+            borderRadius: BorderRadius.circular(10),
+            color: blueColor,
+            // color: blueColor,
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        widget.onSectionSelected(ProfileScreen());
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            "Welcome back,",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 24,
-                              color: theme.colorScheme.onPrimary,
-                            ),
-                          ),
-                          Text(
-                            "Amit Mahato | Dean",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w200,
-                              fontSize: 18,
-                              color: theme.colorScheme.onPrimary,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.onPrimary.withOpacity(
-                                0.2,
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.edit,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Welcome back,",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 24,
                                   color: theme.colorScheme.onPrimary,
-                                  size: 16,
                                 ),
-                                SizedBox(width: 6),
-                                Text(
-                                  "Edit Profile",
-                                  style: TextStyle(
-                                    color: theme.colorScheme.onPrimary,
-                                    fontSize: 14,
+                              ),
+                              Text(
+                                "$firstName $lastName | Dean",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w200,
+                                  fontSize: 18,
+                                  color: theme.colorScheme.onPrimary,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.onPrimary
+                                      .withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.edit,
+                                      color: theme.colorScheme.onPrimary,
+                                      size: 16,
+                                    ),
+                                    SizedBox(width: 6),
+                                    Text(
+                                      "Edit Profile",
+                                      style: TextStyle(
+                                        color: theme.colorScheme.onPrimary,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          Stack(
+                            children: [
+                              CircleAvatar(
+                                radius: 40,
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    "assets/images/img1profile.jpg",
+                                    fit: BoxFit.cover,
+                                    width: 80,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Stack(
-                        children: [
-                          CircleAvatar(
-                            radius: 40,
-                            child: ClipOval(
-                              child: Image.asset(
-                                "assets/images/img1profile.jpg",
-                                fit: BoxFit.cover,
-                                width: 80,
                               ),
-                            ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: ViewCount(),
-                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: ViewCount(),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
