@@ -99,8 +99,8 @@ class _OverVeiwState extends State<OverVeiw> {
           ).showSnackBar(SnackBar(content: Text("Name not Found !")));
         }
         final userData = snapshot.data!.data() as Map<String, dynamic>;
-        final firstName = userData['firstName'] ?? "Guest";
-        final lastName = userData['lastName'] ?? "User";
+        final firstName = userData['firstName'] ?? userData['name'] ?? 'Guest';
+        final lastName = userData['lastName'] ?? "";
 
         return Padding(
           padding: const EdgeInsets.only(top: 0, right: 8, left: 8, bottom: 8),
@@ -477,7 +477,7 @@ class _GridbuildState extends State<Gridbuild> {
     {
       "icon": "assets/icons/icons3-students.png",
       "title": "Students",
-      "description": "Manage student profiles and academic records",
+      "description": "Manage profiles and academic records",
     },
     {
       "icon": "assets/icons/icon6-form.png",
@@ -492,7 +492,7 @@ class _GridbuildState extends State<Gridbuild> {
     {
       "icon": "assets/icons/examination.png",
       "title": "Result",
-      "description": "Manage exams, results and grade reports",
+      "description": "Manage results and grade reports",
     },
     {
       "icon": "assets/icons/examination.png",
@@ -625,7 +625,7 @@ class _GridbuildState extends State<Gridbuild> {
                                 Text(
                                   gridMap.elementAt(index)['description'],
                                   style: TextStyle(
-                                    fontSize: 10,
+                                    fontSize: 12,
                                     color:
                                         isDarkMode
                                             ? Colors.white70

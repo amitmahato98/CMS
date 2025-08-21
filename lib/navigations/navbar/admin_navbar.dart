@@ -30,8 +30,8 @@ class Navbar extends StatelessWidget {
           ).showSnackBar(SnackBar(content: Text("User name not found")));
         }
         final userdata = snapshot.data!.data() as Map<String, dynamic>;
-        final fName = userdata['firstName'] ?? 'Guest';
-        final lName = userdata['lastName'] ?? 'User';
+        final fName = userdata['firstName'] ?? userdata['name'] ?? 'Guest';
+        final lName = userdata['lastName'] ?? '';
 
         return Drawer(
           child: ListView(

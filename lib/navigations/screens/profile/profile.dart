@@ -286,13 +286,18 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
     if (userdoc.exists && userdoc.data() != null) {
       final userdata = userdoc.data()!;
       setState(() {
-        _firstNameController.text = userdata["firstName"] ?? "guest";
-        _lastNameController.text = userdata["lastName"] ?? "user";
-        _emailController.text = userdata["eMail"] ?? "mai@mail.com";
-        _phoneController.text = userdata["mobNo"] ?? "98xxxxxxxx";
-        _addressController.text = userdata["address"] ?? "xxxxxxx";
+        _firstNameController.text = userdata["firstName"] ?? "";
+        _lastNameController.text = userdata["lastName"] ?? "";
+        _emailController.text = userdata["eMail"] ?? "";
+        _phoneController.text = userdata["mobNo"] ?? "";
+        _addressController.text = userdata["address"] ?? "";
         _selectedDate =
             userdata["DoB"] != null ? DateTime.tryParse(userdata["DoB"]) : null;
+        _isEditing = false;
+      });
+    } else {
+      setState(() {
+        _isEditing = true;
       });
     }
   }
@@ -554,21 +559,41 @@ class _ProfessionalInformationScreenState
   @override
   void initState() {
     super.initState();
-    _loadProfessionalInfo();
+    _loadProfessionalInfo(uid!);
   }
 
-  Future<void> _loadProfessionalInfo() async {
-    setState(() {
-      _positionController.text = "Campus Chief";
-      _departmentController.text = "Administration";
-      _experienceController.text = "15 years";
-      _skillsController.text = "Leadership, Management, Education";
-      _joinDate = DateTime(2010, 1, 15);
-    });
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  Future<void> _loadProfessionalInfo(String uid) async {
+    final professionalInfo =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    if (professionalInfo.exists && professionalInfo.data() != null) {
+      final professionalData = professionalInfo.data()!;
+      setState(() {
+        _positionController.text =
+            professionalData['jobProfession'] ?? "Campus Chief";
+        _departmentController.text =
+            professionalData['jobDepartment'] ?? "Administration";
+        _experienceController.text =
+            professionalData['jobExperince'] ?? "15 years";
+        _skillsController.text =
+            professionalData['jobSkill'] ?? "Leadership, Management, Education";
+        _joinDate =
+            professionalData["jobJoin"] != null
+                ? DateTime.tryParse(professionalData["jobJoin"])
+                : null;
+      });
+    }
   }
 
-  Future<void> _saveProfessionalInfo() async {
-    // Removed SharedPreferences saving
+  Future<void> _saveProfessionalInfo(String? uid) async {
+    await FirebaseFirestore.instance.collection("users").doc(uid).set({
+      'jobProfession': _positionController.text.trim(),
+      'jobDepartment': _departmentController.text.trim(),
+      'jobExperince': _experienceController.text.trim(),
+      'jobSkill': _skillsController.text.trim(),
+      'jobJoin': _joinDate?.toIso8601String(),
+      'createdAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
   }
 
   @override
@@ -585,7 +610,7 @@ class _ProfessionalInformationScreenState
             onPressed: () async {
               if (_isEditing) {
                 if (_formKey.currentState!.validate()) {
-                  await _saveProfessionalInfo();
+                  await _saveProfessionalInfo(uid!);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text(

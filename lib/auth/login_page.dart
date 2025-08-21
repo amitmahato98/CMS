@@ -1,9 +1,12 @@
 import 'package:cms/auth/auth_service.dart';
 import 'package:cms/main.dart';
+import 'package:cms/navigations/navbar/forms/LoginPersonalInformationScreen.dart';
 import 'package:flutter/material.dart';
 import 'signup_page.dart';
 import 'reset_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
+
   Future<void> login() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -24,9 +28,39 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       await AuthService().signIn(
-        email: emailController.text,
-        password: passwordController.text,
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
       );
+
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+
+      if (uid != null) {
+        final doc =
+            await FirebaseFirestore.instance.collection("users").doc(uid).get();
+
+        if (!doc.exists || doc.data()?["firstName"] == null) {
+          await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) {
+              return Dialog(
+                insetPadding: const EdgeInsets.all(20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: SizedBox(
+                    width: double.maxFinite,
+                    height: MediaQuery.of(context).size.height * 0.8,
+                    child: LoginPersonalInformationScreen(),
+                  ),
+                ),
+              );
+            },
+          );
+        }
+      }
 
       Navigator.pushReplacement(
         context,
