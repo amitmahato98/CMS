@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -124,26 +123,37 @@ class _ThemeSelectorState extends State<ThemeSelector> {
   @override
   void initState() {
     super.initState();
-    _selectedColor = blueColor; // ✅ Default Blue
+    _selectedColor = blueColor;
     _loadThemeColor();
   }
 
   Future<void> _loadThemeColor() async {
-    int? savedColor;
-
     try {
-      final prefs = await SharedPreferences.getInstance();
-      savedColor = prefs.getInt('themeColor');
-    } catch (_) {}
+      final deviceId = FirebaseAuth.instance.currentUser?.uid;
+      if (deviceId != null) {
+        final snapshot =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(deviceId)
+                .collection('settings')
+                .doc('theme_color')
+                .get();
 
-    // ✅ Use saved color if exists, else default blue
-    final int finalColorValue = savedColor ?? blueColor.value;
-
-    if (!mounted) return;
-    setState(() {
-      _selectedColor = Color(finalColorValue);
-      blueColor = Color(finalColorValue);
-    });
+        if (snapshot.exists && snapshot.data() != null) {
+          final data = snapshot.data() as Map<String, dynamic>;
+          final int? savedColor = data['colorValue'] as int?;
+          if (savedColor != null) {
+            if (!mounted) return;
+            setState(() {
+              _selectedColor = Color(savedColor);
+              blueColor = Color(savedColor);
+            });
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint("⚠️ Failed to load color from Firebase: $e");
+    }
   }
 
   Future<void> _saveSelectedColor(Color color) async {
@@ -151,11 +161,6 @@ class _ThemeSelectorState extends State<ThemeSelector> {
       _selectedColor = color;
       blueColor = color;
     });
-
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt('themeColor', color.value);
-    } catch (_) {}
 
     try {
       final deviceId = FirebaseAuth.instance.currentUser?.uid;
@@ -195,7 +200,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
 
             return GestureDetector(
               onTap: () async {
-                await _saveSelectedColor(color); // ✅ save only when user taps
+                await _saveSelectedColor(color);
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),

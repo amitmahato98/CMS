@@ -101,6 +101,7 @@ class _OverVeiwState extends State<OverVeiw> {
         final userData = snapshot.data!.data() as Map<String, dynamic>;
         final firstName = userData['firstName'] ?? userData['name'] ?? 'Guest';
         final lastName = userData['lastName'] ?? "";
+        final jobProfession = userData['jobProfession'] ?? 'Job Title';
 
         return Padding(
           padding: const EdgeInsets.only(top: 0, right: 8, left: 8, bottom: 8),
@@ -137,7 +138,7 @@ class _OverVeiwState extends State<OverVeiw> {
                                 ),
                               ),
                               Text(
-                                "$firstName $lastName | Dean",
+                                "$firstName $lastName | $jobProfession",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w200,
                                   fontSize: 18,

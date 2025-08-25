@@ -32,6 +32,7 @@ class Navbar extends StatelessWidget {
         final userdata = snapshot.data!.data() as Map<String, dynamic>;
         final fName = userdata['firstName'] ?? userdata['name'] ?? 'Guest';
         final lName = userdata['lastName'] ?? '';
+        final jobProfession = userdata['jobProfession'] ?? 'Job Title';
 
         return Drawer(
           child: ListView(
@@ -68,7 +69,7 @@ class Navbar extends StatelessWidget {
                               style: TextStyle(fontSize: 20, color: whiteColor),
                             ),
                             Text(
-                              "Admin",
+                              jobProfession,
                               style: TextStyle(fontSize: 15, color: whiteColor),
                             ),
                           ],

@@ -1,16 +1,12 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cms/datatypes/datatypes.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart';
-
-// import 'theme_provider.dart';
+import 'package:nepali_date_picker/nepali_date_picker.dart' as nepali_picker;
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -35,13 +31,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       "title": "Educational Information",
       "subtitle": "View your academic qualifications",
       "route": "/educational_information",
-    },
-
-    {
-      "icon": Icons.lock_outline,
-      "title": "Account Settings",
-      "subtitle": "Manage your password and security settings",
-      "route": "/account_settings",
     },
   ];
 
@@ -70,13 +59,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }
           final userData = snapshot.data!.data() as Map<String, dynamic>;
           final firstName = userData['firstName'] ?? "Guest";
-          final lastName = userData['lastName'] ?? "Guest";
+          final lastName = userData['lastName'] ?? "User";
           final email = userData['eMail'] ?? "admin@examplecollege.edu.np";
           final mobNo = userData['mobNo'] ?? "98xxxxxxxx";
+          final jobProfession = userData['jobProfession'] ?? 'JobTitle';
           return SingleChildScrollView(
             child: Column(
               children: [
-                _buildProfileHeader(firstName, lastName, email, mobNo),
+                _buildProfileHeader(
+                  firstName,
+                  lastName,
+                  email,
+                  mobNo,
+                  jobProfession,
+                ),
                 SizedBox(height: 20),
                 _buildMenuSection(),
               ],
@@ -92,6 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     String lastName,
     String email,
     String mobNo,
+    String jobProfession,
   ) {
     return Container(
       color: blueColor,
@@ -122,7 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           SizedBox(height: 5),
           Text(
-            "Campus Chief",
+            jobProfession,
             style: TextStyle(
               fontSize: 16,
               color: Colors.white.withOpacity(0.8),
@@ -227,13 +224,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         );
         break;
-
-      case "/account_settings":
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AccountSettingsScreen()),
-        );
-        break;
     }
   }
 }
@@ -256,7 +246,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   final _phoneController = TextEditingController(text: "+977-98xxxxxxxx");
   final _addressController = TextEditingController(text: "Adresss, Nepal");
 
-  DateTime? _selectedDate = DateTime(2035, 5, 15);
+  NepaliDateTime? _selectedDate = NepaliDateTime(2045, 5, 15);
   bool _isEditing = false;
 
   @override
@@ -292,7 +282,9 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
         _phoneController.text = userdata["mobNo"] ?? "";
         _addressController.text = userdata["address"] ?? "";
         _selectedDate =
-            userdata["DoB"] != null ? DateTime.tryParse(userdata["DoB"]) : null;
+            userdata["DoB"] != null
+                ? NepaliDateTime.tryParse(userdata["DoB"])
+                : null;
         _isEditing = false;
       });
     } else {
@@ -465,12 +457,11 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   Widget _buildDateCard({
     required IconData icon,
     required String label,
-    required DateTime? date,
+    required NepaliDateTime? date,
     required bool isEditable,
   }) {
     final formattedDate =
-        date != null ? "${date.day}/${date.month}/${date.year}" : "Select Date";
-
+        date != null ? date.format("yyyy-MM-dd") : "Select Date";
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(
@@ -486,11 +477,8 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                   onTap: () async {
                     final picked = await showMaterialDatePicker(
                       context: context,
-                      initialDate:
-                          date != null
-                              ? NepaliDateTime.fromDateTime(date)
-                              : NepaliDateTime(2045),
-                      firstDate: NepaliDateTime(2040),
+                      initialDate: date ?? NepaliDateTime.now(),
+                      firstDate: NepaliDateTime(2000),
                       lastDate: NepaliDateTime.now(),
                     );
 
@@ -574,7 +562,7 @@ class _ProfessionalInformationScreenState
         _departmentController.text =
             professionalData['jobDepartment'] ?? "Administration";
         _experienceController.text =
-            professionalData['jobExperince'] ?? "15 years";
+            professionalData['jobExperince'] ?? "0 years";
         _skillsController.text =
             professionalData['jobSkill'] ?? "Leadership, Management, Education";
         _joinDate =
@@ -598,8 +586,6 @@ class _ProfessionalInformationScreenState
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Professional Information"),
@@ -665,27 +651,6 @@ class _ProfessionalInformationScreenState
                 isEditable: _isEditing,
               ),
               const SizedBox(height: 32),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Achievements",
-                  style: theme.textTheme.titleLarge!.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              _buildAchievementCard(
-                "Excellence in Leadership",
-                "Awarded for outstanding leadership in education sector",
-                Icons.emoji_events,
-              ),
-              const SizedBox(height: 12),
-              _buildAchievementCard(
-                "Best Campus Chief 2023",
-                "Recognized as the best campus chief of the year",
-                Icons.star,
-              ),
             ],
           ),
         ),
@@ -765,7 +730,11 @@ class _ProfessionalInformationScreenState
     required bool isEditable,
   }) {
     final formattedDate =
-        date != null ? "${date.day}/${date.month}/${date.year}" : "Select Date";
+        date != null
+            ? NepaliDateTime.fromDateTime(date).format(
+              "yyyy-MM-dd",
+            ) // show Nepali date
+            : "Select Date";
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -780,15 +749,19 @@ class _ProfessionalInformationScreenState
             isEditable
                 ? InkWell(
                   onTap: () async {
-                    final picked = await showDatePicker(
+                    final picked = await nepali_picker.showAdaptiveDatePicker(
                       context: context,
-                      initialDate: date ?? DateTime(1990),
-                      firstDate: DateTime(1950),
-                      lastDate: DateTime.now(),
+                      initialDate:
+                          date != null
+                              ? NepaliDateTime.fromDateTime(date)
+                              : NepaliDateTime(2047, 1, 1),
+                      firstDate: NepaliDateTime(2000, 1, 1),
+                      lastDate: NepaliDateTime.now(),
                     );
                     if (picked != null) {
                       setState(() {
-                        _joinDate = picked;
+                        _joinDate =
+                            picked.toDateTime(); // store as normal DateTime
                       });
                     }
                   },
@@ -829,26 +802,6 @@ class _ProfessionalInformationScreenState
       ),
     );
   }
-
-  Widget _buildAchievementCard(
-    String title,
-    String description,
-    IconData icon,
-  ) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(width: 1, color: blueColor),
-      ),
-      child: ListTile(
-        leading: Icon(icon, color: blueColor),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(description),
-      ),
-    );
-  }
 }
 
 // Educational Information Screen
@@ -860,35 +813,55 @@ class EducationalInformationScreen extends StatefulWidget {
 
 class _EducationalInformationScreenState
     extends State<EducationalInformationScreen> {
-  List<Map<String, dynamic>> educationList = [];
+  final degreeController = TextEditingController();
+  final institutionController = TextEditingController();
+  final yearController = TextEditingController();
+  final gradeController = TextEditingController();
+  final uid = FirebaseAuth.instance.currentUser?.uid;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadEducationData();
-  }
-
-  Future<void> _loadEducationData() async {
-    setState(() {
-      educationList = [
-        {
-          "degree": "Master of Business Administration",
-          "institution": "Tribhuvan University",
-          "year": "2008",
-          "grade": "First Division",
-        },
-        {
-          "degree": "Bachelor of Business Studies",
-          "institution": "Kathmandu University",
-          "year": "2005",
-          "grade": "Distinction",
-        },
-      ];
-    });
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(message), duration: Duration(seconds: 4)),
+      );
   }
 
   Future<void> _saveEducationData() async {
-    // Removed SharedPreferences saving
+    if (uid == null) return;
+    final educationList = FirebaseFirestore.instance
+        .collection("users")
+        .doc(uid)
+        .collection('educations');
+
+    // checking for duplication avialible;
+    final existingEducationList =
+        await educationList
+            .where('degree', isEqualTo: degreeController.text.trim())
+            .where('institution', isEqualTo: institutionController.text.trim())
+            .where('year', isEqualTo: yearController.text.trim())
+            .where('grade', isEqualTo: gradeController.text.trim())
+            .get();
+
+    if (existingEducationList.docs.isNotEmpty) {
+      _showSnackBar("Education Data Already Exists !");
+      return;
+    }
+
+    await educationList.add({
+      'degree': degreeController.text.trim(),
+      'institution': institutionController.text.trim(),
+      'year': yearController.text.trim(),
+      'grade': gradeController.text.trim(),
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+
+    _showSnackBar('Education Added Succesfully !');
+
+    degreeController.clear();
+    yearController.clear();
+    gradeController.clear();
+    institutionController.clear();
   }
 
   @override
@@ -908,30 +881,36 @@ class _EducationalInformationScreenState
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: educationList.length,
-              itemBuilder: (context, index) {
-                return _buildEducationCard(educationList[index], index);
+            StreamBuilder<QuerySnapshot>(
+              stream:
+                  FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(uid)
+                      .collection('educations')
+                      .orderBy('createdAt', descending: true)
+                      .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  _showSnackBar("Error :${snapshot.error}");
+                }
+                if (!snapshot.hasData) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                final educationDocs = snapshot.data!.docs;
+                if (educationDocs.isEmpty) {
+                  return Center(child: Text("No Data Found !"));
+                }
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: educationDocs.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (BuildContext context, int index) {
+                    final doc = educationDocs[index];
+                    final data = doc.data() as Map<String, dynamic>;
+                    return _buildEducationCard(data, doc.id);
+                  },
+                );
               },
-            ),
-            SizedBox(height: 24),
-            Text(
-              "Certifications",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
-            _buildCertificationCard(
-              "Leadership Excellence Certificate",
-              "Institute of Management",
-              "2020",
-            ),
-            SizedBox(height: 12),
-            _buildCertificationCard(
-              "Educational Administration",
-              "Education Board Nepal",
-              "2018",
             ),
           ],
         ),
@@ -939,13 +918,13 @@ class _EducationalInformationScreenState
       floatingActionButton: FloatingActionButton(
         backgroundColor: blueColor,
         onPressed: _showAddEducationDialog,
-        child: Icon(Icons.add),
         tooltip: "Add Education",
+        child: Icon(Icons.add),
       ),
     );
   }
 
-  Widget _buildEducationCard(Map<String, dynamic> education, int index) {
+  Widget _buildEducationCard(Map<String, dynamic> education, String docId) {
     return Container(
       margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
@@ -965,7 +944,7 @@ class _EducationalInformationScreenState
                 children: [
                   Expanded(
                     child: Text(
-                      education["degree"],
+                      education["degree"] ?? "",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -975,14 +954,21 @@ class _EducationalInformationScreenState
                   PopupMenuButton(
                     itemBuilder:
                         (context) => [
-                          PopupMenuItem(child: Text("Delete"), value: "delete"),
+                          PopupMenuItem(value: "delete", child: Text("Delete")),
                         ],
                     onSelected: (value) async {
                       if (value == "delete") {
-                        setState(() {
-                          educationList.removeAt(index);
-                        });
-                        await _saveEducationData();
+                        try {
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(uid)
+                              .collection('educations')
+                              .doc(docId)
+                              .delete();
+                          _showSnackBar("Education deleted");
+                        } catch (e) {
+                          _showSnackBar("Delete failed: $e");
+                        }
                       }
                     },
                   ),
@@ -993,7 +979,7 @@ class _EducationalInformationScreenState
                 children: [
                   Icon(Icons.school, size: 16, color: blueColor),
                   SizedBox(width: 8),
-                  Text(education["institution"]),
+                  Text(education["institution"] ?? ""),
                 ],
               ),
               SizedBox(height: 4),
@@ -1001,11 +987,11 @@ class _EducationalInformationScreenState
                 children: [
                   Icon(Icons.calendar_today, size: 16, color: blueColor),
                   SizedBox(width: 8),
-                  Text(education["year"]),
+                  Text(education["year"] ?? ""),
                   SizedBox(width: 20),
                   Icon(Icons.grade, size: 16, color: blueColor),
                   SizedBox(width: 8),
-                  Text(education["grade"]),
+                  Text(education["grade"] ?? ""),
                 ],
               ),
             ],
@@ -1015,29 +1001,8 @@ class _EducationalInformationScreenState
     );
   }
 
-  Widget _buildCertificationCard(String title, String issuer, String year) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: blueColor, width: 1),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Card(
-        margin: EdgeInsets.zero,
-        child: ListTile(
-          leading: Icon(Icons.verified, color: blueColor),
-          title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text("$issuer • $year"),
-        ),
-      ),
-    );
-  }
-
   void _showAddEducationDialog() {
     final _formKey = GlobalKey<FormState>();
-    final degreeController = TextEditingController();
-    final institutionController = TextEditingController();
-    final yearController = TextEditingController();
-    final gradeController = TextEditingController();
 
     showDialog(
       context: context,
@@ -1155,14 +1120,6 @@ class _EducationalInformationScreenState
               TextButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    setState(() {
-                      educationList.add({
-                        "degree": degreeController.text.trim(),
-                        "institution": institutionController.text.trim(),
-                        "year": yearController.text.trim(),
-                        "grade": gradeController.text.trim(),
-                      });
-                    });
                     await _saveEducationData();
                     Navigator.pop(context);
                   }
@@ -1171,144 +1128,6 @@ class _EducationalInformationScreenState
               ),
             ],
           ),
-    );
-  }
-}
-
-// Account Setting Screen
-
-class AccountSettingsScreen extends StatefulWidget {
-  @override
-  _AccountSettingsScreenState createState() => _AccountSettingsScreenState();
-}
-
-class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
-  final _currentPasswordController = TextEditingController();
-  final _newPasswordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-
-  bool _obscureCurrent = true;
-  bool _obscureNew = true;
-  bool _obscureConfirm = true;
-
-  String? _hashedPassword;
-
-  void _hashPassword() {
-    final newPassword = _newPasswordController.text;
-    final confirmPassword = _confirmPasswordController.text;
-
-    if (newPassword.isEmpty || confirmPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please enter new and confirm passwords")),
-      );
-      return;
-    }
-
-    if (newPassword != confirmPassword) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Passwords do not match")));
-      return;
-    }
-
-    final bytes = utf8.encode(newPassword);
-    final digest = sha256.convert(bytes);
-
-    setState(() {
-      _hashedPassword = digest.toString();
-    });
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("Password hashed successfully!")));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Password Hashing"),
-        backgroundColor: blueColor,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildPasswordField(
-              label: "Current Password",
-              controller: _currentPasswordController,
-              obscureText: _obscureCurrent,
-              toggleVisibility:
-                  () => setState(() => _obscureCurrent = !_obscureCurrent),
-            ),
-            SizedBox(height: 16),
-            _buildPasswordField(
-              label: "New Password",
-              controller: _newPasswordController,
-              obscureText: _obscureNew,
-              toggleVisibility:
-                  () => setState(() => _obscureNew = !_obscureNew),
-            ),
-            SizedBox(height: 16),
-            _buildPasswordField(
-              label: "Confirm Password",
-              controller: _confirmPasswordController,
-              obscureText: _obscureConfirm,
-              toggleVisibility:
-                  () => setState(() => _obscureConfirm = !_obscureConfirm),
-            ),
-            SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _hashPassword,
-              child: Text("Hash Password"),
-            ),
-            SizedBox(height: 24),
-            if (_hashedPassword != null) ...[
-              Text(
-                "SHA-256 Hashed Password:",
-                style: theme.textTheme.titleMedium,
-              ),
-              SizedBox(height: 8),
-              SelectableText(
-                _hashedPassword!,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: blueColor,
-                ),
-              ),
-              SizedBox(height: 24),
-              Text(
-                "SHA-256 is a cryptographic hash function that converts any input into a fixed-size 256-bit hash. "
-                "It is widely used for securely storing passwords because it’s computationally infeasible to reverse or find collisions.",
-                style: theme.textTheme.bodySmall,
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPasswordField({
-    required String label,
-    required TextEditingController controller,
-    required bool obscureText,
-    required VoidCallback toggleVisibility,
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(Icons.lock),
-        suffixIcon: IconButton(
-          icon: Icon(obscureText ? Icons.visibility : Icons.visibility_off),
-          onPressed: toggleVisibility,
-        ),
-      ),
     );
   }
 }
