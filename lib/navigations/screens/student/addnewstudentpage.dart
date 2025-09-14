@@ -155,8 +155,8 @@ class _AddNewStudentPageState extends State<AddNewStudentPage> {
     if (!RegExp(r'^\d{4}$').hasMatch(value.trim()))
       return 'Batch must be exactly 4 digits';
     final year = int.tryParse(value.trim());
-    if (year == null || year < 2060 || year > 2099)
-      return 'Batch must be between 2060–2099';
+    if (year == null || year < 2070 || year > 2099)
+      return 'Batch must be between 2070–2099';
     return null;
   }
 

@@ -176,8 +176,17 @@ class _NewStudentState extends State<NewStudent> {
               Padding(
                 padding: const EdgeInsets.all(12),
                 child: TextField(
+                  cursorColor: blueColor,
                   decoration: InputDecoration(
+                    labelStyle: TextStyle(color: blueColor),
                     hintStyle: TextStyle(color: blueColor.withOpacity(0.5)),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: blueColor, width: 0.5),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: blueColor, width: 1.5),
+                    ),
                     hintText:
                         'Roll No, Name, Course, Batch, Phone, Reg No, Email',
                     prefixIcon: Icon(Icons.search, color: blueColor),

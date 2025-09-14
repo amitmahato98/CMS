@@ -24,12 +24,32 @@ Future<void> main() async {
 
   int? firebaseColor;
   try {
-    final doc =
-        await FirebaseFirestore.instance
-            .collection('app_settings')
-            .doc('theme_color')
-            .get();
-    if (doc.exists) firebaseColor = doc['colorValue'] as int;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('settings')
+          .doc('theme_color')
+          .get()
+          .timeout(
+            const Duration(seconds: 6),
+            onTimeout:
+                () => Future.value(
+                  FirebaseFirestore.instance
+                      .collection('users')
+                      .doc('dummy')
+                      .collection('settings')
+                      .doc('theme_color')
+                      .snapshots()
+                      .first,
+                ),
+          );
+
+      if (doc.exists) {
+        firebaseColor = doc['colorValue'] as int?;
+      }
+    }
   } catch (_) {}
 
   // Corrected: use .value for default Color
@@ -56,7 +76,6 @@ class MyApp extends StatelessWidget {
           theme: themeProvider.currentTheme,
           home: StreamBuilder<User?>(
             stream: AuthService().auth$(),
-
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -193,7 +212,7 @@ class _MainNavigatorState extends State<MainNavigator> {
                       onPressed: () => themeProvider.toggleTheme(),
                     ),
                     IconButton(
-                      icon: Icon(Icons.notifications),
+                      icon: Icon(Icons.notification_add),
                       tooltip: 'Notifications',
                       onPressed: () => _pushPage(SendNotificationPage()),
                     ),

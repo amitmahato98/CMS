@@ -1,17 +1,17 @@
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:nepali_date_picker/nepali_date_picker.dart' as picker;
-import 'package:nepali_date_picker/nepali_date_picker.dart';
+// import 'package:nepali_date_picker/nepali_date_picker.dart' as picker;
+// import 'package:nepali_date_picker/nepali_date_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class Subject {
   String code = '';
@@ -34,9 +34,10 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
   final _mobile = TextEditingController();
   final _symbol = TextEditingController();
   final _email = TextEditingController();
-  final _year = TextEditingController();
+  final _batch = TextEditingController();
   final _dob = TextEditingController();
   final _registrationNumber = TextEditingController();
+  bool _autofill = false;
 
   String? _selectedCourse;
   String? _selectedExamType;
@@ -45,6 +46,68 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
   List<Subject> _subjects = [Subject()];
 
   bool _showPreview = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fullName.addListener(_checkAndAutofill);
+    _symbol.addListener(_checkAndAutofill);
+  }
+
+  Future<void> _checkAndAutofill() async {
+    final name = _fullName.text.trim();
+    final roll = _symbol.text.trim();
+
+    if (name.isEmpty || roll.isEmpty) return;
+
+    try {
+      final query =
+          await FirebaseFirestore.instance
+              .collection("students")
+              .where("rollNumber", isEqualTo: roll)
+              .limit(1)
+              .get();
+
+      if (query.docs.isNotEmpty) {
+        final data = query.docs.first.data();
+        final storedName = data["name"] ?? "";
+
+        if (storedName.toLowerCase() == name.toLowerCase()) {
+          setState(() {
+            _fullName.text = storedName;
+            _fatherName.text = data["fatherFullName"] ?? "";
+            _address.text = data["address"] ?? "";
+            _mobile.text = data["phone"] ?? "";
+            _email.text = data["email"] ?? "";
+            _symbol.text = data["rollNumber"] ?? "";
+            _batch.text = data["batch"] ?? "";
+            _dob.text =
+                data["dateOfBirth"] != null
+                    ? DateFormat("yyyy-MM-dd").format(
+                      DateTime.tryParse(data["dateOfBirth"]) ?? DateTime.now(),
+                    )
+                    : "";
+            _registrationNumber.text = data["registrationNumber"] ?? "";
+            _selectedCourse = data["program"] ?? null;
+          });
+          if (!_autofill) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  "All the related details are autofilled for $storedName($roll).",
+                  style: TextStyle(color: whiteColor),
+                ),
+                backgroundColor: Colors.green,
+              ),
+            );
+            _autofill = true;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint("Autofill error: $e");
+    }
+  }
 
   Future<void> _pickImage(Function(Uint8List) callback) async {
     final source = await showDialog<ImageSource>(
@@ -116,16 +179,16 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                             ? 'Enter first and last name'
                             : null,
               ),
-              _textField(
-                _fatherName,
-                'Father\'s Name',
-                required: true,
-                validator:
-                    (v) =>
-                        !_validateFullName(v)
-                            ? 'Enter first and last name'
-                            : null,
-              ),
+              // _textField(
+              //   _fatherName,
+              //   'Father\'s Name',
+              //   required: true,
+              //   validator:
+              //       (v) =>
+              //           !_validateFullName(v)
+              //               ? 'Enter first and last name'
+              //               : null,
+              // ),
               _textField(
                 _symbol,
                 'Symbol No.',
@@ -138,94 +201,94 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                             : 'Enter valid 8-digit number starting with 7/8/9',
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               ),
-              _textField(_address, 'Address', required: true),
-              GestureDetector(
-                onTap: () async {
-                  final todayBs = NepaliDateTime.now();
-                  final maxBsDate = NepaliDateTime(
-                    todayBs.year - 18,
-                    todayBs.month - 2,
-                    todayBs.day - 3,
-                  );
-                  final picked = await picker.showAdaptiveDatePicker(
-                    context: context,
-                    initialDate: maxBsDate,
-                    firstDate: NepaliDateTime(2000, 1, 1),
-                    lastDate: maxBsDate,
-                  );
-                  if (picked != null) {
-                    setState(() {
-                      _dob.text = NepaliDateFormat('yyyy-MM-dd').format(picked);
-                    });
-                  }
-                },
-                child: AbsorbPointer(
-                  child: _textField(
-                    _dob,
-                    'Date of Birth (YYYY-MM-DD)',
-                    required: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Date of Birth is required';
-                      }
-                      try {
-                        final selectedBs = NepaliDateTime.parse(value);
-                        final todayBs = NepaliDateTime.now();
-                        final diff = todayBs.year - selectedBs.year;
-                        if (diff < 18 ||
-                            (diff == 18 &&
-                                (todayBs.month < selectedBs.month ||
-                                    (todayBs.month == selectedBs.month &&
-                                        todayBs.day < selectedBs.day)))) {
-                          return 'You must be at least 18 years old';
-                        }
-                      } catch (e) {
-                        return 'Invalid date format';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-              ),
-              _textField(
-                _mobile,
-                'Mobile No.',
-                type: TextInputType.number,
-                required: true,
-                validator:
-                    (v) =>
-                        RegExp(r'^(97|98)\d{8}$').hasMatch(v ?? '')
-                            ? null
-                            : 'Enter valid 10-digit number starting with 97/98',
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              ),
-              _textField(
-                _email,
-                'Email',
-                validator:
-                    (v) =>
-                        RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v ?? '')
-                            ? null
-                            : 'Invalid email',
-              ),
-              DropdownButtonFormField<String>(
-                value: _selectedCourse,
-                decoration: InputDecoration(
-                  labelText: 'Course',
-                  labelStyle: TextStyle(color: blueColor),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: blueColor, width: 0.5),
-                  ),
-                ),
-                items: const [
-                  DropdownMenuItem(value: 'BIT', child: Text('BIT')),
-                  DropdownMenuItem(value: 'BSc.CSIT', child: Text('BSc.CSIT')),
-                ],
-                onChanged: (v) => setState(() => _selectedCourse = v),
-                validator: (v) => v == null ? 'Please select a course' : null,
-              ),
-              const SizedBox(height: 12),
+              // _textField(_address, 'Address', required: true),
+              // GestureDetector(
+              //   onTap: () async {
+              //     final todayBs = NepaliDateTime.now();
+              //     final maxBsDate = NepaliDateTime(
+              //       todayBs.year - 18,
+              //       todayBs.month - 2,
+              //       todayBs.day - 3,
+              //     );
+              //     final picked = await picker.showAdaptiveDatePicker(
+              //       context: context,
+              //       initialDate: maxBsDate,
+              //       firstDate: NepaliDateTime(2000, 1, 1),
+              //       lastDate: maxBsDate,
+              //     );
+              //     if (picked != null) {
+              //       setState(() {
+              //         _dob.text = NepaliDateFormat('yyyy-MM-dd').format(picked);
+              //       });
+              //     }
+              //   },
+              //   child: AbsorbPointer(
+              //     child: _textField(
+              //       _dob,
+              //       'Date of Birth (YYYY-MM-DD)',
+              //       required: true,
+              //       validator: (value) {
+              //         if (value == null || value.isEmpty) {
+              //           return 'Date of Birth is required';
+              //         }
+              //         try {
+              //           final selectedBs = NepaliDateTime.parse(value);
+              //           final todayBs = NepaliDateTime.now();
+              //           final diff = todayBs.year - selectedBs.year;
+              //           if (diff < 18 ||
+              //               (diff == 18 &&
+              //                   (todayBs.month < selectedBs.month ||
+              //                       (todayBs.month == selectedBs.month &&
+              //                           todayBs.day < selectedBs.day)))) {
+              //             return 'You must be at least 18 years old';
+              //           }
+              //         } catch (e) {
+              //           return 'Invalid date format';
+              //         }
+              //         return null;
+              //       },
+              //     ),
+              //   ),
+              // ),
+              // _textField(
+              //   _mobile,
+              //   'Mobile No.',
+              //   type: TextInputType.number,
+              //   required: true,
+              //   validator:
+              //       (v) =>
+              //           RegExp(r'^(97|98)\d{8}$').hasMatch(v ?? '')
+              //               ? null
+              //               : 'Enter valid 10-digit number starting with 97/98',
+              //   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              // ),
+              // _textField(
+              //   _email,
+              //   'Email',
+              //   validator:
+              //       (v) =>
+              //           RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v ?? '')
+              //               ? null
+              //               : 'Invalid email',
+              // ),
+              // DropdownButtonFormField<String>(
+              //   value: _selectedCourse,
+              //   decoration: InputDecoration(
+              //     labelText: 'Course',
+              //     labelStyle: TextStyle(color: blueColor),
+              //     enabledBorder: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(10),
+              //       borderSide: BorderSide(color: blueColor, width: 0.5),
+              //     ),
+              //   ),
+              //   items: const [
+              //     DropdownMenuItem(value: 'BIT', child: Text('BIT')),
+              //     DropdownMenuItem(value: 'BSc.CSIT', child: Text('BSc.CSIT')),
+              //   ],
+              //   onChanged: (v) => setState(() => _selectedCourse = v),
+              //   validator: (v) => v == null ? 'Please select a course' : null,
+              // ),
+              // const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: _selectedExamType,
                 decoration: InputDecoration(
@@ -245,32 +308,32 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                     (v) => v == null ? 'Please select a exam type' : null,
               ),
               const SizedBox(height: 12),
-              _textField(
-                _year,
-                'Year',
-                required: true,
-                type: TextInputType.number,
-                validator:
-                    (v) =>
-                        RegExp(r'^(20)\d{2}$').hasMatch(v ?? '')
-                            ? null
-                            : 'Enter valid 4-digit number starting with 20',
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              ),
-              _textField(
-                _registrationNumber,
-                'Registration Number',
-                required: true,
-                type: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9\-]')),
-                ],
-                validator:
-                    (v) =>
-                        RegExp(r'^[0-9\-]+$').hasMatch(v ?? '')
-                            ? null
-                            : 'Only numbers and "-" allowed',
-              ),
+              // _textField(
+              //   _batch,
+              //   'Batch',
+              //   required: true,
+              //   type: TextInputType.number,
+              //   validator:
+              //       (v) =>
+              //           RegExp(r'^(20)\d{2}$').hasMatch(v ?? '')
+              //               ? null
+              //               : 'Enter valid 4-digit number starting with 20',
+              //   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              // ),
+              // _textField(
+              //   _registrationNumber,
+              //   'Registration Number',
+              //   required: true,
+              //   type: TextInputType.number,
+              //   inputFormatters: [
+              //     FilteringTextInputFormatter.allow(RegExp(r'[0-9\-]')),
+              //   ],
+              //   validator:
+              //       (v) =>
+              //           RegExp(r'^[0-9\-]+$').hasMatch(v ?? '')
+              //               ? null
+              //               : 'Only numbers and "-" allowed',
+              // ),
               const SizedBox(height: 20),
               Row(
                 children: [
@@ -687,7 +750,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
         const SizedBox(height: 5),
         Text("Course: $_selectedCourse"),
         const SizedBox(height: 5),
-        Text("Year: ${_year.text}"),
+        Text("Batch: ${_batch.text}"),
         const SizedBox(height: 5),
         Text("Date of Birth: ${_dob.text}"),
         const SizedBox(height: 5),
@@ -793,7 +856,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                                 pw.SizedBox(height: 5),
                                 pw.Text("Course: $_selectedCourse"),
                                 pw.SizedBox(height: 5),
-                                pw.Text("Year: ${_year.text}"),
+                                pw.Text("Batch: ${_batch.text}"),
                                 pw.SizedBox(height: 5),
                                 pw.Text("Date of Birth: ${_dob.text}"),
                                 pw.SizedBox(height: 5),
@@ -821,6 +884,7 @@ class _AdmitCardGeneratorState extends State<AdmitCardGenerator> {
                       "Subjects:",
                       style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                     ),
+                    // ignore: deprecated_member_use
                     pw.Table.fromTextArray(
                       border: pw.TableBorder.all(),
                       headers: ['S.N.', 'Course Code', 'Course Name'],

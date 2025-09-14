@@ -11,6 +11,7 @@ analyzer:
   errors:
     use_build_context_synchronously: ignore
     library_private_types_in_public_api: ignore
+    deprecated_member_use: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

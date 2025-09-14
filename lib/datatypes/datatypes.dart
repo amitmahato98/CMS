@@ -131,13 +131,27 @@ class _ThemeSelectorState extends State<ThemeSelector> {
     try {
       final deviceId = FirebaseAuth.instance.currentUser?.uid;
       if (deviceId != null) {
-        final snapshot =
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(deviceId)
-                .collection('settings')
-                .doc('theme_color')
-                .get();
+        final snapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(deviceId)
+            .collection('settings')
+            .doc('theme_color')
+            .get()
+            .timeout(
+              const Duration(seconds: 6),
+              onTimeout: () {
+                // Timeout → return empty snapshot
+                return Future.value(
+                  FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(deviceId)
+                      .collection('settings')
+                      .doc('theme_color')
+                      .snapshots()
+                      .first,
+                );
+              },
+            );
 
         if (snapshot.exists && snapshot.data() != null) {
           final data = snapshot.data() as Map<String, dynamic>;
@@ -149,10 +163,20 @@ class _ThemeSelectorState extends State<ThemeSelector> {
               blueColor = Color(savedColor);
             });
           }
+        } else {
+          // timeout or no color → keep default blueColor
+          if (!mounted) return;
+          setState(() {
+            _selectedColor = blueColor;
+          });
         }
       }
     } catch (e) {
       debugPrint("⚠️ Failed to load color from Firebase: $e");
+      if (!mounted) return;
+      setState(() {
+        _selectedColor = blueColor;
+      });
     }
   }
 
