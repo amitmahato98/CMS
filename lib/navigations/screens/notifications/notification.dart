@@ -389,6 +389,8 @@ class _SendNotificationPageState extends State<SendNotificationPage>
         notification,
       );
 
+      if (!mounted) return;
+
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -416,13 +418,17 @@ class _SendNotificationPageState extends State<SendNotificationPage>
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: blueColor),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: blueColor),
+        );
+      }
     } finally {
-      setState(() {
-        _isSending = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isSending = false;
+        });
+      }
     }
   }
 

@@ -66,6 +66,7 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
 
         // Compare names for match
         if (storedName.toLowerCase() == name.toLowerCase()) {
+          if (!mounted) return;
           setState(() {
             nameController.text = storedName; // standard case
             rollController.text = data["rollNumber"] ?? "";
@@ -79,17 +80,19 @@ class _IDCardGeneratorState extends State<IDCardGenerator> {
             selectedCourse = data["program"] ?? null;
           });
           if (!_autofill) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'All the related details are autofilled for $storedName($roll).',
+            if (mounted) {
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'All the related details are autofilled for $storedName($roll).',
+                    ),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 3),
                   ),
-                  backgroundColor: Colors.green,
-                  duration: Duration(seconds: 3),
-                ),
-              );
+                );
+            }
             _autofill = true;
           }
         }

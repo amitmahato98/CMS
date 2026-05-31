@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cms/utils/app_error_handler.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -256,9 +257,12 @@ class _MainNavigatorState extends State<MainNavigator> {
 
                       if (user != null) {
                         print("User is logged in: ${user.uid}");
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text(user.uid)));
+                        if (context.mounted) {
+                          AppErrorHandler.showSuccessSnackBar(
+                            context,
+                            "User ID: ${user.uid}",
+                          );
+                        }
                       } else {
                         print("No user is logged in");
                       }

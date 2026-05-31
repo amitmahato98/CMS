@@ -363,18 +363,25 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
     );
   }
 
+  late Stream<QuerySnapshot> _requestsStream;
+
   @override
   void initState() {
     super.initState();
     seedSampleData(); // 🔹 run seeder once
+    _updateStream();
+  }
+
+  void _updateStream() {
+    _requestsStream =
+        FirebaseFirestore.instance
+            .collection("leaveRequests")
+            .where("category", isEqualTo: selectedCategory.name)
+            .snapshots();
   }
 
   @override
   Widget build(BuildContext context) {
-    final query = FirebaseFirestore.instance
-        .collection("leaveRequests")
-        .where("category", isEqualTo: selectedCategory.name);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Leave Requests"),
@@ -403,10 +410,12 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
                               ? Colors.white
                               : Colors.black87,
                     ),
-                    onPressed:
-                        () => setState(() {
-                          selectedCategory = StaffCategory.Teaching;
-                        }),
+                    onPressed: () {
+                      setState(() {
+                        selectedCategory = StaffCategory.Teaching;
+                        _updateStream();
+                      });
+                    },
                     child: const Text("Teacher"),
                   ),
                 ),
@@ -423,10 +432,12 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
                               ? Colors.white
                               : Colors.black87,
                     ),
-                    onPressed:
-                        () => setState(() {
-                          selectedCategory = StaffCategory.Admin;
-                        }),
+                    onPressed: () {
+                      setState(() {
+                        selectedCategory = StaffCategory.Admin;
+                        _updateStream();
+                      });
+                    },
                     child: const Text("Admin Staff"),
                   ),
                 ),
@@ -436,7 +447,7 @@ class _LeaveRequestApproveState extends State<LeaveRequestApprove> {
           const SizedBox(height: 16),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: query.snapshots(),
+              stream: _requestsStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());

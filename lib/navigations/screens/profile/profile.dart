@@ -34,7 +34,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     },
   ];
 
-  final uid = FirebaseAuth.instance.currentUser?.uid;
+  late final String? uid;
+  late final Stream<DocumentSnapshot> _userStream;
+
+  @override
+  void initState() {
+    super.initState();
+    uid = FirebaseAuth.instance.currentUser?.uid;
+    _userStream =
+        FirebaseFirestore.instance.collection("users").doc(uid).snapshots();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,18 +55,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: StreamBuilder<DocumentSnapshot>(
-        stream:
-            FirebaseFirestore.instance.collection("users").doc(uid).snapshots(),
+        stream: _userStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (!snapshot.hasData || !snapshot.data!.exists) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text("User info not found!")));
-          }
-          final userData = snapshot.data!.data() as Map<String, dynamic>;
+          final userData =
+              (snapshot.data?.data() as Map<String, dynamic>?) ?? {};
           final firstName = userData['firstName'] ?? "Guest";
           final lastName = userData['lastName'] ?? "User";
           final email = userData['eMail'] ?? "admin@examplecollege.edu.np";
@@ -308,10 +312,12 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
             onPressed: () async {
               if (_isEditing) {
                 if (_formKey.currentState!.validate()) {
-                  _saveUserInfo(uid!);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Information saved")),
-                  );
+                  await _saveUserInfo(uid!);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Information saved")),
+                    );
+                  }
                 }
               }
               setState(() => _isEditing = !_isEditing);
@@ -597,13 +603,15 @@ class _ProfessionalInformationScreenState
               if (_isEditing) {
                 if (_formKey.currentState!.validate()) {
                   await _saveProfessionalInfo(uid!);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        "Professional information updated successfully!",
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          "Professional information updated successfully!",
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 }
               }
               setState(() {
@@ -819,7 +827,22 @@ class _EducationalInformationScreenState
   final gradeController = TextEditingController();
   final uid = FirebaseAuth.instance.currentUser?.uid;
 
+  late final Stream<QuerySnapshot> _educationsStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _educationsStream =
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .collection('educations')
+            .orderBy('createdAt', descending: true)
+            .snapshots();
+  }
+
   void _showSnackBar(String message) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -882,16 +905,10 @@ class _EducationalInformationScreenState
             ),
             SizedBox(height: 16),
             StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(uid)
-                      .collection('educations')
-                      .orderBy('createdAt', descending: true)
-                      .snapshots(),
+              stream: _educationsStream,
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  _showSnackBar("Error :${snapshot.error}");
+                  return Center(child: Text("Error: ${snapshot.error}"));
                 }
                 if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator());

@@ -160,9 +160,11 @@ class _TeacherScreenState extends State<TeacherScreen> {
       final encoded = jsonEncode(_teachers.map((e) => e.toJson()).toList());
       await prefs.setString('teachers', encoded);
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Teacher deleted')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Teacher deleted')));
+      }
     }
   }
 

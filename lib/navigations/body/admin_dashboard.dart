@@ -81,24 +81,24 @@ class OverVeiw extends StatefulWidget {
 }
 
 class _OverVeiwState extends State<OverVeiw> {
+  late final Stream<DocumentSnapshot> _userStream;
+
+  @override
+  void initState() {
+    super.initState();
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    _userStream =
+        FirebaseFirestore.instance.collection('users').doc(uid).snapshots();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final uid = FirebaseAuth.instance.currentUser?.uid;
 
     return StreamBuilder<DocumentSnapshot>(
-      stream:
-          FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+      stream: _userStream,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (!snapshot.hasData || !snapshot.data!.exists) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text("Name not Found !")));
-        }
-        final userData = snapshot.data!.data() as Map<String, dynamic>;
+        final userData = (snapshot.data?.data() as Map<String, dynamic>?) ?? {};
         final firstName = userData['firstName'] ?? userData['name'] ?? 'Guest';
         final lastName = userData['lastName'] ?? "";
         final jobProfession = userData['jobProfession'] ?? 'Job Title';

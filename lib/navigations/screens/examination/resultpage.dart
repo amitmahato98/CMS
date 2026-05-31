@@ -401,7 +401,7 @@ class AddResultPage extends StatefulWidget {
 }
 
 class _AddResultPageState extends State<AddResultPage> {
-  final _formKey = GlobalKey<FormState>();
+  // final _formKeyForAddResult = GlobalKey<FormState>();
   final _rollCtrl = TextEditingController();
   final _nameCtrl = TextEditingController();
   final _dobCtrl = TextEditingController();

@@ -39,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
             await FirebaseFirestore.instance.collection("users").doc(uid).get();
 
         if (!doc.exists || doc.data()?["firstName"] == null) {
+          if (!mounted) return;
           await showDialog(
             context: context,
             barrierDismissible: false,
@@ -62,16 +63,20 @@ class _LoginPageState extends State<LoginPage> {
         }
       }
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => MainNavigator()),
-      );
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => MainNavigator()),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(mapAuthError(e))));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(mapAuthError(e))));
+      }
     } finally {
-      setState(() => loading = false);
+      if (mounted) setState(() => loading = false);
     }
   }
 

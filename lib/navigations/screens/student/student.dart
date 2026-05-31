@@ -11,11 +11,19 @@ class NewStudent extends StatefulWidget {
 }
 
 class _NewStudentState extends State<NewStudent> {
+  late final Stream<QuerySnapshot> _studentsStream;
   List<Map<String, dynamic>> students = [];
   List<Map<String, dynamic>> filteredStudents = [];
   int? _expandedIndex;
 
   String searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _studentsStream =
+        FirebaseFirestore.instance.collection('students').snapshots();
+  }
 
   Future<void> _addOrEditStudent(
     Map<String, dynamic> student, {
@@ -105,9 +113,11 @@ class _NewStudentState extends State<NewStudent> {
     ).then((confirmed) {
       if (confirmed == true) {
         _deleteStudent(index);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Student deleted')));
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Student deleted')));
+        }
       }
     });
   }
@@ -148,7 +158,7 @@ class _NewStudentState extends State<NewStudent> {
     return Scaffold(
       appBar: AppBar(title: const Text("Students"), backgroundColor: primary),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('students').snapshots(),
+        stream: _studentsStream,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             debugPrint('Stream error: ${snapshot.error}');
@@ -165,11 +175,28 @@ class _NewStudentState extends State<NewStudent> {
                   .map((doc) => doc.data() as Map<String, dynamic>)
                   .toList();
 
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            setState(() {
-              _filterStudents();
-            });
-          });
+          // Filter inline to avoid setState during build
+          final query = searchQuery.toLowerCase();
+          final filteredData =
+              query.isEmpty
+                  ? students
+                  : students.where((s) {
+                    final roll =
+                        s['rollNumber']?.toString().toLowerCase() ?? '';
+                    final n = s['name']?.toString().toLowerCase() ?? '';
+                    final c = s['program']?.toString().toLowerCase() ?? '';
+                    final b = s['batch']?.toString().toLowerCase() ?? '';
+                    final p = s['phone']?.toString().toLowerCase() ?? '';
+                    final r = s['regNumber']?.toString().toLowerCase() ?? '';
+                    final e = s['email']?.toString().toLowerCase() ?? '';
+                    return roll.contains(query) ||
+                        n.contains(query) ||
+                        c.contains(query) ||
+                        b.contains(query) ||
+                        p.contains(query) ||
+                        r.contains(query) ||
+                        e.contains(query);
+                  }).toList();
 
           return Column(
             children: [
@@ -197,24 +224,22 @@ class _NewStudentState extends State<NewStudent> {
                     fillColor: isDark ? theme.cardColor : Colors.grey[200],
                   ),
                   onChanged: (val) {
-                    searchQuery = val;
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      setState(() {
-                        _filterStudents();
-                      });
+                    setState(() {
+                      searchQuery = val;
+                      _filterStudents();
                     });
                   },
                 ),
               ),
               Expanded(
                 child:
-                    filteredStudents.isEmpty
+                    filteredData.isEmpty
                         ? const Center(child: Text("No students found."))
                         : ListView.builder(
                           padding: const EdgeInsets.all(12),
-                          itemCount: filteredStudents.length,
+                          itemCount: filteredData.length,
                           itemBuilder: (context, index) {
-                            final student = filteredStudents[index];
+                            final student = filteredData[index];
                             final expanded = _expandedIndex == index;
 
                             return GestureDetector(

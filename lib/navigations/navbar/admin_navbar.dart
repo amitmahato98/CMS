@@ -17,25 +17,22 @@ class Navbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    return StreamBuilder<DocumentSnapshot>(
-      stream:
-          FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (!snapshot.hasData || !snapshot.data!.exists) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text("User name not found")));
-        }
-        final userdata = snapshot.data!.data() as Map<String, dynamic>;
-        final fName = userdata['firstName'] ?? userdata['name'] ?? 'Guest';
-        final lName = userdata['lastName'] ?? '';
-        final jobProfession = userdata['jobProfession'] ?? 'Job Title';
+    return Drawer(
+      child: StreamBuilder<DocumentSnapshot>(
+        stream:
+            FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        return Drawer(
-          child: ListView(
+          final userdata =
+              (snapshot.data?.data() as Map<String, dynamic>?) ?? {};
+          final fName = userdata['firstName'] ?? userdata['name'] ?? 'Guest';
+          final lName = userdata['lastName'] ?? '';
+          final jobProfession = userdata['jobProfession'] ?? 'Job Title';
+
+          return ListView(
             padding: EdgeInsets.zero,
             children: [
               DrawerHeader(
@@ -147,6 +144,7 @@ class Navbar extends StatelessWidget {
                 onTap: () async {
                   Navigator.of(context).pop(); // close drawer
                   await AuthService().signOut(); // sign out
+                  if (!context.mounted) return;
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (_) => const LoginPage()),
@@ -158,9 +156,9 @@ class Navbar extends StatelessWidget {
                 },
               ),
             ],
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
