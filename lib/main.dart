@@ -1,6 +1,6 @@
 import 'package:cms/auth/auth_service.dart';
 import 'package:cms/auth/login_page.dart';
-import 'package:cms/datatypes/datatypes.dart';
+import 'package:cms/datatypes/datatypes.dart' hide User;
 import 'package:cms/navigations/body/admin_dashboard.dart';
 import 'package:cms/navigations/navbar/admin_navbar.dart';
 import 'package:cms/navigations/screens/notifications/notification.dart';
@@ -15,10 +15,17 @@ import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cms/utils/app_error_handler.dart';
+import 'package:cms/navigations/screens/auth_gate.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Set up global error handling for Flutter framework errors
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint('Uncaught Flutter Error: ${details.exception}');
+  };
 
   final prefs = await SharedPreferences.getInstance();
   int? localColor = prefs.getInt('themeColor');
@@ -75,20 +82,7 @@ class MyApp extends StatelessWidget {
           title: 'CMS',
           debugShowCheckedModeBanner: false,
           theme: themeProvider.currentTheme,
-          home: StreamBuilder<User?>(
-            stream: AuthService().auth$(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.hasData) {
-                // user is logged in
-                return MainNavigator();
-              }
-              // user is not logged in
-              return const LoginPage();
-            },
-          ),
+          home: const AuthGate(),
         );
       },
     );

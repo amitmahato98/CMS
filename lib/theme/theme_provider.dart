@@ -103,6 +103,13 @@ class ThemeProvider with ChangeNotifier {
     radioTheme: RadioThemeData(
       fillColor: MaterialStateProperty.all(Color(0xFF1E88E5)),
     ),
+    pageTransitionsTheme: PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+      },
+    ),
   );
 
   static final _darkTheme = ThemeData(
@@ -309,6 +316,13 @@ class ThemeProvider with ChangeNotifier {
           return Colors.white70;
         }),
       ),
+    ),
+    pageTransitionsTheme: PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+      },
     ),
   );
 }

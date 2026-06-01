@@ -1,14 +1,10 @@
 import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-
-import 'teacher.dart';
 
 class AddNewTeacherPage extends StatefulWidget {
-  final Teacher? teacher;
+  final Map<String, dynamic>? teacherData;
 
-  const AddNewTeacherPage({super.key, this.teacher});
+  const AddNewTeacherPage({super.key, this.teacherData});
 
   @override
   State<AddNewTeacherPage> createState() => _AddNewTeacherPageState();
@@ -23,28 +19,29 @@ class _AddNewTeacherPageState extends State<AddNewTeacherPage> {
   final qualification = TextEditingController();
   final specialization = TextEditingController();
   final experience = TextEditingController();
+
   String designation = 'Lecturer';
-  String department = 'BSc CSIT';
+  String department = 'BSc.CSIT';
   DateTime joiningDate = DateTime.now();
   late bool isEditing;
 
   @override
   void initState() {
     super.initState();
-    isEditing = widget.teacher != null;
+    isEditing = widget.teacherData != null;
 
     if (isEditing) {
-      final t = widget.teacher!;
-      name.text = t.name;
-      email.text = t.email;
-      phone.text = t.phone;
-      address.text = t.address;
-      qualification.text = t.qualification;
-      specialization.text = t.specialization;
-      experience.text = t.experience;
-      designation = t.designation;
-      department = t.department;
-      joiningDate = DateTime.tryParse(t.joiningDate) ?? DateTime.now();
+      final t = widget.teacherData!;
+      name.text = t['name'] ?? '';
+      email.text = t['email'] ?? '';
+      phone.text = t['phone'] ?? '';
+      address.text = t['address'] ?? '';
+      qualification.text = t['qualification'] ?? '';
+      specialization.text = t['specialization'] ?? '';
+      experience.text = t['experience'] ?? '';
+      designation = t['designation'] ?? 'Lecturer';
+      department = t['department'] ?? 'BSc.CSIT';
+      joiningDate = DateTime.tryParse(t['joiningDate'] ?? '') ?? DateTime.now();
     }
   }
 
@@ -64,45 +61,22 @@ class _AddNewTeacherPageState extends State<AddNewTeacherPage> {
 
   Future<void> _saveTeacher() async {
     if (_formKey.currentState!.validate()) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      List<Teacher> teachers = [];
-      final existing = prefs.getString('teachers');
-      if (existing != null) {
-        final decoded = jsonDecode(existing) as List;
-        teachers = decoded.map((e) => Teacher.fromJson(e)).toList();
-      }
-
-      final updatedTeacher = Teacher(
-        id:
+      final updatedTeacher = {
+        'id':
             isEditing
-                ? widget.teacher!.id
+                ? widget.teacherData!['id']
                 : 'TCH${DateTime.now().millisecondsSinceEpoch}',
-        name: name.text,
-        email: email.text,
-        phone: phone.text,
-        address: address.text,
-        department: department,
-        designation: designation,
-        qualification: qualification.text,
-        specialization: specialization.text,
-        experience: experience.text,
-        joiningDate: joiningDate.toIso8601String(),
-      );
-
-      if (isEditing) {
-        final index = teachers.indexWhere((t) => t.id == widget.teacher!.id);
-        if (index != -1) {
-          teachers[index] = updatedTeacher;
-        }
-      } else {
-        teachers.add(updatedTeacher);
-      }
-
-      await prefs.setString(
-        'teachers',
-        jsonEncode(teachers.map((t) => t.toJson()).toList()),
-      );
+        'name': name.text,
+        'email': email.text,
+        'phone': phone.text,
+        'address': address.text,
+        'department': department,
+        'designation': designation,
+        'qualification': qualification.text,
+        'specialization': specialization.text,
+        'experience': experience.text,
+        'joiningDate': joiningDate.toIso8601String(),
+      };
 
       Navigator.pop(context, updatedTeacher);
     }

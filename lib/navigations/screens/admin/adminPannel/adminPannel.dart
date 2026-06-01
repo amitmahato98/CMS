@@ -2,6 +2,9 @@ import 'package:cms/datatypes/datatypes.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide User;
+import 'dart:async';
 import 'dart:convert';
 
 class UserManagementScreen extends StatefulWidget {
@@ -18,6 +21,16 @@ class _UserManagementScreenState extends State<UserManagementScreen>
 
   List<User> users = [];
   SharedPreferences? prefs;
+  StreamSubscription? _usersSub;
+  bool _isLoading = true;
+
+  // Firestore reference (single source of truth)
+  final CollectionReference<Map<String, dynamic>> _usersRef = FirebaseFirestore
+      .instance
+      .collection('users');
+  final CollectionReference<Map<String, dynamic>> _logsRef = FirebaseFirestore
+      .instance
+      .collection('deletion_logs');
 
   @override
   void initState() {
@@ -32,10 +45,15 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     _initializeData();
   }
 
+  // ---------------------------------------------------------------------------
+  // INITIALIZATION
+  // ---------------------------------------------------------------------------
+
   Future<void> _initializeData() async {
     await _loadPreferences();
-    await _loadUsers();
     await _loadFilterState();
+    await _seedDefaultUsersIfEmpty(); // push 12 defaults to Firebase ONCE
+    _listenToUsers(); // real-time sync from Firebase
     _animationController.forward();
   }
 
@@ -43,165 +61,221 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     prefs = await SharedPreferences.getInstance();
   }
 
-  Future<void> _loadUsers() async {
-    if (prefs == null) return;
+  // ---------------------------------------------------------------------------
+  // SEEDING — writes default users into Firestore only if the collection is empty
+  // ---------------------------------------------------------------------------
 
-    final usersJson = prefs!.getStringList('users_data');
-    if (usersJson != null && usersJson.isNotEmpty) {
-      setState(() {
-        users =
-            usersJson.map((userString) {
-              final userMap = jsonDecode(userString);
-              return User.fromJson(userMap);
-            }).toList();
-      });
-    } else {
-      _loadDefaultUsers();
+  Future<void> _seedDefaultUsersIfEmpty() async {
+    try {
+      // Local guard so we don't try to re-seed after a manual wipe.
+      final alreadySeeded = prefs?.getBool('users_seeded') ?? false;
+
+      final snapshot = await _usersRef.limit(1).get();
+      if (snapshot.docs.isNotEmpty) {
+        await prefs?.setBool('users_seeded', true);
+        return; // Firebase already has users — nothing to do.
+      }
+
+      if (alreadySeeded) return;
+
+      final defaults = _defaultUsersList();
+      final batch = FirebaseFirestore.instance.batch();
+      for (final user in defaults) {
+        batch.set(_usersRef.doc(user.id), user.toJson());
+      }
+      await batch.commit();
+      await prefs?.setBool('users_seeded', true);
+      debugPrint("✅ Seeded ${defaults.length} default users to Firebase.");
+    } catch (e) {
+      debugPrint("⚠️ Seeding failed (check rules/connection): $e");
+      // Fallback so the UI is not empty if Firebase is unreachable.
+      _loadUsersFromCacheOrDefaults();
     }
   }
 
-  void _loadDefaultUsers() {
-    setState(() {
-      users = [
-        User(
-          id: '1',
-          name: 'Dr. Saroj Karki',
-          email: 'sarojkrki@school.edu',
-          role: UserRole.teacher,
-          status: UserStatus.pending,
-          initials: 'SK',
-        ),
-        User(
-          id: '2',
-          name: 'Alexender Chetry',
-          email: 'alex.chetrii@student.edu',
-          role: UserRole.student,
-          status: UserStatus.pending,
-          initials: 'AC',
-        ),
-        User(
-          id: '3',
-          name: 'Mandip Raina',
-          email: 'mandeep.raina@parent.com',
-          role: UserRole.parent,
-          status: UserStatus.approved,
-          initials: 'MR',
-        ),
-        User(
-          id: '4',
-          name: 'Admin Amit',
-          email: 'admin@school.edu',
-          role: UserRole.admin,
-          status: UserStatus.pending,
-          initials: 'AA',
-        ),
-        User(
-          id: '5',
-          name: 'Emly Rai',
-          email: 'emm.lee@student.edu',
-          role: UserRole.student,
-          status: UserStatus.pending,
-          initials: 'ER',
-        ),
-        User(
-          id: '6',
-          name: 'Prof. Michael Mandip',
-          email: 'michael.mandip@school.edu',
-          role: UserRole.teacher,
-          status: UserStatus.pending,
-          initials: 'MM',
-        ),
-        User(
-          id: '7',
-          name: 'Time Raina',
-          email: 'time.raina@parent.com',
-          role: UserRole.parent,
-          status: UserStatus.pending,
-          initials: 'TR',
-        ),
-        User(
-          id: '8',
-          name: 'Admin Mahato',
-          email: 'admin.mahato@school.edu',
-          role: UserRole.admin,
-          status: UserStatus.approved,
-          initials: 'AM',
-        ),
-        User(
-          id: '9',
-          name: 'Sushant Rai',
-          email: 'sush.antman@student.edu',
-          role: UserRole.student,
-          status: UserStatus.approved,
-          initials: 'ER',
-        ),
-        User(
-          id: '10',
-          name: 'Prof. Michael Prabhat',
-          email: 'michael.mandip@school.edu',
-          role: UserRole.teacher,
-          status: UserStatus.pending,
-          initials: 'MP',
-        ),
-        User(
-          id: '11',
-          name: 'Dhruv Rathee',
-          email: 'dhruv.rathee@parent.com',
-          role: UserRole.parent,
-          status: UserStatus.pending,
-          initials: 'DR',
-        ),
-        User(
-          id: '12',
-          name: 'Admin Amit Mahato',
-          email: 'admin.amit.mahato@school.edu',
-          role: UserRole.admin,
-          status: UserStatus.pending,
-          initials: 'AM',
-        ),
-      ];
-    });
-    _saveUsers();
+  // ---------------------------------------------------------------------------
+  // REAL-TIME LISTENER — Firestore is the single source of truth
+  // ---------------------------------------------------------------------------
+
+  void _listenToUsers() {
+    _usersSub = _usersRef.snapshots().listen(
+      (snapshot) {
+        if (!mounted) return;
+        setState(() {
+          users =
+              snapshot.docs.map((doc) {
+                final data = doc.data();
+                data['id'] = doc.id;
+                return User.fromJson(data);
+              }).toList();
+          _isLoading = false;
+        });
+        _saveUsersToCache(); // keep an offline cache
+      },
+      onError: (e) {
+        debugPrint("⚠️ Firestore listen error: $e");
+        _loadUsersFromCacheOrDefaults();
+      },
+    );
   }
 
-  Future<void> _saveUsers() async {
-    if (prefs == null) return;
+  void _loadUsersFromCacheOrDefaults() {
+    final usersJson = prefs?.getStringList('users_data');
+    if (usersJson != null && usersJson.isNotEmpty) {
+      setState(() {
+        users = usersJson.map((s) => User.fromJson(jsonDecode(s))).toList();
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        users = _defaultUsersList();
+        _isLoading = false;
+      });
+      _saveUsersToCache();
+    }
+  }
 
-    final usersJson = users.map((user) => jsonEncode(user.toJson())).toList();
+  Future<void> _saveUsersToCache() async {
+    if (prefs == null) return;
+    final usersJson = users.map((u) => jsonEncode(u.toJson())).toList();
     await prefs!.setStringList('users_data', usersJson);
   }
 
+  // ---------------------------------------------------------------------------
+  // DEFAULT USER DATA
+  // ---------------------------------------------------------------------------
+
+  List<User> _defaultUsersList() {
+    return [
+      User(
+        id: '1',
+        name: 'Dr. Saroj Karki',
+        email: 'sarojkrki@school.edu',
+        role: UserRole.teacher,
+        status: UserStatus.pending,
+        initials: 'SK',
+      ),
+      User(
+        id: '2',
+        name: 'Alexender Chetry',
+        email: 'alex.chetrii@student.edu',
+        role: UserRole.student,
+        status: UserStatus.pending,
+        initials: 'AC',
+      ),
+      User(
+        id: '3',
+        name: 'Mandip Raina',
+        email: 'mandeep.raina@parent.com',
+        role: UserRole.parent,
+        status: UserStatus.approved,
+        initials: 'MR',
+      ),
+      User(
+        id: '4',
+        name: 'Admin Amit',
+        email: 'admin@school.edu',
+        role: UserRole.admin,
+        status: UserStatus.pending,
+        initials: 'AA',
+      ),
+      User(
+        id: '5',
+        name: 'Emly Rai',
+        email: 'emm.lee@student.edu',
+        role: UserRole.student,
+        status: UserStatus.pending,
+        initials: 'ER',
+      ),
+      User(
+        id: '6',
+        name: 'Prof. Michael Mandip',
+        email: 'michael.mandip@school.edu',
+        role: UserRole.teacher,
+        status: UserStatus.pending,
+        initials: 'MM',
+      ),
+      User(
+        id: '7',
+        name: 'Time Raina',
+        email: 'time.raina@parent.com',
+        role: UserRole.parent,
+        status: UserStatus.pending,
+        initials: 'TR',
+      ),
+      User(
+        id: '8',
+        name: 'Admin Mahato',
+        email: 'admin.mahato@school.edu',
+        role: UserRole.admin,
+        status: UserStatus.approved,
+        initials: 'AM',
+      ),
+      User(
+        id: '9',
+        name: 'Sushant Rai',
+        email: 'sush.antman@student.edu',
+        role: UserRole.student,
+        status: UserStatus.approved,
+        initials: 'SR',
+      ),
+      User(
+        id: '10',
+        name: 'Prof. Michael Prabhat',
+        email: 'michael.prabhat@school.edu',
+        role: UserRole.teacher,
+        status: UserStatus.pending,
+        initials: 'MP',
+      ),
+      User(
+        id: '11',
+        name: 'Dhruv Rathee',
+        email: 'dhruv.rathee@parent.com',
+        role: UserRole.parent,
+        status: UserStatus.pending,
+        initials: 'DR',
+      ),
+      User(
+        id: '12',
+        name: 'Admin Amit Mahato',
+        email: 'admin.amit.mahato@school.edu',
+        role: UserRole.admin,
+        status: UserStatus.pending,
+        initials: 'AM',
+      ),
+    ];
+  }
+
+  // ---------------------------------------------------------------------------
+  // FILTER STATE PERSISTENCE
+  // ---------------------------------------------------------------------------
+
   Future<void> _loadFilterState() async {
     if (prefs == null) return;
-
     final savedFilter = prefs!.getString('selected_filter');
     final savedSearch = prefs!.getString('search_query');
-
-    if (savedFilter != null) {
-      setState(() {
-        selectedFilter = savedFilter;
-      });
-    }
-
-    if (savedSearch != null) {
-      setState(() {
-        searchQuery = savedSearch;
-      });
-    }
+    setState(() {
+      if (savedFilter != null) selectedFilter = savedFilter;
+      if (savedSearch != null) searchQuery = savedSearch;
+    });
   }
 
   Future<void> _saveFilterState() async {
     if (prefs == null) return;
-
     await prefs!.setString('selected_filter', selectedFilter);
     await prefs!.setString('search_query', searchQuery);
   }
 
   @override
   void dispose() {
+    _usersSub?.cancel();
     _animationController.dispose();
     super.dispose();
   }
+
+  // ---------------------------------------------------------------------------
+  // FILTERING
+  // ---------------------------------------------------------------------------
 
   List<User> get filteredUsers {
     List<User> filtered = users;
@@ -211,38 +285,124 @@ class _UserManagementScreenState extends State<UserManagementScreen>
         filtered =
             filtered
                 .where(
-                  (user) =>
-                      user.role.toString().split('.').last == selectedFilter,
+                  (u) => u.role.toString().split('.').last == selectedFilter,
                 )
                 .toList();
       } else {
         filtered =
             filtered
                 .where(
-                  (user) =>
-                      user.status.toString().split('.').last == selectedFilter,
+                  (u) => u.status.toString().split('.').last == selectedFilter,
                 )
                 .toList();
       }
     }
 
     if (searchQuery.isNotEmpty) {
+      final q = searchQuery.toLowerCase();
       filtered =
           filtered
               .where(
-                (user) =>
-                    user.name.toLowerCase().contains(
-                      searchQuery.toLowerCase(),
-                    ) ||
-                    user.email.toLowerCase().contains(
-                      searchQuery.toLowerCase(),
-                    ),
+                (u) =>
+                    u.name.toLowerCase().contains(q) ||
+                    u.email.toLowerCase().contains(q),
               )
               .toList();
     }
 
     return filtered;
   }
+
+  // ---------------------------------------------------------------------------
+  // FIREBASE WRITE OPERATIONS (every action updates Firebase)
+  // ---------------------------------------------------------------------------
+
+  Future<void> _approveUser(User user) async {
+    final updatedUser = user.copyWith(status: UserStatus.approved);
+    final String currentAdminId =
+        FirebaseAuth.instance.currentUser?.uid ?? 'unknown_admin';
+    try {
+      await _usersRef.doc(user.id).set({
+        ...updatedUser.toJson(),
+        'updated_at': FieldValue.serverTimestamp(),
+        'approved_at': FieldValue.serverTimestamp(),
+        'approved_by': currentAdminId,
+      }, SetOptions(merge: true));
+      _showSnackbar('${user.name} approved successfully', Colors.green);
+    } catch (e) {
+      debugPrint("❌ Failed to approve user: $e");
+      _showSnackbar('Failed to approve ${user.name}', Colors.red);
+    }
+  }
+
+  Future<void> _rejectUser(User user) async {
+    final updatedUser = user.copyWith(status: UserStatus.rejected);
+    final String currentAdminId =
+        FirebaseAuth.instance.currentUser?.uid ?? 'unknown_admin';
+    try {
+      await _usersRef.doc(user.id).set({
+        ...updatedUser.toJson(),
+        'updated_at': FieldValue.serverTimestamp(),
+        'rejected_at': FieldValue.serverTimestamp(),
+        'rejected_by': currentAdminId,
+      }, SetOptions(merge: true));
+      _showSnackbar('${user.name} rejected', Colors.orange);
+    } catch (e) {
+      debugPrint("❌ Failed to reject user: $e");
+      _showSnackbar('Failed to reject ${user.name}', Colors.red);
+    }
+  }
+
+  Future<void> _deleteUser(User user, String reason) async {
+    try {
+      // Log the deletion FIRST so we never lose the record.
+      await _saveDeletionLog(user, reason);
+
+      // Permanently remove the user record from the database.
+      await _usersRef.doc(user.id).delete();
+      _showSnackbar('${user.name} deleted successfully', Colors.red);
+    } catch (e) {
+      debugPrint("❌ Failed to delete user: $e");
+      _showSnackbar('Failed to delete ${user.name}', Colors.red);
+    }
+  }
+
+  Future<void> _saveDeletionLog(User user, String reason) async {
+    final String currentAdminId =
+        FirebaseAuth.instance.currentUser?.uid ?? 'unknown_admin';
+    await _logsRef.add({
+      'user_id': user.id,
+      'user_name': user.name,
+      'user_email': user.email,
+      'user_role': user.role.toString().split('.').last,
+      'reason': reason.trim().isEmpty ? 'No reason provided' : reason.trim(),
+      'deleted_by': currentAdminId,
+      'deleted_at': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getDeletionLogs() async {
+    final querySnapshot =
+        await _logsRef.orderBy('deleted_at', descending: true).get();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  Future<void> clearOldDeletionLogs({int daysToKeep = 30}) async {
+    final cutoffDate = DateTime.now().subtract(Duration(days: daysToKeep));
+    final querySnapshot =
+        await _logsRef
+            .where('deleted_at', isLessThan: Timestamp.fromDate(cutoffDate))
+            .get();
+    final batch = FirebaseFirestore.instance.batch();
+    for (var doc in querySnapshot.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
+  }
+
+  // ---------------------------------------------------------------------------
+  // UI
+  // ---------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -258,7 +418,14 @@ class _UserManagementScreenState extends State<UserManagementScreen>
           children: [
             _buildSearchAndFilter(context, isDark),
             _buildFilterTabs(context, isDark),
-            Expanded(child: _buildUserList(context, isDark)),
+            Expanded(
+              child:
+                  _isLoading
+                      ? Center(
+                        child: CircularProgressIndicator(color: blueColor),
+                      )
+                      : _buildUserList(context, isDark),
+            ),
           ],
         ),
       ),
@@ -323,10 +490,12 @@ class _UserManagementScreenState extends State<UserManagementScreen>
             SizedBox(width: 12),
             Expanded(
               child: TextField(
+                controller: TextEditingController(text: searchQuery)
+                  ..selection = TextSelection.collapsed(
+                    offset: searchQuery.length,
+                  ),
                 onChanged: (value) {
-                  setState(() {
-                    searchQuery = value;
-                  });
+                  setState(() => searchQuery = value);
                   _saveFilterState();
                 },
                 style: GoogleFonts.inter(
@@ -336,7 +505,6 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                 cursorColor: blueColor,
                 decoration: InputDecoration(
                   hintText: 'Search users...',
-                  // border: InputBorder.none,
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(width: 1.5, color: blueColor),
@@ -380,9 +548,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
 
           return GestureDetector(
             onTap: () {
-              setState(() {
-                selectedFilter = filter['key'] as String;
-              });
+              setState(() => selectedFilter = filter['key'] as String);
               _saveFilterState();
             },
             child: AnimatedContainer(
@@ -499,9 +665,9 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     return ListView.builder(
       padding: EdgeInsets.all(16),
       itemCount: filtered.length,
-      itemBuilder: (context, index) {
-        return _buildUserCard(context, filtered[index], isDark, index);
-      },
+      itemBuilder:
+          (context, index) =>
+              _buildUserCard(context, filtered[index], isDark, index),
     );
   }
 
@@ -586,7 +752,6 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                           _buildActionButton(
                             context,
                             icon: Icons.delete_outline,
-
                             color: blueColor.withOpacity(0.6),
                             onPressed: () => _showDeleteDialog(context, user),
                           ),
@@ -667,7 +832,6 @@ class _UserManagementScreenState extends State<UserManagementScreen>
   Widget _buildRoleChip(UserRole role, bool isDark) {
     Color chipColor;
     IconData chipIcon;
-
     switch (role) {
       case UserRole.teacher:
         chipColor = blueColor;
@@ -715,7 +879,6 @@ class _UserManagementScreenState extends State<UserManagementScreen>
   Widget _buildStatusBadge(UserStatus status, bool isDark) {
     Color badgeColor;
     IconData badgeIcon;
-
     switch (status) {
       case UserStatus.approved:
         badgeColor = Color.fromARGB(255, 75, 173, 78);
@@ -760,7 +923,6 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     BuildContext context, {
     required IconData icon,
     required Color color,
-
     String? label,
     bool isExpanded = false,
     required VoidCallback onPressed,
@@ -769,10 +931,8 @@ class _UserManagementScreenState extends State<UserManagementScreen>
       height: isExpanded ? 44 : 36,
       child: ElevatedButton(
         onPressed: onPressed,
-
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(isExpanded ? 12 : 18),
@@ -818,7 +978,6 @@ class _UserManagementScreenState extends State<UserManagementScreen>
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
-
             child: Container(
               decoration: BoxDecoration(
                 color: isDark ? darkBlack : Colors.white,
@@ -842,12 +1001,10 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: Colors.red.shade100,
-
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
                           Icons.delete_outline,
-
                           color: Colors.red.shade400,
                           size: 24,
                         ),
@@ -979,90 +1136,8 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     );
   }
 
-  void _approveUser(User user) {
-    setState(() {
-      users =
-          users
-              .map(
-                (u) =>
-                    u.id == user.id
-                        ? u.copyWith(status: UserStatus.approved)
-                        : u,
-              )
-              .toList();
-    });
-    _saveUsers();
-    _showSnackbar('${user.name} approved successfully', Colors.green);
-  }
-
-  void _rejectUser(User user) {
-    setState(() {
-      users =
-          users
-              .map(
-                (u) =>
-                    u.id == user.id
-                        ? u.copyWith(status: UserStatus.rejected)
-                        : u,
-              )
-              .toList();
-    });
-    _saveUsers();
-    _showSnackbar('${user.name} rejected', Colors.orange);
-  }
-
-  void _deleteUser(User user, String reason) {
-    setState(() {
-      users.removeWhere((u) => u.id == user.id);
-    });
-    _saveUsers();
-
-    _saveDeletionLog(user, reason);
-    _showSnackbar('${user.name} deleted successfully', Colors.red);
-  }
-
-  Future<void> _saveDeletionLog(User user, String reason) async {
-    if (prefs == null) return;
-
-    final deletionLogs = prefs!.getStringList('deletion_logs') ?? [];
-    final logEntry = {
-      'user_name': user.name,
-      'user_email': user.email,
-      'user_role': user.role.toString(),
-      'reason': reason.isEmpty ? 'No reason provided' : reason,
-      'deleted_at': DateTime.now().toIso8601String(),
-    };
-
-    deletionLogs.add(jsonEncode(logEntry));
-    await prefs!.setStringList('deletion_logs', deletionLogs);
-  }
-
-  Future<List<Map<String, dynamic>>> getDeletionLogs() async {
-    if (prefs == null) return [];
-
-    final deletionLogs = prefs!.getStringList('deletion_logs') ?? [];
-    return deletionLogs
-        .map((log) => jsonDecode(log) as Map<String, dynamic>)
-        .toList();
-  }
-
-  Future<void> clearOldDeletionLogs({int daysToKeep = 30}) async {
-    if (prefs == null) return;
-
-    final deletionLogs = prefs!.getStringList('deletion_logs') ?? [];
-    final cutoffDate = DateTime.now().subtract(Duration(days: daysToKeep));
-
-    final filteredLogs =
-        deletionLogs.where((logString) {
-          final log = jsonDecode(logString);
-          final deletedAt = DateTime.parse(log['deleted_at']);
-          return deletedAt.isAfter(cutoffDate);
-        }).toList();
-
-    await prefs!.setStringList('deletion_logs', filteredLogs);
-  }
-
   void _showSnackbar(String message, Color color) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -1101,79 +1176,3 @@ class _UserManagementScreenState extends State<UserManagementScreen>
       );
   }
 }
-
-// User Model
-class User {
-  final String id;
-  final String name;
-  final String email;
-  final UserRole role;
-  final UserStatus status;
-  final String initials;
-  final String? avatarUrl;
-
-  User({
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.role,
-    required this.status,
-    required this.initials,
-    this.avatarUrl,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'email': email,
-      'role': role.toString(),
-      'status': status.toString(),
-      'initials': initials,
-      'avatarUrl': avatarUrl,
-    };
-  }
-
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
-      role: UserRole.values.firstWhere(
-        (e) => e.toString() == json['role'],
-        orElse: () => UserRole.student,
-      ),
-      status: UserStatus.values.firstWhere(
-        (e) => e.toString() == json['status'],
-        orElse: () => UserStatus.pending,
-      ),
-      initials: json['initials'],
-      avatarUrl: json['avatarUrl'],
-    );
-  }
-
-  User copyWith({
-    String? id,
-    String? name,
-    String? email,
-    UserRole? role,
-    UserStatus? status,
-    String? initials,
-    String? avatarUrl,
-  }) {
-    return User(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      email: email ?? this.email,
-      role: role ?? this.role,
-      status: status ?? this.status,
-      initials: initials ?? this.initials,
-      avatarUrl: avatarUrl ?? this.avatarUrl,
-    );
-  }
-}
-
-// Enums
-enum UserRole { teacher, student, parent, admin }
-
-enum UserStatus { approved, pending, rejected }

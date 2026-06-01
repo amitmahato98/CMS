@@ -14,6 +14,7 @@ class _SignupPageState extends State<SignupPage> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  String selectedRole = 'student';
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
 
@@ -26,6 +27,7 @@ class _SignupPageState extends State<SignupPage> {
         name: nameController.text,
         email: emailController.text,
         password: passwordController.text,
+        role: selectedRole,
       );
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -126,6 +128,43 @@ class _SignupPageState extends State<SignupPage> {
                             ),
                           ],
                         ),
+                      ),
+                      const SizedBox(height: 15),
+                      DropdownButtonFormField<String>(
+                        value: selectedRole,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white.withOpacity(0.1),
+                          prefixIcon: const Icon(
+                            Icons.school,
+                            color: Colors.white,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        dropdownColor: Colors.blueGrey,
+                        style: const TextStyle(color: Colors.white),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'student',
+                            child: Text('Student'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'teacher',
+                            child: Text('Teacher'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'parent',
+                            child: Text('Parent'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() => selectedRole = value);
+                          }
+                        },
                       ),
                       const SizedBox(height: 15),
                       formField(

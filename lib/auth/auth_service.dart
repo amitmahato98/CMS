@@ -12,6 +12,7 @@ class AuthService {
     required String name,
     required String email,
     required String password,
+    String role = 'student',
     bool createProfileDoc = true,
   }) async {
     final cred = await _auth.createUserWithEmailAndPassword(
@@ -24,10 +25,19 @@ class AuthService {
       final userDoc = _db.collection('users').doc(cred.user!.uid);
 
       try {
+        String initials =
+            name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : 'U';
         await userDoc.set({
+          'id': cred.user!.uid,
           'name': name.trim(),
+          'full_name': name.trim(),
           'email': email.trim(),
-          'createdAt': FieldValue.serverTimestamp(),
+          'phone': '',
+          'role': role,
+          'status': 'pending',
+          'initials': initials,
+          'created_at': FieldValue.serverTimestamp(),
+          'updated_at': FieldValue.serverTimestamp(),
         });
 
         await userDoc.collection('settings').doc('theme_color').set({

@@ -282,3 +282,80 @@ class _ThemeSelectorState extends State<ThemeSelector> {
     );
   }
 }
+
+// User Models for Firestore
+enum UserRole { teacher, student, parent, admin }
+
+enum UserStatus { approved, pending, rejected }
+
+class User {
+  final String id;
+  final String name;
+  final String email;
+  final UserRole role;
+  final UserStatus status;
+  final String initials;
+  final String? avatarUrl;
+
+  User({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.role,
+    required this.status,
+    required this.initials,
+    this.avatarUrl,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'role': role.toString().split('.').last,
+      'status': status.toString().split('.').last,
+      'initials': initials,
+      'avatarUrl': avatarUrl,
+    };
+  }
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'] ?? '',
+      name: json['name'] ?? 'Unknown User',
+      email: json['email'] ?? '',
+      role:
+          UserRole.values.cast<UserRole?>().firstWhere(
+            (e) => e?.toString().split('.').last == json['role'],
+            orElse: () => UserRole.student,
+          )!,
+      status:
+          UserStatus.values.cast<UserStatus?>().firstWhere(
+            (e) => e?.toString().split('.').last == json['status'],
+            orElse: () => UserStatus.pending,
+          )!,
+      initials: json['initials'] ?? 'U',
+      avatarUrl: json['avatarUrl'],
+    );
+  }
+
+  User copyWith({
+    String? id,
+    String? name,
+    String? email,
+    UserRole? role,
+    UserStatus? status,
+    String? initials,
+    String? avatarUrl,
+  }) {
+    return User(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      role: role ?? this.role,
+      status: status ?? this.status,
+      initials: initials ?? this.initials,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+    );
+  }
+}
