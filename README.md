@@ -134,21 +134,9 @@ flutter build ios
 
 ---
 
-## 📸 Screenshots
 
-Add your app screenshots here to make the project visually appealing:
 
-- Login Screen
-- Dashboard
-- Student Management Page
-- Attendance Page
 
-```md
-![Login](assets/screenshots/login.png)
-![Dashboard](assets/screenshots/dashboard.png)
-```
-
----
 
 ## 🗺️ Roadmap
 
